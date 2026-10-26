@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   CircleCheck,
   CircleX,
@@ -29,12 +29,35 @@ export function Status({ state }: { state: RunState }) {
       interrupted: TriangleAlert,
     }[state] || CircleDashed;
   return (
-    <Badge variant="outline" className="gap-1.5 font-normal capitalize">
+    <Badge variant="outline" data-run-state={state} className="gap-1.5 font-normal capitalize">
       <Icon
         className={`size-3.5 ${state === "running" || state === "cancelling" ? "animate-spin" : ""}`}
       />
       {state}
     </Badge>
+  );
+}
+export function RunningBorder() {
+  const ref = useRef<SVGSVGElement>(null);
+  const [animating, setAnimating] = useState(false);
+  useEffect(() => {
+    let visible = false;
+    const update = () => setAnimating(visible && !document.hidden);
+    const observer = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      update();
+    });
+    if (ref.current) observer.observe(ref.current);
+    document.addEventListener("visibilitychange", update);
+    return () => {
+      observer.disconnect();
+      document.removeEventListener("visibilitychange", update);
+    };
+  }, []);
+  return (
+    <svg ref={ref} className="workflow-running-border" aria-hidden="true" data-animating={animating}>
+      <rect pathLength="100" />
+    </svg>
   );
 }
 export function IconButton({

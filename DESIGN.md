@@ -23,6 +23,12 @@ colors:
   sidebar-accent-foreground: "#202020"
   sidebar-border: "#e4e4e4"
   sidebar-ring: "#757575"
+  running: "#13713f"
+  running-muted: "#edf8f0"
+  running-border: "#75ab89"
+  dark-running: "#79d99a"
+  dark-running-muted: "#1d2c22"
+  dark-running-border: "#477553"
   dark-background: "#171717"
   dark-foreground: "#ededed"
   dark-popover: "#222222"
@@ -158,7 +164,7 @@ This is a source extraction from `src/mainview/index.css`, `App.tsx`, the shadcn
 
 ## Colors
 
-A strictly grayscale palette uses tonal contrast for hierarchy in both themes.
+A grayscale palette uses tonal contrast for hierarchy in both themes. Green is reserved for actively running pipelines, as explicitly requested by the user.
 
 ### Primary
 
@@ -267,7 +273,11 @@ Project navigation uses the shadcn sidebar. Menu rows are compact (36px high), w
 
 ### Chips / Status
 
-Run status uses an outline pill with a Lucide icon and readable state text. Running and cancelling use a spinner. Workflow event tags use secondary fills and compact squared corners; malformed workflow indicators pair an icon with wording. State must remain understandable in grayscale.
+Run status uses an outline pill with a Lucide icon and readable state text. Running uses green foreground, a tinted surface, and a spinner; cancelling remains neutral. Workflow event tags use secondary fills and compact squared corners; malformed workflow indicators pair an icon with wording. State must remain understandable without color.
+
+Running workflows have a green perimeter with a moving SVG stroke segment on the existing shadcn Button. The 3-second linear circuit pauses when the card is offscreen or the document is hidden. The static border, icon, and Running text preserve the state with reduced motion. The history badge counts running work in green; the status bar separates running, queued, and cancelling counts.
+
+A green-tinted current-step summary sits above the output toolbar and remains visible while logs scroll. Step-start, completion, and job completion messages update it; nested action steps use a stack and concurrent/matrix jobs keep independent contexts. Act metadata supplies step IDs and stages, while displayed names come from masked messages. Only the currently active log sections receive a tinted surface and green line numbers/job labels. All live emphasis disappears when the run leaves the running state.
 
 ### Workflow / Job Selection and Live Output
 
@@ -314,7 +324,7 @@ Shared transitions resolve to the installed Tailwind default (150ms, standard ea
 
 ### Don't:
 
-- **Don't** introduce color accents, gradients, decorative glow, or ornamental textures.
+- **Don't** introduce color accents beyond running-state green, gradients, decorative glow, or ornamental textures.
 - **Don't** use monospace for general navigation, headings, or prose.
 - **Don't** turn flat workspace panes into a grid of elevated cards.
 - **Don't** replace shadcn/ui controls with unrelated component styles.

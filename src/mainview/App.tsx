@@ -67,7 +67,7 @@ import {
 import { RunDialog } from "@/components/run-dialog";
 import { RunDetail } from "@/components/run-detail";
 import { SettingsView, AgentsView } from "@/components/settings";
-import { Empty, IconButton, fail } from "@/components/common";
+import { Empty, IconButton, RunningBorder, fail } from "@/components/common";
 import {
   activeStates,
   settingsSchema,
@@ -228,6 +228,9 @@ function Workspace() {
     if (!runnerStopped) void refresh();
   }
   const active = runs.filter((r) => activeStates.includes(r.state));
+  const running = runs.filter((r) => r.state === "running");
+  const queued = runs.filter((r) => r.state === "queued");
+  const cancelling = runs.filter((r) => r.state === "cancelling");
   return (
     <>
       <Sidebar>
@@ -270,7 +273,7 @@ function Workspace() {
                             r.request.projectId === p.id &&
                             r.state === "running",
                         ) && (
-                          <LoaderCircle className="ml-auto size-3 animate-spin" />
+                          <LoaderCircle className="ml-auto size-3 animate-spin running-foreground" aria-label="Running pipeline" />
                         )}
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -315,9 +318,10 @@ function Workspace() {
                     {item.id === "history" && active.length > 0 && (
                       <Badge
                         variant="secondary"
-                        className="ml-auto text-[11px]"
+                        className={`ml-auto text-[11px] ${running.length ? "running-count" : ""}`}
+                        aria-label={running.length ? `${running.length} running` : `${active.length} queued or cancelling`}
                       >
-                        {active.length}
+                        {running.length || active.length}
                       </Badge>
                     )}
                   </SidebarMenuButton>
@@ -333,6 +337,7 @@ function Workspace() {
                   <SidebarMenuItem key={r.id}>
                     <SidebarMenuButton
                       className="recent-run"
+                      data-run-state={r.state}
                       onClick={() => {
                         setSelected(r.request.projectId);
                         setView("project");
@@ -536,13 +541,17 @@ function Workspace() {
                             .toLowerCase()
                             .includes(search.toLowerCase()),
                         )
-                        .map((w) => (
+                        .map((w) => {
+                          const isRunning = running.some(r =>
+                            r.request.projectId === w.projectId && r.request.workflowPath === w.path);
+                          return (
                           <Button
                             key={w.path}
                             variant="ghost"
-                            className={`workflow-item ${workflow?.path === w.path ? "selected" : ""}`}
+                            className={`workflow-item ${workflow?.path === w.path ? "selected" : ""} ${isRunning ? "is-running" : ""}`}
                             onClick={() => setSelectedWorkflow(w.path)}
                           >
+                            {isRunning && <RunningBorder />}
                             <WorkflowIcon className="size-4 shrink-0" />
                             <span className="min-w-0 flex-1">
                               <span className="workflow-name">{w.name}</span>
@@ -562,6 +571,12 @@ function Workspace() {
                                         {e}
                                       </Badge>
                                     ))}
+                                    {isRunning && (
+                                      <Badge variant="outline" data-run-state="running">
+                                        <LoaderCircle className="size-3 animate-spin" />
+                                        Running
+                                      </Badge>
+                                    )}
                                     <span>
                                       {w.jobs.length}{" "}
                                       {w.jobs.length === 1 ? "job" : "jobs"}
@@ -572,7 +587,8 @@ function Workspace() {
                             </span>
                             <ChevronRight className="size-3.5 text-muted-foreground" />
                           </Button>
-                        ))}
+                          );
+                        })}
                     </div>
                     {!workflows.some((w) =>
                       (w.name + " " + w.path)
@@ -717,9 +733,11 @@ function Workspace() {
             GitHub Actions via act
           </span>
           <span>
-            {active.length
-              ? `${active.length} active or queued`
-              : "No active runs"}
+            <span className={running.length ? "running-foreground" : undefined}>
+              {running.length ? `${running.length} running` : !active.length ? "No active runs" : null}
+            </span>
+            {queued.length > 0 && <span>{running.length ? " · " : ""}{queued.length} queued</span>}
+            {cancelling.length > 0 && <span>{running.length || queued.length ? " · " : ""}{cancelling.length} cancelling</span>}
             <span className="status-separator">·</span>
             {health?.docker.ok ? "Docker connected" : "Docker not connected"}
           </span>

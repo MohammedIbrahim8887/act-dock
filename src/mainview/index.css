@@ -29,6 +29,9 @@
   --sidebar-accent-foreground: #202020;
   --sidebar-border: #e4e4e4;
   --sidebar-ring: #757575;
+  --running: #13713f;
+  --running-muted: #edf8f0;
+  --running-border: #75ab89;
 }
 .dark {
   color-scheme: dark;
@@ -58,6 +61,9 @@
   --sidebar-accent-foreground: #fafafa;
   --sidebar-border: #303030;
   --sidebar-ring: #949494;
+  --running: #79d99a;
+  --running-muted: #1d2c22;
+  --running-border: #477553;
 }
 @theme inline {
   --color-background: var(--background);
@@ -359,6 +365,7 @@
   padding: 0 14px;
 }
 .workflow-item {
+  position: relative;
   padding: 15px 12px;
   height: auto;
   width: 100%;
@@ -378,6 +385,58 @@
 }
 .workflow-item > svg {
   margin-top: 2px;
+}
+.workflow-item.is-running {
+  border-color: var(--running-border);
+  background: color-mix(in srgb, var(--running-muted) 55%, var(--background));
+}
+.workflow-item.is-running.selected,
+.workflow-item.is-running:hover {
+  background: var(--running-muted);
+}
+.workflow-item.is-running > svg:not(.workflow-running-border) {
+  color: var(--running);
+}
+.workflow-item > .workflow-running-border {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  pointer-events: none;
+  overflow: visible;
+}
+.workflow-running-border rect {
+  x: 0px;
+  y: 0px;
+  width: 100%;
+  height: 100%;
+  rx: 7px;
+  fill: none;
+  stroke: var(--running);
+  stroke-width: 1.5px;
+  stroke-dasharray: 20 80;
+  vector-effect: non-scaling-stroke;
+  animation: running-border 3s linear infinite;
+  animation-play-state: paused;
+}
+.workflow-running-border[data-animating="true"] rect {
+  animation-play-state: running;
+}
+@keyframes running-border {
+  to { stroke-dashoffset: -100; }
+}
+.running-foreground,
+[data-run-state="running"][data-slot="badge"],
+.recent-run[data-run-state="running"] .recent-run-icon,
+.recent-run[data-run-state="running"] .recent-project {
+  color: var(--running);
+}
+[data-run-state="running"][data-slot="badge"],
+.running-count[data-slot="badge"] {
+  color: var(--running);
+  background: var(--running-muted);
+  border-color: var(--running-border);
 }
 .workflow-name {
   display: block;
@@ -555,6 +614,55 @@
 .log-tab[data-state="inactive"] {
   display: none;
 }
+.run-progress {
+  padding: 13px 24px;
+  background: var(--running-muted);
+  border-bottom: 1px solid var(--running-border);
+}
+.run-progress-label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--running);
+  font-size: 11px;
+  font-weight: 550;
+  margin-bottom: 6px;
+}
+.run-progress-scroll,
+.run-progress-scroll [data-slot="scroll-area-viewport"] {
+  max-height: 112px;
+}
+.run-progress-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.run-progress-step {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  font-size: 12px;
+  min-width: 0;
+}
+.run-progress-job {
+  color: var(--running);
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+.run-progress-name {
+  font-weight: 550;
+  overflow-wrap: anywhere;
+  min-width: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.run-progress-wait {
+  font-size: 12px;
+  color: var(--running);
+}
 .log-toolbar {
   display: flex;
   align-items: center;
@@ -599,6 +707,14 @@
 }
 .log-line:hover {
   background: var(--accent);
+}
+.log-line.is-current-step,
+.log-line.is-current-step:hover {
+  background: var(--running-muted);
+}
+.log-line.is-current-step .line-number,
+.log-line.is-current-step .log-job {
+  color: var(--running);
 }
 .log-job {
   color: var(--muted-foreground);
@@ -1050,6 +1166,12 @@ blockquote {
   }
 }
 @media (prefers-reduced-motion: reduce) {
+  .workflow-running-border rect,
+  [data-run-state="running"] .animate-spin,
+  .run-progress .animate-spin,
+  .running-foreground.animate-spin {
+    animation: none !important;
+  }
   *,
   *::before,
   *::after {

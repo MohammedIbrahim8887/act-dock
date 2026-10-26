@@ -8,6 +8,7 @@ import {
   ArrowDown,
   Terminal,
   ChevronLeft,
+  LoaderCircle,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -17,6 +18,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { api, exportLogs } from "@/lib/api";
 import { activeStates, type LogEntry, type Run } from "../../shared/contracts";
+import { advanceProgress, currentSteps, isCurrentStepLine, type RunProgress } from "../../shared/run-progress";
 import { Empty, Status, IconButton, duration, fail } from "./common";
 export function RunDetail({
   run,
@@ -33,6 +35,7 @@ export function RunDetail({
     [tab, setTab] = useState("logs"),
     [error, setError] = useState(""),
     [busy, setBusy] = useState(false);
+  const [progress, setProgress] = useState<{ runId: string; steps: RunProgress }>({ runId: "", steps: {} });
   const viewportRef = useRef<HTMLDivElement | null>(null);
   const attachViewport = useCallback(
     (node: HTMLDivElement | null) => {
@@ -47,6 +50,7 @@ export function RunDetail({
     let timer: ReturnType<typeof setTimeout>;
     cursor.current = 0;
     setLogs([]);
+    setProgress({ runId: run?.id || "", steps: {} });
     setError("");
     setFollow(true);
     setTab("logs");
@@ -61,6 +65,7 @@ export function RunDetail({
         if (!alive) return;
         cursor.current = page.nextCursor;
         setLogs((prev) => [...prev, ...page.entries].slice(-2000));
+        setProgress(prev => ({ runId: run.id, steps: advanceProgress(prev.steps, page.entries) }));
         setError("");
         if (!page.end)
           timer = setTimeout(
@@ -99,6 +104,7 @@ export function RunDetail({
   const visible = logs.filter(
     (l) => !filter || l.message.toLowerCase().includes(filter.toLowerCase()),
   );
+  const steps = run.state === "running" && progress.runId === run.id ? currentSteps(progress.steps) : [];
   async function action(kind: "cancel" | "rerun") {
     setBusy(true);
     try {
@@ -195,6 +201,24 @@ export function RunDetail({
           )}
         </div>
         <TabsContent value="logs" className="log-tab">
+          {run.state === "running" && (
+            <div className="run-progress" role="status" aria-live="polite" aria-atomic="true">
+              <div className="run-progress-label">
+                <LoaderCircle className="size-3.5 animate-spin" aria-hidden="true" />
+                {steps.length > 1 ? "Current steps" : "Current step"}
+              </div>
+              <ScrollArea className="run-progress-scroll">
+                <div className="run-progress-steps">
+                  {steps.length ? steps.map(step => (
+                    <div className="run-progress-step" key={step.jobKey}>
+                      {step.job && <span className="run-progress-job mono">{step.job}</span>}
+                      <span className="run-progress-name" title={step.name}>{step.name.replace(/^Main\s+/, "")}</span>
+                    </div>
+                  )) : <span className="run-progress-wait">{logs.length ? "Preparing the next step…" : "Preparing workflow…"}</span>}
+                </div>
+              </ScrollArea>
+            </div>
+          )}
           <div className="log-toolbar">
             <div className="search-input">
               <Search className="size-3.5" />
@@ -253,7 +277,7 @@ export function RunDetail({
               aria-live="off"
             >
               {visible.map((l) => (
-                <div className="log-line" key={l.cursor}>
+                <div className={`log-line ${isCurrentStepLine(l, steps) ? "is-current-step" : ""}`} key={l.cursor}>
                   <span className="line-number">{l.cursor}</span>
                   <code>
                     {l.job && <span className="log-job">[{l.job}] </span>}

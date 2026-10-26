@@ -844,6 +844,28 @@
         "verification": "Isolated fixture captures with illustrative projects, runs, and counts; source confirms behavior. No claim of completed native integration or accessibility testing.",
         "scope": "Functional extension of the existing monochrome shadcn system. Local small metadata and radius differences do not establish new system tokens."
       }
+    },
+    "runningState": {
+      "scope": "User-approved green accent for running pipelines; other states remain neutral.",
+      "tokens": {
+        "light": {
+          "running": "#13713f",
+          "running-muted": "#edf8f0",
+          "running-border": "#75ab89"
+        },
+        "dark": {
+          "running": "#79d99a",
+          "running-muted": "#1d2c22",
+          "running-border": "#477553"
+        }
+      },
+      "surfaces": [
+        "Workflow perimeter and Running badge",
+        "Running count and project/recent-run indicators",
+        "Current-step summary and active log sections"
+      ],
+      "motion": "3-second linear SVG stroke circuit; paused offscreen or when document is hidden, static under reduced motion.",
+      "progress": "Masked act step messages with optional lifecycle metadata; per-job stacks retain nested and concurrent step context beyond the 2,000-line visible log window."
     }
   },
   "components": [
@@ -951,7 +973,7 @@
       "**Do** keep installer artwork and native Finder placement aligned through the shared layout file."
     ],
     "donts": [
-      "**Don't** introduce color accents, gradients, decorative glow, or ornamental textures.",
+      "**Don't** introduce color accents beyond running-state green, gradients, decorative glow, or ornamental textures.",
       "**Don't** use monospace for general navigation, headings, or prose.",
       "**Don't** turn flat workspace panes into a grid of elevated cards.",
       "**Don't** replace shadcn/ui controls with unrelated component styles.",

@@ -1,6 +1,6 @@
 # Act Dock
 
-A macOS-first Electrobun app for running local GitHub Actions with `act`. Includes a persistent background runner, CLI, and MCP stdio server for local AI agents. The React interface uses shadcn/ui with strictly grayscale light and dark themes.
+A macOS-first Electrobun app for running local GitHub Actions with `act`. Includes a persistent background runner, CLI, and MCP stdio server for local AI agents. The React interface uses shadcn/ui with grayscale light and dark themes and green indicators for running pipelines.
 
 ## Requirements
 

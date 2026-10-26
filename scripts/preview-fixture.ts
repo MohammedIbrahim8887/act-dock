@@ -31,6 +31,26 @@ await writeFile(
   docker,
   `#!${process.execPath}\nif(process.argv.includes('info'))console.log('Fixture Docker (simulated)');\n`,
 );
+if (process.argv.includes("--running")) {
+  await writeFile(act, `#!${process.execPath}
+if (process.argv.includes('--version')) { console.log('act fixture (simulated)'); process.exit(0); }
+const emit = (msg, fields = {}) => console.log(JSON.stringify({jobID:'test', job:'Unit tests', msg, ...fields}));
+emit('[fixture] Simulated pipeline for running-state review');
+emit('⭐ Run Set up job');
+emit('Using catthehacker/ubuntu:act-latest');
+emit('✅ Success - Set up job');
+emit('⭐ Run Main Checkout working files', {stepID:['1'], stage:'Main'});
+emit('Current working files ready', {stepID:['1'], stage:'Main', raw_output:true});
+emit('✅ Success - Main Checkout working files [1s]', {stepID:['1'], stage:'Main', stepResult:'success'});
+emit('⭐ Run Main Run unit tests', {stepID:['2'], stage:'Main'});
+for (let i = 0; i < 300; i++) {
+  emit('Checking workflow fixture '+(i+1)+'…', {stepID:['2'], stage:'Main', raw_output:true});
+  await Bun.sleep(2000);
+}
+emit('✅ Success - Main Run unit tests [10m]', {stepID:['2'], stage:'Main', stepResult:'success'});
+emit('🏁 Job succeeded');
+`);
+}
 await chmod(act, 0o700);
 await chmod(docker, 0o700);
 const { store, scheduler } = (await serve()) || {};

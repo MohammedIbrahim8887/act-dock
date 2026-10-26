@@ -1,6 +1,6 @@
 {
   "name": "act-dock",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Local GitHub Actions runner for desktop and AI agents",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.32.2",
