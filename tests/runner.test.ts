@@ -197,6 +197,30 @@ describe("scheduler", () => {
   });
 });
 describe("persistence", () => {
+  test("preserves step lifecycle metadata without persisting unmasked field contents", async () => {
+    const run = scheduler.enqueue(request(), "cli");
+    scheduler.cancel(run.id);
+    scheduler.log(run.id, JSON.stringify({
+      msg: "⭐ Run Main Test ***", jobID: "check", job: "Checks",
+      matrix: { node: 20, token: "private-matrix-value" },
+      step: "unmasked-step-value", stepID: ["2", "1"], stage: "Main",
+      raw_output: false,
+    }));
+    scheduler.log(run.id, JSON.stringify({
+      msg: "✅ Success - Main Test ***", jobID: "check", job: "Checks",
+      matrix: { token: "private-matrix-value", node: 20 },
+      stepID: ["2", "1"], stage: "Main", stepResult: "success",
+    }));
+    const page = await scheduler.logs(run.id, 0, 100);
+    const first = page.entries[0];
+    expect(first.stepId).toEqual(["2", "1"]);
+    expect(first.stage).toBe("Main");
+    expect(first.rawOutput).toBe(false);
+    expect(first.jobKey).toBe(page.entries[1].jobKey);
+    expect(page.entries[1].stepResult).toBe("success");
+    expect(JSON.stringify(page)).not.toContain("private-matrix-value");
+    expect(JSON.stringify(page)).not.toContain("unmasked-step-value");
+  });
   test("recovers active work as interrupted and preserves queued work", () => {
     const a = scheduler.enqueue(request(), "cli");
     store.putRun({ ...a, state: "running" });

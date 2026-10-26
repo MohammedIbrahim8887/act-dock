@@ -4,11 +4,13 @@ import { promisify } from "node:util";
 import { existsSync, appendFileSync } from "node:fs";
 import { resolve, join } from "node:path";
 import { createInterface } from "node:readline";
+import { createHash } from "node:crypto";
 import {
   AppError,
   activeStates,
   type Health,
   type LogPage,
+  type LogEntry,
   type Run,
   type RunRequest,
 } from "../shared/contracts";
@@ -128,11 +130,27 @@ export class Scheduler {
     let job: string | undefined,
       level: string | undefined,
       text = clean;
+    const context: Partial<LogEntry> = {};
     try {
       const d = JSON.parse(clean);
       text = String(d.msg ?? d.message ?? clean);
       job = d.jobID || d.job ? String(d.jobID || d.job) : undefined;
       level = d.level ? String(d.level) : undefined;
+      // Keep masked message text as the title. act's other fields can contain
+      // unmasked values, so retain only lifecycle fields and a hashed job key.
+      if (job) {
+        const matrix = d.matrix && typeof d.matrix === "object"
+          ? Object.entries(d.matrix).sort(([a], [b]) => a.localeCompare(b))
+          : [];
+        context.jobKey = createHash("sha256")
+          .update(JSON.stringify([job, d.job, matrix]))
+          .digest("hex").slice(0, 24);
+      }
+      if (Array.isArray(d.stepID)) context.stepId = d.stepID.map(String);
+      if (["Pre", "Main", "Post"].includes(d.stage)) context.stage = d.stage;
+      if (["success", "failure", "skipped"].includes(d.stepResult))
+        context.stepResult = d.stepResult;
+      if (typeof d.raw_output === "boolean") context.rawOutput = d.raw_output;
     } catch {}
     const entry = {
       cursor,
@@ -141,6 +159,7 @@ export class Scheduler {
       message: text,
       job,
       level,
+      ...context,
     };
     const line = JSON.stringify(entry) + "\n";
     const file = join(this.store.directory, "logs", id + ".jsonl");

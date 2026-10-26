@@ -81,6 +81,11 @@ export type LogEntry = {
   message: string;
   job?: string;
   level?: string;
+  jobKey?: string;
+  stepId?: string[];
+  stage?: string;
+  stepResult?: string;
+  rawOutput?: boolean;
 };
 export type LogPage = { entries: LogEntry[]; nextCursor: number; end: boolean };
 export type Health = {
@@ -239,6 +244,11 @@ const logSchema = z.object({
   message: z.string(),
   job: z.string().optional(),
   level: z.string().optional(),
+  jobKey: z.string().optional(),
+  stepId: z.array(z.string()).optional(),
+  stage: z.string().optional(),
+  stepResult: z.string().optional(),
+  rawOutput: z.boolean().optional(),
 });
 const dependencySchema = z.object({
   path: z.string().optional(),
