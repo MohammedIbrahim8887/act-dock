@@ -1,0 +1,964 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-26T11:14:23.215826Z",
+  "title": "Design System: Act Dock",
+  "extensions": {
+    "colorMeta": {
+      "background": {
+        "role": "neutral",
+        "displayName": "Light background",
+        "tonalRamp": [
+          "#171717",
+          "#1c1c1c",
+          "#2a2a2a",
+          "#404040",
+          "#686868",
+          "#a0a0a0",
+          "#e4e4e4",
+          "#ffffff"
+        ]
+      },
+      "foreground": {
+        "role": "neutral",
+        "displayName": "Light foreground",
+        "tonalRamp": [
+          "#171717",
+          "#1c1c1c",
+          "#2a2a2a",
+          "#404040",
+          "#686868",
+          "#a0a0a0",
+          "#e4e4e4",
+          "#ffffff"
+        ]
+      },
+      "popover": {
+        "role": "neutral",
+        "displayName": "Light popover",
+        "tonalRamp": [
+          "#171717",
+          "#1c1c1c",
+          "#2a2a2a",
+          "#404040",
+          "#686868",
+          "#a0a0a0",
+          "#e4e4e4",
+          "#ffffff"
+        ]
+      },
+      "popover-foreground": {
+        "role": "neutral",
+        "displayName": "Light popover foreground",
+        "tonalRamp": [
+          "#171717",
+          "#1c1c1c",
+          "#2a2a2a",
+          "#404040",
+          "#686868",
+          "#a0a0a0",
+          "#e4e4e4",
+          "#ffffff"
+        ]
+      },
+      "primary": {
+        "role": "primary",
+        "displayName": "Light primary",
+        "tonalRamp": [
+          "#171717",
+          "#1c1c1c",
+          "#2a2a2a",
+          "#404040",
+          "#686868",
+          "#a0a0a0",
+          "#e4e4e4",
+          "#ffffff"
+        ]
+      },
+      "primary-foreground": {
+        "role": "primary",
+        "displayName": "Light primary foreground",
+        "tonalRamp": [
+          "#171717",
+          "#1c1c1c",
+          "#2a2a2a",
+          "#404040",
+          "#686868",
+          "#a0a0a0",
+          "#e4e4e4",
+          "#ffffff"
+        ]
+      },
+      "secondary": {
+        "role": "neutral",
+        "displayName": "Light secondary",
+        "tonalRamp": [
+          "#171717",
+          "#1c1c1c",
+          "#2a2a2a",
+          "#404040",
+          "#686868",
+          "#a0a0a0",
+          "#e4e4e4",
+          "#ffffff"
+        ]
+      },
+      "secondary-foreground": {
+        "role": "neutral",
+        "displayName": "Light secondary foreground",
+        "tonalRamp": [
+          "#171717",
+          "#1c1c1c",
+          "#2a2a2a",
+          "#404040",
+          "#686868",
+          "#a0a0a0",
+          "#e4e4e4",
+          "#ffffff"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Light muted",
+        "tonalRamp": [
+          "#171717",
+          "#1c1c1c",
+          "#2a2a2a",
+          "#404040",
+          "#686868",
+          "#a0a0a0",
+          "#e4e4e4",
+          "#ffffff"
+        ]
+      },
+      "muted-foreground": {
+        "role": "neutral",
+        "displayName": "Light muted foreground",
+        "tonalRamp": [
+          "#171717",
+          "#1c1c1c",
+          "#2a2a2a",
+          "#404040",
+          "#686868",
+          "#a0a0a0",
+          "#e4e4e4",
+          "#ffffff"
+        ]
+      },
+      "accent": {
+        "role": "neutral",
+        "displayName": "Light accent",
+        "tonalRamp": [
+          "#171717",
+          "#1c1c1c",
+          "#2a2a2a",
+          "#404040",
+          "#686868",
+          "#a0a0a0",
+          "#e4e4e4",
+          "#ffffff"
+        ]
+      },
+      "accent-foreground": {
+        "role": "neutral",
+        "displayName": "Light accent foreground",
+        "tonalRamp": [
+          "#171717",
+          "#1c1c1c",
+          "#2a2a2a",
+          "#404040",
+          "#686868",
+          "#a0a0a0",
+          "#e4e4e4",
+          "#ffffff"
+        ]
+      },
+      "border": {
+        "role": "neutral",
+        "displayName": "Light border",
+        "tonalRamp": [
+          "#171717",
+          "#1c1c1c",
+          "#2a2a2a",
+          "#404040",
+          "#686868",
+          "#a0a0a0",
+          "#e4e4e4",
+          "#ffffff"
+        ]
+      },
+      "input": {
+        "role": "neutral",
+        "displayName": "Light input",
+        "tonalRamp": [
+          "#171717",
+          "#1c1c1c",
+          "#2a2a2a",
+          "#404040",
+          "#686868",
+          "#a0a0a0",
+          "#e4e4e4",
+          "#ffffff"
+        ]
+      },
+      "ring": {
+        "role": "neutral",
+        "displayName": "Light ring",
+        "tonalRamp": [
+          "#171717",
+          "#1c1c1c",
+          "#2a2a2a",
+          "#404040",
+          "#686868",
+          "#a0a0a0",
+          "#e4e4e4",
+          "#ffffff"
+        ]
+      },
+      "sidebar": {
+        "role": "neutral",
+        "displayName": "Light sidebar",
+        "tonalRamp": [
+          "#171717",
+          "#1c1c1c",
+          "#2a2a2a",
+          "#404040",
+          "#686868",
+          "#a0a0a0",
+          "#e4e4e4",
+          "#ffffff"
+        ]
+      },
+      "sidebar-foreground": {
+        "role": "neutral",
+        "displayName": "Light sidebar foreground",
+        "tonalRamp": [
+          "#171717",
+          "#1c1c1c",
+          "#2a2a2a",
+          "#404040",
+          "#686868",
+          "#a0a0a0",
+          "#e4e4e4",
+          "#ffffff"
+        ]
+      },
+      "sidebar-accent": {
+        "role": "neutral",
+        "displayName": "Light sidebar accent",
+        "tonalRamp": [
+          "#171717",
+          "#1c1c1c",
+          "#2a2a2a",
+          "#404040",
+          "#686868",
+          "#a0a0a0",
+          "#e4e4e4",
+          "#ffffff"
+        ]
+      },
+      "sidebar-accent-foreground": {
+        "role": "neutral",
+        "displayName": "Light sidebar accent foreground",
+        "tonalRamp": [
+          "#171717",
+          "#1c1c1c",
+          "#2a2a2a",
+          "#404040",
+          "#686868",
+          "#a0a0a0",
+          "#e4e4e4",
+          "#ffffff"
+        ]
+      },
+      "sidebar-border": {
+        "role": "neutral",
+        "displayName": "Light sidebar border",
+        "tonalRamp": [
+          "#171717",
+          "#1c1c1c",
+          "#2a2a2a",
+          "#404040",
+          "#686868",
+          "#a0a0a0",
+          "#e4e4e4",
+          "#ffffff"
+        ]
+      },
+      "sidebar-ring": {
+        "role": "neutral",
+        "displayName": "Light sidebar ring",
+        "tonalRamp": [
+          "#171717",
+          "#1c1c1c",
+          "#2a2a2a",
+          "#404040",
+          "#686868",
+          "#a0a0a0",
+          "#e4e4e4",
+          "#ffffff"
+        ]
+      },
+      "dark-background": {
+        "role": "neutral",
+        "displayName": "Dark background",
+        "tonalRamp": [
+          "#171717",
+          "#1c1c1c",
+          "#2a2a2a",
+          "#404040",
+          "#686868",
+          "#a0a0a0",
+          "#e4e4e4",
+          "#ffffff"
+        ]
+      },
+      "dark-foreground": {
+        "role": "neutral",
+        "displayName": "Dark foreground",
+        "tonalRamp": [
+          "#171717",
+          "#1c1c1c",
+          "#2a2a2a",
+          "#404040",
+          "#686868",
+          "#a0a0a0",
+          "#e4e4e4",
+          "#ffffff"
+        ]
+      },
+      "dark-popover": {
+        "role": "neutral",
+        "displayName": "Dark popover",
+        "tonalRamp": [
+          "#171717",
+          "#1c1c1c",
+          "#2a2a2a",
+          "#404040",
+          "#686868",
+          "#a0a0a0",
+          "#e4e4e4",
+          "#ffffff"
+        ]
+      },
+      "dark-popover-foreground": {
+        "role": "neutral",
+        "displayName": "Dark popover foreground",
+        "tonalRamp": [
+          "#171717",
+          "#1c1c1c",
+          "#2a2a2a",
+          "#404040",
+          "#686868",
+          "#a0a0a0",
+          "#e4e4e4",
+          "#ffffff"
+        ]
+      },
+      "dark-primary": {
+        "role": "primary",
+        "displayName": "Dark primary",
+        "tonalRamp": [
+          "#171717",
+          "#1c1c1c",
+          "#2a2a2a",
+          "#404040",
+          "#686868",
+          "#a0a0a0",
+          "#e4e4e4",
+          "#ffffff"
+        ]
+      },
+      "dark-primary-foreground": {
+        "role": "primary",
+        "displayName": "Dark primary foreground",
+        "tonalRamp": [
+          "#171717",
+          "#1c1c1c",
+          "#2a2a2a",
+          "#404040",
+          "#686868",
+          "#a0a0a0",
+          "#e4e4e4",
+          "#ffffff"
+        ]
+      },
+      "dark-secondary": {
+        "role": "neutral",
+        "displayName": "Dark secondary",
+        "tonalRamp": [
+          "#171717",
+          "#1c1c1c",
+          "#2a2a2a",
+          "#404040",
+          "#686868",
+          "#a0a0a0",
+          "#e4e4e4",
+          "#ffffff"
+        ]
+      },
+      "dark-secondary-foreground": {
+        "role": "neutral",
+        "displayName": "Dark secondary foreground",
+        "tonalRamp": [
+          "#171717",
+          "#1c1c1c",
+          "#2a2a2a",
+          "#404040",
+          "#686868",
+          "#a0a0a0",
+          "#e4e4e4",
+          "#ffffff"
+        ]
+      },
+      "dark-muted": {
+        "role": "neutral",
+        "displayName": "Dark muted",
+        "tonalRamp": [
+          "#171717",
+          "#1c1c1c",
+          "#2a2a2a",
+          "#404040",
+          "#686868",
+          "#a0a0a0",
+          "#e4e4e4",
+          "#ffffff"
+        ]
+      },
+      "dark-muted-foreground": {
+        "role": "neutral",
+        "displayName": "Dark muted foreground",
+        "tonalRamp": [
+          "#171717",
+          "#1c1c1c",
+          "#2a2a2a",
+          "#404040",
+          "#686868",
+          "#a0a0a0",
+          "#e4e4e4",
+          "#ffffff"
+        ]
+      },
+      "dark-accent": {
+        "role": "neutral",
+        "displayName": "Dark accent",
+        "tonalRamp": [
+          "#171717",
+          "#1c1c1c",
+          "#2a2a2a",
+          "#404040",
+          "#686868",
+          "#a0a0a0",
+          "#e4e4e4",
+          "#ffffff"
+        ]
+      },
+      "dark-accent-foreground": {
+        "role": "neutral",
+        "displayName": "Dark accent foreground",
+        "tonalRamp": [
+          "#171717",
+          "#1c1c1c",
+          "#2a2a2a",
+          "#404040",
+          "#686868",
+          "#a0a0a0",
+          "#e4e4e4",
+          "#ffffff"
+        ]
+      },
+      "dark-border": {
+        "role": "neutral",
+        "displayName": "Dark border",
+        "tonalRamp": [
+          "#171717",
+          "#1c1c1c",
+          "#2a2a2a",
+          "#404040",
+          "#686868",
+          "#a0a0a0",
+          "#e4e4e4",
+          "#ffffff"
+        ]
+      },
+      "dark-input": {
+        "role": "neutral",
+        "displayName": "Dark input",
+        "tonalRamp": [
+          "#171717",
+          "#1c1c1c",
+          "#2a2a2a",
+          "#404040",
+          "#686868",
+          "#a0a0a0",
+          "#e4e4e4",
+          "#ffffff"
+        ]
+      },
+      "dark-ring": {
+        "role": "neutral",
+        "displayName": "Dark ring",
+        "tonalRamp": [
+          "#171717",
+          "#1c1c1c",
+          "#2a2a2a",
+          "#404040",
+          "#686868",
+          "#a0a0a0",
+          "#e4e4e4",
+          "#ffffff"
+        ]
+      },
+      "dark-sidebar": {
+        "role": "neutral",
+        "displayName": "Dark sidebar",
+        "tonalRamp": [
+          "#171717",
+          "#1c1c1c",
+          "#2a2a2a",
+          "#404040",
+          "#686868",
+          "#a0a0a0",
+          "#e4e4e4",
+          "#ffffff"
+        ]
+      },
+      "dark-sidebar-foreground": {
+        "role": "neutral",
+        "displayName": "Dark sidebar foreground",
+        "tonalRamp": [
+          "#171717",
+          "#1c1c1c",
+          "#2a2a2a",
+          "#404040",
+          "#686868",
+          "#a0a0a0",
+          "#e4e4e4",
+          "#ffffff"
+        ]
+      },
+      "dark-sidebar-accent": {
+        "role": "neutral",
+        "displayName": "Dark sidebar accent",
+        "tonalRamp": [
+          "#171717",
+          "#1c1c1c",
+          "#2a2a2a",
+          "#404040",
+          "#686868",
+          "#a0a0a0",
+          "#e4e4e4",
+          "#ffffff"
+        ]
+      },
+      "dark-sidebar-accent-foreground": {
+        "role": "neutral",
+        "displayName": "Dark sidebar accent foreground",
+        "tonalRamp": [
+          "#171717",
+          "#1c1c1c",
+          "#2a2a2a",
+          "#404040",
+          "#686868",
+          "#a0a0a0",
+          "#e4e4e4",
+          "#ffffff"
+        ]
+      },
+      "dark-sidebar-border": {
+        "role": "neutral",
+        "displayName": "Dark sidebar border",
+        "tonalRamp": [
+          "#171717",
+          "#1c1c1c",
+          "#2a2a2a",
+          "#404040",
+          "#686868",
+          "#a0a0a0",
+          "#e4e4e4",
+          "#ffffff"
+        ]
+      },
+      "dark-sidebar-ring": {
+        "role": "neutral",
+        "displayName": "Dark sidebar ring",
+        "tonalRamp": [
+          "#171717",
+          "#1c1c1c",
+          "#2a2a2a",
+          "#404040",
+          "#686868",
+          "#a0a0a0",
+          "#e4e4e4",
+          "#ffffff"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "headline": {
+        "displayName": "Page heading",
+        "purpose": "Base page headings; project and run headings have local overrides."
+      },
+      "title": {
+        "displayName": "Section title",
+        "purpose": "Compact section hierarchy in native system sans."
+      },
+      "body": {
+        "displayName": "Interface body",
+        "purpose": "Native system sans; no display font."
+      },
+      "label": {
+        "displayName": "Field label",
+        "purpose": "Compact medium-weight field labels."
+      },
+      "code": {
+        "displayName": "Technical values",
+        "purpose": "Code, paths, commands, IDs, configuration, and output only; size depends on context."
+      }
+    },
+    "shadows": [
+      {
+        "name": "shadow-xs",
+        "value": "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+        "purpose": "Installed Tailwind small shadow used by ordinary inputs and outline buttons; search overrides remove it."
+      },
+      {
+        "name": "shadow-lg",
+        "value": "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+        "purpose": "Installed Tailwind dialog elevation, not a workspace-pane treatment."
+      }
+    ],
+    "motion": [
+      {
+        "name": "default-transition-duration",
+        "value": "150ms",
+        "purpose": "Installed Tailwind duration for shared transition utilities."
+      },
+      {
+        "name": "default-transition-timing-function",
+        "value": "cubic-bezier(0.4, 0, 0.2, 1)",
+        "purpose": "Installed Tailwind easing for shared control state transitions."
+      },
+      {
+        "name": "sidebar-transition",
+        "value": "200ms linear",
+        "purpose": "Declared sidebar position/width transitions."
+      },
+      {
+        "name": "reduced-motion-duration",
+        "value": "0.01ms",
+        "purpose": "Source reduced-motion override for animations and transitions; scrolling becomes auto."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "workspace-tight-max",
+        "value": "1100px"
+      },
+      {
+        "name": "single-pane-max",
+        "value": "900px"
+      },
+      {
+        "name": "sidebar-sheet-below",
+        "value": "768px"
+      },
+      {
+        "name": "dialog-sm-min",
+        "value": "640px"
+      },
+      {
+        "name": "compact-window-max",
+        "value": "600px"
+      }
+    ],
+    "brand": {
+      "name": "Pipeline Loop",
+      "selection": "User-approved logo3",
+      "approvedSource": "assets/brand/approved-pipeline-loop.png",
+      "emblem": "assets/brand/pipeline-loop.png",
+      "appIcon": "assets/brand/app-icon.png",
+      "provenance": "assets/brand/provenance.json",
+      "geometry": "Rounded pipeline loop with three square nodes at top, left, and bottom, and an integrated right-facing chevron; preserve supplied silhouette, proportions, gaps, and node positions.",
+      "sidebar": {
+        "source": "src/mainview/App.tsx",
+        "styles": "src/mainview/index.css",
+        "imageSize": "28px × 28px",
+        "lightTreatment": "Transparent black emblem",
+        "darkTreatment": "filter: invert(1)",
+        "alternativeText": "Empty beside the visible Act Dock name"
+      },
+      "scope": "Asset geometry does not extend app radius, color, or typography scales."
+    },
+    "surfaces": {
+      "macos-installer": {
+        "platform": "Native macOS Finder",
+        "renderer": "scripts/macos/render-assets.swift",
+        "buildScript": "scripts/build-brand.ts",
+        "layoutSource": "assets/macos/installer-layout.json",
+        "units": "Logical points; icon positions measured from content top-left",
+        "layout": {
+          "width": 820,
+          "height": 560,
+          "heroHeight": 244,
+          "iconSize": 112,
+          "appPosition": [
+            235,
+            350
+          ],
+          "applicationsPosition": [
+            585,
+            350
+          ],
+          "footerTop": 464,
+          "textSize": 13,
+          "titleBarHeight": 32
+        },
+        "windowSize": {
+          "width": 820,
+          "height": 592
+        },
+        "appearance": "Flat charcoal hero above a light installation region; neutral branding, text, and connector strokes.",
+        "typography": "NSFont.systemFont; semibold 42pt hero, semibold 20pt brand name, 14pt supporting line. Finder owns file labels, configured at 13pt. Small metadata remains local.",
+        "instruction": "DRAG TO INSTALL is the functional source-to-destination arrow instruction, not a section eyebrow.",
+        "interaction": {
+          "source": "Actual draggable Act Dock application",
+          "destination": "Real Finder bookmark alias to /Applications",
+          "ownership": "Finder supplies icon dragging, file labels, window chrome, and system traffic-light colors."
+        },
+        "copy": {
+          "hero": "Your pipelines.\nRight here.",
+          "supporting": "Run GitHub Actions on your machine.",
+          "arrow": "DRAG TO INSTALL",
+          "install": "Drag Act Dock to Applications.",
+          "nextStep": "Then open it from Applications to get started."
+        },
+        "releaseMetadata": {
+          "source": "package.json",
+          "observedVersion": "0.1.0",
+          "channel": "Stable omits suffix; non-stable output adds Canary."
+        },
+        "outputDirectory": "build-support/macos/<channel>/",
+        "outputs": [
+          "background.png",
+          "background@2x.png",
+          "applications-folder.png",
+          "installer-preview.png",
+          "Applications"
+        ],
+        "backgroundScales": [
+          1,
+          2
+        ],
+        "visualReference": ".impeccable/review/macos-installer-final.png",
+        "previewRole": "installer-preview.png is a reproducible layout aid; mounted Finder supplies the native surface.",
+        "verification": "Source and mounted screenshot inspected for documentation. No claim of completed installation, contrast, keyboard, or accessibility testing.",
+        "scope": "Fixed installer composition and local renderer values do not extend app breakpoints, spacing, typography, radii, shadows, or theme tokens."
+      },
+      "project-folder-selection": {
+        "platform": "Electrobun desktop webview with a built-in browser fallback",
+        "sources": [
+          "src/mainview/components/add-project-dialog.tsx",
+          "src/mainview/lib/api.ts",
+          "src/mainview/index.css"
+        ],
+        "controls": "shadcn Dialog, Button, Input, Label, Checkbox, ScrollArea, and Skeleton; Lucide outline icons",
+        "selection": {
+          "desktop": "Choose folder opens the native chooser; show the selected path read-only before Add project. Change folder reopens the chooser.",
+          "fallback": "Browser sessions begin in the built-in folder browser; desktop also exposes Browse folders.",
+          "navigation": [
+            "Home and supplied location shortcuts",
+            "Up one folder",
+            "Folder rows open subfolders",
+            "Read-only current location",
+            "Case-insensitive search within the current listing",
+            "Show hidden folders checkbox"
+          ],
+          "confirmation": "Select this folder selects the current listing location, then Add project registers it. No editable path textbox or file editing controls.",
+          "workflowHint": "Workflow discovery is informational; folders without workflows may be added."
+        },
+        "layout": "Dialog maximum width 620px; wrapping shortcuts; truncated location and folder names; scrolling list height min(280px, 34vh); selected path wraps in a muted region. At or below 600px, dialog max-height is calc(100dvh - 32px) with vertical scrolling.",
+        "states": [
+          "Loading skeletons",
+          "No matching folders",
+          "No subfolders with explicit selection still available",
+          "Diagnostic error with retry",
+          "Selection disabled while loading or unavailable",
+          "Add disabled without selection or while busy"
+        ],
+        "visualReference": ".impeccable/review/project-picker.png",
+        "verification": "Isolated fixture capture of the built-in browser; illustrative paths and projects. Does not depict the native chooser or establish native integration or accessibility testing.",
+        "scope": "Reuses existing semantic theme, system fonts, radii, and shadcn controls; no new colors, fonts, or assets. Local dense text is not a normative typography token."
+      },
+      "run-history": {
+        "platform": "Desktop webview with compact-window reflow",
+        "sources": [
+          "src/mainview/components/run-history.tsx",
+          "src/mainview/App.tsx",
+          "src/mainview/index.css"
+        ],
+        "controls": "shadcn Input, labeled Select via Choice, Button, Table, ScrollArea, and Skeleton; shared grayscale status badges and Lucide outline icons",
+        "search": "Literal workflow/project/job/run ID search",
+        "filters": {
+          "Project": "All projects or a specific project, including removed projects with retained runs",
+          "Status": "All statuses or a run state",
+          "Started by": [
+            "Anyone",
+            "Desktop",
+            "CLI",
+            "AI agent (MCP)"
+          ],
+          "Created": [
+            "Any time",
+            "Last 24 hours",
+            "Last 7 days",
+            "Last 30 days"
+          ]
+        },
+        "pagination": {
+          "counting": "Runner supplies filtered total, total pages, and current page results.",
+          "pageSizes": [
+            10,
+            25,
+            50,
+            100
+          ],
+          "defaultPageSize": 25,
+          "footer": "Visible result range and total, rows-per-page selector, page indicator, first/previous/next/last buttons with accessible names",
+          "reset": "Filter and page-size changes return to page one; Clear filters retains the page size.",
+          "disabled": "Boundary controls disable appropriately; pending requests and stopped runner disable pagination."
+        },
+        "stateOwnership": "History options live in root App state; search, filters, page, and page size survive opening a run and returning during the app session.",
+        "layout": "Search/clear row, four labeled filters, count/refresh row, scrollable table, divider-separated pagination, then retention note. Filters become two columns at or below 1100px. At or below 600px, pagination navigation occupies a full row, the page scrolls, and results retain a 180px minimum height.",
+        "states": [
+          "Polite live result counts and ranges",
+          "Loading skeletons",
+          "No matching runs with filter recovery",
+          "Empty history guidance",
+          "Load error with Retry",
+          "Stopped runner with reconnect explanation"
+        ],
+        "visualReferences": [
+          ".impeccable/review/history-desktop.png",
+          ".impeccable/review/history-compact.png"
+        ],
+        "verification": "Isolated fixture captures with illustrative projects, runs, and counts; source confirms behavior. No claim of completed native integration or accessibility testing.",
+        "scope": "Functional extension of the existing monochrome shadcn system. Local small metadata and radius differences do not establish new system tokens."
+      }
+    }
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Standard shadcn/ui primary variant; label drawn from the interface.",
+      "html": "<button type=\"button\" class=\"ds-preview ds-button-primary\">Run workflow</button>",
+      "css": ".ds-button-primary{font-family:var(--font-sans);display:inline-flex;align-items:center;justify-content:center;gap:8px;height:36px;padding:8px 16px;border:0;border-radius:calc(var(--radius) - 2px);font-size:14px;font-weight:500;white-space:nowrap;outline:none;cursor:pointer;transition:color 150ms cubic-bezier(.4,0,.2,1),background-color 150ms cubic-bezier(.4,0,.2,1),box-shadow 150ms cubic-bezier(.4,0,.2,1);background:var(--primary);color:var(--primary-foreground);}.ds-button-primary:hover{background:color-mix(in oklab,var(--primary) 90%,transparent);}.ds-button-primary:focus-visible{border-color:var(--ring);box-shadow:0 0 0 3px color-mix(in oklab,var(--ring) 50%,transparent);}.ds-button-primary:disabled{pointer-events:none;opacity:.5;}@media(prefers-reduced-motion:reduce){:host .ds-preview,:host .ds-preview *{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important;}}"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Standard shadcn/ui outline variant; label drawn from the interface.",
+      "html": "<button type=\"button\" class=\"ds-preview ds-button-outline\">Run again</button>",
+      "css": ".ds-button-outline{font-family:var(--font-sans);display:inline-flex;align-items:center;justify-content:center;gap:8px;height:36px;padding:8px 16px;border:0;border-radius:calc(var(--radius) - 2px);font-size:14px;font-weight:500;white-space:nowrap;outline:none;cursor:pointer;transition:color 150ms cubic-bezier(.4,0,.2,1),background-color 150ms cubic-bezier(.4,0,.2,1),box-shadow 150ms cubic-bezier(.4,0,.2,1);background:var(--background);color:var(--foreground);border:1px solid var(--border);box-shadow:0 1px 2px 0 rgb(0 0 0 / .05);}.ds-button-outline:hover{background:var(--accent);color:var(--accent-foreground);}.ds-button-outline:focus-visible{border-color:var(--ring);box-shadow:0 0 0 3px color-mix(in oklab,var(--ring) 50%,transparent);}.ds-button-outline:disabled{pointer-events:none;opacity:.5;}:host-context(.dark) .ds-button-outline{border-color:var(--input);background:color-mix(in oklab,var(--input) 30%,transparent);}:host-context(.dark) .ds-button-outline:hover{background:color-mix(in oklab,var(--input) 50%,transparent);}@media(prefers-reduced-motion:reduce){:host .ds-preview,:host .ds-preview *{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important;}}"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Standard shadcn/ui secondary variant; label drawn from the interface.",
+      "html": "<button type=\"button\" class=\"ds-preview ds-button-secondary\">1</button>",
+      "css": ".ds-button-secondary{font-family:var(--font-sans);display:inline-flex;align-items:center;justify-content:center;gap:8px;height:36px;padding:8px 16px;border:0;border-radius:calc(var(--radius) - 2px);font-size:14px;font-weight:500;white-space:nowrap;outline:none;cursor:pointer;transition:color 150ms cubic-bezier(.4,0,.2,1),background-color 150ms cubic-bezier(.4,0,.2,1),box-shadow 150ms cubic-bezier(.4,0,.2,1);background:var(--secondary);color:var(--secondary-foreground);}.ds-button-secondary:hover{background:color-mix(in oklab,var(--secondary) 80%,transparent);}.ds-button-secondary:focus-visible{border-color:var(--ring);box-shadow:0 0 0 3px color-mix(in oklab,var(--ring) 50%,transparent);}.ds-button-secondary:disabled{pointer-events:none;opacity:.5;}@media(prefers-reduced-motion:reduce){:host .ds-preview,:host .ds-preview *{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important;}}"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Standard shadcn/ui ghost variant; label drawn from the interface.",
+      "html": "<button type=\"button\" class=\"ds-preview ds-button-ghost\">Advanced options</button>",
+      "css": ".ds-button-ghost{font-family:var(--font-sans);display:inline-flex;align-items:center;justify-content:center;gap:8px;height:36px;padding:8px 16px;border:0;border-radius:calc(var(--radius) - 2px);font-size:14px;font-weight:500;white-space:nowrap;outline:none;cursor:pointer;transition:color 150ms cubic-bezier(.4,0,.2,1),background-color 150ms cubic-bezier(.4,0,.2,1),box-shadow 150ms cubic-bezier(.4,0,.2,1);background:transparent;color:var(--foreground);}.ds-button-ghost:hover{background:var(--accent);color:var(--accent-foreground);}.ds-button-ghost:focus-visible{border-color:var(--ring);box-shadow:0 0 0 3px color-mix(in oklab,var(--ring) 50%,transparent);}.ds-button-ghost:disabled{pointer-events:none;opacity:.5;}:host-context(.dark) .ds-button-ghost:hover{background:color-mix(in oklab,var(--accent) 50%,transparent);}@media(prefers-reduced-motion:reduce){:host .ds-preview,:host .ds-preview *{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important;}}"
+    },
+    {
+      "name": "Link Button",
+      "kind": "button",
+      "refersTo": "button-link",
+      "description": "Standard shadcn/ui link variant; label drawn from the interface.",
+      "html": "<button type=\"button\" class=\"ds-preview ds-button-link\">View run</button>",
+      "css": ".ds-button-link{font-family:var(--font-sans);display:inline-flex;align-items:center;justify-content:center;gap:8px;height:36px;padding:8px 16px;border:0;border-radius:calc(var(--radius) - 2px);font-size:14px;font-weight:500;white-space:nowrap;outline:none;cursor:pointer;transition:color 150ms cubic-bezier(.4,0,.2,1),background-color 150ms cubic-bezier(.4,0,.2,1),box-shadow 150ms cubic-bezier(.4,0,.2,1);background:transparent;color:var(--primary);text-underline-offset:4px;}.ds-button-link:hover{text-decoration:underline;}.ds-button-link:focus-visible{border-color:var(--ring);box-shadow:0 0 0 3px color-mix(in oklab,var(--ring) 50%,transparent);}.ds-button-link:disabled{pointer-events:none;opacity:.5;}@media(prefers-reduced-motion:reduce){:host .ds-preview,:host .ds-preview *{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important;}}"
+    },
+    {
+      "name": "Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Ordinary field; search inputs have separate local overrides.",
+      "html": "<input class=\"ds-preview ds-input\" aria-label=\"Project folder\" placeholder=\"Project folder\" />",
+      "css": ".ds-input{font-family:var(--font-sans);height:36px;min-width:0;border:1px solid var(--input);border-radius:calc(var(--radius) - 2px);padding:4px 12px;background:transparent;color:var(--foreground);font-size:14px;box-shadow:0 1px 2px 0 rgb(0 0 0 / .05);transition:color 150ms cubic-bezier(.4,0,.2,1),background-color 150ms cubic-bezier(.4,0,.2,1),box-shadow 150ms cubic-bezier(.4,0,.2,1);}.ds-input::placeholder{color:var(--muted-foreground);}.ds-input:focus-visible{outline:none;border-color:var(--ring);box-shadow:0 0 0 3px color-mix(in oklab,var(--ring) 50%,transparent);}.ds-input:disabled{opacity:.5;pointer-events:none;}:host-context(.dark) .ds-input{background:color-mix(in oklab,var(--input) 30%,transparent);}@media(prefers-reduced-motion:reduce){:host .ds-preview,:host .ds-preview *{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important;}}"
+    },
+    {
+      "name": "Project Navigation",
+      "kind": "nav",
+      "refersTo": "navigation-item",
+      "description": "Selected project row; generic label illustrates a user-supplied project name.",
+      "html": "<nav aria-label=\"Projects\" class=\"ds-preview ds-nav\"><button class=\"ds-nav-item\" type=\"button\" aria-current=\"page\"><svg aria-hidden=\"true\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M20 20H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2Z\"/></svg><span>Project name</span></button></nav>",
+      "css": ".ds-nav{background:var(--sidebar);padding:12px;}.ds-nav-item{font-family:var(--font-sans);display:flex;align-items:center;gap:10px;width:100%;height:36px;padding:8px;border:0;border-radius:calc(var(--radius) - 2px);background:transparent;color:var(--sidebar-foreground);text-align:left;font-size:13px;cursor:pointer;transition:color 150ms cubic-bezier(.4,0,.2,1),background-color 150ms cubic-bezier(.4,0,.2,1),box-shadow 150ms cubic-bezier(.4,0,.2,1);}.ds-nav-item[aria-current=page],.ds-nav-item:hover,.ds-nav-item:active{background:var(--sidebar-accent);color:var(--sidebar-accent-foreground);}.ds-nav-item[aria-current=page]{font-weight:550;}.ds-nav-item:focus-visible{outline:2px solid var(--sidebar-ring);}.ds-nav-item:disabled{pointer-events:none;opacity:.5;}@media(prefers-reduced-motion:reduce){:host .ds-preview,:host .ds-preview *{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important;}}"
+    },
+    {
+      "name": "Run Status",
+      "kind": "chip",
+      "refersTo": "status-badge",
+      "description": "Static succeeded state with an outline icon and readable wording.",
+      "html": "<span class=\"ds-preview ds-status\"><svg aria-hidden=\"true\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"m9 12 2 2 4-4\"/></svg>Succeeded</span>",
+      "css": ".ds-status{font-family:var(--font-sans);display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border);border-radius:9999px;background:transparent;color:var(--foreground);padding:2px 8px;font-size:11px;font-weight:400;white-space:nowrap;}@media(prefers-reduced-motion:reduce){:host .ds-preview,:host .ds-preview *{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important;}}"
+    },
+    {
+      "name": "Selected Workflow",
+      "kind": "custom",
+      "refersTo": "workflow-selected",
+      "description": "Selected row with name and path; sample values are illustrative.",
+      "html": "<button type=\"button\" aria-pressed=\"true\" class=\"ds-preview ds-workflow\"><span class=\"ds-workflow-name\">Workflow name</span><span class=\"ds-workflow-path\">.github/workflows/example.yml</span></button>",
+      "css": ".ds-workflow{font-family:var(--font-sans);display:flex;flex-direction:column;align-items:flex-start;gap:0;width:100%;padding:15px 12px;border:1px solid var(--border);border-radius:7px;background:var(--muted);color:var(--foreground);text-align:left;cursor:pointer;transition:color 150ms cubic-bezier(.4,0,.2,1),background-color 150ms cubic-bezier(.4,0,.2,1),box-shadow 150ms cubic-bezier(.4,0,.2,1);}.ds-workflow:hover{background:var(--muted);}.ds-workflow:focus-visible{border-color:var(--ring);box-shadow:0 0 0 3px color-mix(in oklab,var(--ring) 50%,transparent);}.ds-workflow:disabled{pointer-events:none;opacity:.5;}.ds-workflow-name{font-size:13px;font-weight:550;overflow-wrap:anywhere;}.ds-workflow-path{font-family:var(--font-mono);font-size:11px;color:var(--muted-foreground);margin-top:4px;overflow-wrap:anywhere;}@media(prefers-reduced-motion:reduce){:host .ds-preview,:host .ds-preview *{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important;}}"
+    },
+    {
+      "name": "Live Output",
+      "kind": "custom",
+      "refersTo": "live-output",
+      "description": "Source log typography and wrapping; illustrative output, not evidence of a successful run.",
+      "html": "<div class=\"ds-preview ds-output\" aria-label=\"Illustrative output\"><div class=\"ds-log-line\"><span class=\"ds-line-number\" aria-hidden=\"true\">1</span><code class=\"ds-log-code\">Example log output</code></div></div>",
+      "css": ".ds-output{background:var(--muted);color:var(--foreground);padding:16px 0 40px;}.ds-log-line{display:flex;gap:18px;font-size:11px;line-height:1.9;padding:0 20px 0 10px;}.ds-log-line:hover{background:var(--accent);}.ds-line-number{font-family:var(--font-mono);font-size:10px;width:30px;flex-shrink:0;text-align:right;color:var(--muted-foreground);user-select:none;}.ds-log-code{font-family:var(--font-mono);white-space:pre-wrap;overflow-wrap:anywhere;min-width:0;}@media(prefers-reduced-motion:reduce){:host .ds-preview,:host .ds-preview *{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important;}}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Quiet, precise, restrained developer workspace",
+    "overview": "Act Dock is a quiet, precise, restrained developer workspace in a macOS Electrobun webview. Project navigation, workflow/job selection, and readable live output establish the hierarchy. The primary signature is workflow selection beside the selected run’s logs.\n\nNative system sans carries interface text; monospace is reserved for code and literal technical values. Grayscale surfaces, compact controls, and fine dividers keep attention on names, state, and output. Light and dark follow the system by default, with explicit theme choices available.\n\nThe user-selected Pipeline Loop (logo3) extends this identity across the sidebar, macOS app icon, and native Finder installer. Its rounded pipeline loop, three square nodes, and right-facing chevron are the adopted brand silhouette. The installer gives this grayscale identity a charcoal hero above a light installation region; its composition is specific to Finder.",
+    "keyCharacteristics": [
+      "Workflow/job selection beside readable live logs.",
+      "System sans for UI; monospace for code, paths, commands, IDs, and output.",
+      "Grayscale flat surfaces and fine dividers.",
+      "shadcn/ui primitives with Lucide outline icons.",
+      "System-following light/dark themes and reduced-motion support.",
+      "Approved Pipeline Loop identity shared by the sidebar, app icon, and native Finder installer."
+    ],
+    "rules": [],
+    "dos": [
+      "**Do** use semantic theme variables for surfaces, text, borders, and focus.",
+      "**Do** preserve workflow selection and live output as the workspace signature.",
+      "**Do** reserve monospace for code and literal technical values.",
+      "**Do** pair run-state icons with readable state labels.",
+      "**Do** retain keyboard focus, accessible control names, disabled feedback, and reduced-motion support.",
+      "**Do** keep long technical content wrapping within its pane.",
+      "**Do** reuse the approved Pipeline Loop assets and neutral dark-mode inversion.",
+      "**Do** keep installer artwork and native Finder placement aligned through the shared layout file."
+    ],
+    "donts": [
+      "**Don't** introduce color accents, gradients, decorative glow, or ornamental textures.",
+      "**Don't** use monospace for general navigation, headings, or prose.",
+      "**Don't** turn flat workspace panes into a grid of elevated cards.",
+      "**Don't** replace shadcn/ui controls with unrelated component styles.",
+      "**Don't** promote tiny metadata, one-off measurements, or unverified motion into universal rules.",
+      "**Don't** treat this source extraction as proof of rendered contrast, focus behavior, or responsive correctness.",
+      "**Don't** flatten the draggable application or real Applications alias into installer artwork.",
+      "**Don't** promote installer typography, icon geometry, or system-owned chrome colors into app-wide tokens."
+    ]
+  }
+}

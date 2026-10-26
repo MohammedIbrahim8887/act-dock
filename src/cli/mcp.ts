@@ -1,0 +1,53 @@
+import { APP_VERSION } from "../shared/version";
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { methods, errorMessage, AppError } from "../shared/contracts";
+import { call } from "../runner/client";
+export async function startMcp() {
+  const server = new McpServer({ name: "act-dock", version: APP_VERSION });
+  const descriptions = {
+    list_projects: "List saved local projects.",
+    add_project:
+      "Register an absolute local folder. Workflows run with your user permissions.",
+    list_workflows: "Discover workflows, jobs, events and manual inputs.",
+    run_pipeline:
+      "Queue a local pipeline and immediately return a run ID. Poll get_run and get_run_logs.",
+    list_runs:
+      "List local pipeline runs, newest first. Filter by project, state, source, literal query, or since (UTC ISO date). Filters apply before the cursor/limit. Cursor is an offset.",
+    get_run: "Read run status and result.",
+    get_run_logs:
+      "Read a bounded log page after a cursor. Continue using nextCursor until end.",
+    cancel_run: "Cancel a queued or running pipeline.",
+  };
+  for (const name of Object.keys(
+    descriptions,
+  ) as (keyof typeof descriptions)[]) {
+    server.registerTool(
+      name,
+      { description: descriptions[name], inputSchema: methods[name].shape },
+      async (params: Record<string, unknown>) => {
+        try {
+          const data = await call(name, params, "mcp");
+          return {
+            content: [{ type: "text" as const, text: JSON.stringify(data) }],
+            structuredContent: { result: data },
+          };
+        } catch (e) {
+          return {
+            isError: true,
+            content: [
+              {
+                type: "text" as const,
+                text: JSON.stringify({
+                  code: e instanceof AppError ? e.code : "RUNNER_ERROR",
+                  message: errorMessage(e),
+                }),
+              },
+            ],
+          };
+        }
+      },
+    );
+  }
+  await server.connect(new StdioServerTransport());
+}

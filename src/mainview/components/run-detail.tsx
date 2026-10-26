@@ -1,0 +1,337 @@
+import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  Copy,
+  Download,
+  RotateCcw,
+  Square,
+  Search,
+  ArrowDown,
+  Terminal,
+  ChevronLeft,
+} from "lucide-react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+import { api, exportLogs } from "@/lib/api";
+import { activeStates, type LogEntry, type Run } from "../../shared/contracts";
+import { Empty, Status, IconButton, duration, fail } from "./common";
+export function RunDetail({
+  run,
+  onRun,
+  onBack,
+}: {
+  run: Run | null;
+  onRun: (r: Run) => void;
+  onBack: () => void;
+}) {
+  const [logs, setLogs] = useState<LogEntry[]>([]),
+    [filter, setFilter] = useState(""),
+    [follow, setFollow] = useState(true),
+    [tab, setTab] = useState("logs"),
+    [error, setError] = useState(""),
+    [busy, setBusy] = useState(false);
+  const viewportRef = useRef<HTMLDivElement | null>(null);
+  const attachViewport = useCallback(
+    (node: HTMLDivElement | null) => {
+      viewportRef.current = node;
+      if (node && follow) node.scrollTop = node.scrollHeight;
+    },
+    [follow],
+  );
+  const cursor = useRef(0);
+  useEffect(() => {
+    let alive = true;
+    let timer: ReturnType<typeof setTimeout>;
+    cursor.current = 0;
+    setLogs([]);
+    setError("");
+    setFollow(true);
+    setTab("logs");
+    async function poll() {
+      if (!run) return;
+      try {
+        const page = await api("get_run_logs", {
+          runId: run.id,
+          cursor: cursor.current,
+          limit: 1000,
+        });
+        if (!alive) return;
+        cursor.current = page.nextCursor;
+        setLogs((prev) => [...prev, ...page.entries].slice(-2000));
+        setError("");
+        if (!page.end)
+          timer = setTimeout(
+            () => void poll(),
+            page.entries.length === 1000 ? 50 : 800,
+          );
+      } catch (e) {
+        if (alive) {
+          setError(fail(e));
+          timer = setTimeout(() => void poll(), 3000);
+        }
+      }
+    }
+    void poll();
+    return () => {
+      alive = false;
+      clearTimeout(timer);
+    };
+  }, [run?.id]);
+  useEffect(() => {
+    if (follow) {
+      const viewport = viewportRef.current;
+      if (viewport) viewport.scrollTop = viewport.scrollHeight;
+    }
+  }, [logs, follow, tab]);
+  if (!run)
+    return (
+      <section className="run-pane">
+        <Empty
+          title="Every run, in view"
+          description="Choose a workflow to start a run. Its output and result will appear here."
+          icon={<Terminal className="size-6" />}
+        />
+      </section>
+    );
+  const visible = logs.filter(
+    (l) => !filter || l.message.toLowerCase().includes(filter.toLowerCase()),
+  );
+  async function action(kind: "cancel" | "rerun") {
+    setBusy(true);
+    try {
+      const result =
+        kind === "cancel"
+          ? await api("cancel_run", { runId: run!.id })
+          : await api("run_pipeline", {
+              ...run!.request,
+              idempotencyKey: undefined,
+            });
+      onRun(result);
+      toast.success(
+        kind === "cancel" ? "Cancellation requested" : "Run queued",
+      );
+    } catch (e) {
+      toast.error(fail(e));
+    } finally {
+      setBusy(false);
+    }
+  }
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(
+        visible.map((l) => l.message).join("\n"),
+      );
+      toast.success("Visible logs copied");
+    } catch {
+      toast.error("Clipboard unavailable. Export the logs instead.");
+    }
+  }
+  return (
+    <section className="run-pane">
+      <header className="run-header">
+        <div className="run-heading">
+          <Button
+            className="narrow-back"
+            variant="ghost"
+            size="icon"
+            aria-label="Back to workflows"
+            onClick={onBack}
+          >
+            <ChevronLeft />
+          </Button>
+          <div className="min-w-0">
+            <h2>{run.request.workflowPath.split("/").pop()}</h2>
+            <p>
+              {run.projectName}
+              <span> / </span>
+              {run.request.jobId || "All jobs"}
+            </p>
+          </div>
+          <Status state={run.state} />
+        </div>
+        <div className="run-metadata">
+          <span title={run.createdAt}>
+            {new Date(run.createdAt).toLocaleString(undefined, {
+              month: "short",
+              day: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
+          </span>
+          <span>{duration(run.startedAt, run.finishedAt)}</span>
+          <span className="capitalize">{run.source}</span>
+          <span className="mono">{run.id.slice(0, 8)}</span>
+        </div>
+      </header>
+      <Tabs value={tab} onValueChange={setTab} className="run-tabs">
+        <div className="run-tab-bar">
+          <TabsList variant="line">
+            <TabsTrigger value="logs">Output</TabsTrigger>
+            <TabsTrigger value="details">Run details</TabsTrigger>
+          </TabsList>
+          {activeStates.includes(run.state) ? (
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={busy || run.state === "cancelling"}
+              onClick={() => void action("cancel")}
+            >
+              <Square className="size-3" />
+              {run.state === "cancelling" ? "Cancelling…" : "Cancel run"}
+            </Button>
+          ) : (
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={busy}
+              onClick={() => void action("rerun")}
+            >
+              <RotateCcw className="size-3" />
+              Run again
+            </Button>
+          )}
+        </div>
+        <TabsContent value="logs" className="log-tab">
+          <div className="log-toolbar">
+            <div className="search-input">
+              <Search className="size-3.5" />
+              <Input
+                aria-label="Search latest retained output (up to 2,000 lines)"
+                placeholder="Find in latest 2,000 lines…"
+                value={filter}
+                onChange={(e) => setFilter(e.target.value)}
+              />
+            </div>
+            <IconButton label="Copy visible output" onClick={() => void copy()}>
+              <Copy className="size-4" />
+            </IconButton>
+            <IconButton
+              label="Export complete logs"
+              onClick={() =>
+                void exportLogs(run.id)
+                  .then((path) => {
+                    if (path) toast.success("Logs exported to " + path);
+                  })
+                  .catch((e) => toast.error(fail(e)))
+              }
+            >
+              <Download className="size-4" />
+            </IconButton>
+          </div>
+          {run.diagnostic && (
+            <div className="run-diagnostic" role="alert">
+              {run.diagnostic}
+            </div>
+          )}
+          {error && (
+            <div className="run-diagnostic" role="alert">
+              {error} Reconnecting…
+            </div>
+          )}
+          <ScrollArea
+            className="log-scroll"
+            viewportRef={attachViewport}
+            viewportLabel="Scrollable pipeline output"
+            onViewportScroll={(event) => {
+              const viewport = event.currentTarget;
+              if (
+                viewport.scrollHeight -
+                  viewport.scrollTop -
+                  viewport.clientHeight >
+                48
+              )
+                setFollow(false);
+            }}
+          >
+            <div
+              className="log-lines"
+              role="log"
+              aria-label="Pipeline output"
+              aria-live="off"
+            >
+              {visible.map((l) => (
+                <div className="log-line" key={l.cursor}>
+                  <span className="line-number">{l.cursor}</span>
+                  <code>
+                    {l.job && <span className="log-job">[{l.job}] </span>}
+                    {l.message || " "}
+                  </code>
+                </div>
+              ))}
+              {!logs.length && !error && (
+                <div className="log-wait">
+                  {activeStates.includes(run.state)
+                    ? "Waiting for output…"
+                    : "This run has no output."}
+                </div>
+              )}
+              {filter && !visible.length && logs.length > 0 && (
+                <div className="log-wait">
+                  No matches in retained output. Export complete logs to search
+                  earlier lines.
+                </div>
+              )}
+            </div>
+          </ScrollArea>
+          <div className="log-footer">
+            <span>
+              {logs.length === 2000
+                ? "Latest 2,000"
+                : logs.length.toLocaleString()}{" "}
+              lines{filter ? ` · ${visible.length} matches` : ""}
+            </span>
+            <Button
+              variant={follow ? "secondary" : "ghost"}
+              size="xs"
+              onClick={() => setFollow((v) => !v)}
+            >
+              <ArrowDown className="size-3" />
+              {follow ? "Following output" : "Follow output"}
+            </Button>
+          </div>
+        </TabsContent>
+        <TabsContent value="details" className="details-tab">
+          <dl className="detail-list">
+            <dt>Run ID</dt>
+            <dd className="mono">{run.id}</dd>
+            <dt>Project</dt>
+            <dd className="mono">{run.projectPath}</dd>
+            <dt>Workflow</dt>
+            <dd className="mono">{run.request.workflowPath}</dd>
+            <dt>Event</dt>
+            <dd>{run.request.event}</dd>
+            <dt>Jobs</dt>
+            <dd>{run.request.jobId || "All jobs"}</dd>
+            <dt>Source</dt>
+            <dd>{run.source}</dd>
+            <dt>Exit code</dt>
+            <dd>{run.exitCode ?? "—"}</dd>
+            <dt>Created</dt>
+            <dd>{new Date(run.createdAt).toLocaleString()}</dd>
+            <dt>Started</dt>
+            <dd>
+              {run.startedAt ? new Date(run.startedAt).toLocaleString() : "—"}
+            </dd>
+            <dt>Finished</dt>
+            <dd>
+              {run.finishedAt ? new Date(run.finishedAt).toLocaleString() : "—"}
+            </dd>
+          </dl>
+          <Separator />
+          <h3 className="mt-5 mb-2">Invocation</h3>
+          <p className="field-help mb-3">
+            act also reads your global and project .actrc files.
+          </p>
+          <pre className="command-block">
+            {run.command
+              .map((a) => (/\s/.test(a) ? JSON.stringify(a) : a))
+              .join(" ")}
+          </pre>
+        </TabsContent>
+      </Tabs>
+    </section>
+  );
+}

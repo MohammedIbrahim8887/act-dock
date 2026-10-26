@@ -1,0 +1,12 @@
+{
+  "source": "User-selected Pipeline Loop concept",
+  "generator": "built-in image_gen",
+  "mark": {
+    "prompt": "Use case: logo-brand, precise-object-edit. Edit the supplied approved Act Dock Pipeline Loop logo. Extract ONLY the large upper emblem: a rounded rectangular pipeline loop with three solid rounded-square nodes at top, left and bottom, and a right-facing angular chevron integrated into the right side. Remove the 'Act Dock' wordmark completely. Remove the white background and make it genuinely transparent. Preserve the exact silhouette, proportions, rounded corners, gaps, node positions, and right chevron of the supplied emblem; do not redesign, simplify, add outlines, rearrange, or change geometry. Render the entire emblem solid pure black with clean flat vector-like edges, no gradients, texture, shadow or white halo. Center the isolated emblem on a square transparent canvas, occupying roughly 80 percent of the width and height with equal generous transparent margins. One emblem only, no text, no extra symbols. This is a production logo asset derived from the user's chosen logo, not a new concept.",
+    "file": "pipeline-loop.png"
+  },
+  "appIcon": {
+    "prompt": "Use case: logo-brand. Production macOS application icon for Act Dock, using the supplied user-approved Pipeline Loop emblem as a strict shape reference. Preserve the exact emblem: chunky rounded rectangular loop, separate rounded-square nodes at top, left, bottom, and integrated right-facing chevron. No wordmark. Render that exact emblem in pure white, centered and occupying 62 percent of a single charcoal #202020 macOS squircle tile. Tile is flat, extremely clean and quiet; classic macOS app-icon proportions, smooth large continuous rounded corners. Transparent canvas outside the tile; tile takes 84 percent of the square canvas, with even transparent margin on all four sides. A tiny amount of neutral edge definition is okay, but no perspective, no glow, no color, no decorative shadows, no 3D, no textures, no text, no border frame, no badges. The mark must remain readable at Dock size. One finished icon only. Exact logo fidelity is more important than visual novelty.",
+    "file": "app-icon.png"
+  }
+}
