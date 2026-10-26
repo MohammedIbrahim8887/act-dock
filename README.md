@@ -2,7 +2,7 @@
 
 Run GitHub Actions locally from a desktop workspace, a CLI, or your AI agents. Select a project, run a workflow or job against your current files, and follow its output and current step. A background runner keeps working when the app closes.
 
-**[Download Act Dock](https://act-dock.mohammedibrahim.dev/#downloads)** · [Releases and checksums](https://github.com/MohammedIbrahim8887/act-dock/releases) · [Report an issue](https://github.com/MohammedIbrahim8887/act-dock/issues)
+**[Download Act Dock](https://act-dock.mohammedibrahim.dev/#downloads)** · [Docs](https://act-dock.mohammedibrahim.dev/docs) · [Releases and checksums](https://github.com/MohammedIbrahim8887/act-dock/releases) · [Report an issue](https://github.com/MohammedIbrahim8887/act-dock/issues)
 
 ## Downloads
 

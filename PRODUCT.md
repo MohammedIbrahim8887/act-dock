@@ -20,3 +20,6 @@ Running workflows have a green animated outline, visible Running label, green st
 
 ## Distribution and releases
 The personal repository is MohammedIbrahim8887/act-dock. Public downloads live on GitHub Releases and are linked from https://act-dock.mohammedibrahim.dev. Packages include DMG, Windows installer, DEB, RPM, and AppImage. Native macOS and Linux startup can be checked locally; Windows GUI verification requires a Windows host. Main releases use a self-hosted runner on the owner's Mac, run checks through Act Dock, select a new patch version, publish installers and a checksummed manifest, and deploy the site without GitHub-hosted Actions minutes.
+
+## Website
+The landing page shows a coded, looping replica of the app running ci.yml instead of a static screenshot. It follows the desktop dark theme, pauses offscreen, has a visible pause control, and freezes on a mid-run frame for reduced motion. `/docs` covers install, first run, MCP setup per client (Claude Code, Codex, Cursor, Claude Desktop), tool reference, CLI, configuration, runner data, troubleshooting codes, and FAQ.
