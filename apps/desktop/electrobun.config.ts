@@ -20,6 +20,8 @@ export default {
     // Vite builds to dist/, we copy from there
     copy: {
       [process.platform === "win32" ? "dist-runner/act-dock.exe" : "dist-runner/act-dock"]: process.platform === "win32" ? "act-dock.exe" : "act-dock",
+      [process.platform === "win32" ? "dist-runner/act.exe" : "dist-runner/act"]: process.platform === "win32" ? "act.exe" : "act",
+      "dist-runner/act-LICENSE.txt": "act-LICENSE.txt",
       "dist/index.html": "views/mainview/index.html",
       "dist/assets": "views/mainview/assets",
     },

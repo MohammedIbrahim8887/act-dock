@@ -1,4 +1,5 @@
 import { mkdir } from "node:fs/promises";
+import { bundleAct, hostActTarget } from "../../../scripts/act";
 await mkdir("dist-runner", { recursive: true });
 const child = Bun.spawn(
   [
@@ -12,3 +13,4 @@ const child = Bun.spawn(
   { stdout: "inherit", stderr: "inherit" },
 );
 if ((await child.exited) !== 0) process.exit(1);
+await bundleAct(hostActTarget(), "dist-runner");

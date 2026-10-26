@@ -9,7 +9,7 @@ import {
   renameSync,
   readFileSync,
 } from "node:fs";
-import { resolve, join, dirname } from "node:path";
+import { resolve, join, dirname, basename } from "node:path";
 import { createHash } from "node:crypto";
 import {
   AppError,
@@ -19,7 +19,7 @@ import {
   type Results,
   type Run,
 } from "../shared/contracts";
-import { dataDir, executablePath, preparePaths } from "./paths";
+import { dataDir, executablePath, bundledActPath, preparePaths } from "./paths";
 import { localRequest } from "./transport";
 export async function request<M extends Method>(
   method: M,
@@ -79,14 +79,19 @@ export async function call<M extends Method>(
   await ensureRunner();
   return request(method, params, source);
 }
+// Installs the runner and the act engine shipped beside it into the data folder.
 export async function installRunner(source: string) {
   preparePaths();
   mkdirSync(dirname(executablePath), { recursive: true, mode: 0o700 });
   if (source === executablePath) return;
   const hash = (p: string) =>
     createHash("sha256").update(readFileSync(p)).digest("hex");
-  if (existsSync(executablePath) && hash(source) === hash(executablePath))
-    return;
+  const act = join(dirname(source), basename(bundledActPath));
+  const pending = [
+    [source, executablePath],
+    [act, bundledActPath],
+  ].filter(([from, to]) => existsSync(from) && (!existsSync(to) || hash(from) !== hash(to)));
+  if (!pending.length) return;
   if (await isAlive()) {
     const runs = await request("list_runs");
     if (runs.some((r) => ["queued", "running", "cancelling"].includes(r.state)))
@@ -99,8 +104,13 @@ export async function installRunner(source: string) {
         "Runner is still stopping. Reopen Act Dock after it finishes.",
       );
   }
-  const temp = executablePath + "." + process.pid + ".tmp";
-  copyFileSync(source, temp);
-  chmodSync(temp, 0o700);
-  renameSync(temp, executablePath);
+  for (const [from, to] of pending) {
+    const temp = to + "." + process.pid + ".tmp";
+    copyFileSync(from, temp);
+    chmodSync(temp, 0o700);
+    // The user already approved the app; its helper copies shouldn't trigger a second Gatekeeper prompt.
+    if (process.platform === "darwin")
+      Bun.spawnSync(["xattr", "-d", "com.apple.quarantine", temp], { stderr: "ignore" });
+    renameSync(temp, to);
+  }
 }

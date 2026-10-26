@@ -16,10 +16,12 @@ import {
 } from "../shared/contracts";
 import { Store } from "./store";
 import { commandArgs, validateRun } from "./workflows";
-import { executablePath } from "./paths";
+import { executablePath, bundledActPath } from "./paths";
 const exec = promisify(execFile);
-export function binary(name: string, configured = "") {
+// A path chosen in Settings wins, then the act engine shipped with the app, then the system.
+export function binary(name: string, configured = "", bundled = "") {
   if (configured) return existsSync(configured) ? configured : undefined;
+  if (bundled && existsSync(bundled)) return bundled;
   return (
     Bun.which(name) ||
     ["/opt/homebrew/bin", "/usr/local/bin", "/usr/bin"]
@@ -29,19 +31,24 @@ export function binary(name: string, configured = "") {
 }
 export async function health(store: Store): Promise<Health> {
   const s = store.settings();
-  async function check(name: string, args: string[], custom: string) {
-    const path = binary(name, custom);
+  async function check(name: string, args: string[], custom: string, bundled = "") {
+    const path = binary(name, custom, bundled);
     if (!path)
       return {
         ok: false,
-        message: `${name} was not found. Install it or choose its executable in Settings.`,
+        message: custom
+          ? `${name} was not found at the path chosen in Settings.`
+          : name === "act"
+            ? "The act engine was not found. Reinstall Act Dock or choose an act executable in Settings."
+            : `${name} was not found. Install it or choose its executable in Settings.`,
       };
     try {
       const r = await exec(path, args, {
         timeout: 5000,
         maxBuffer: 1024 * 1024,
       });
-      return { path, ok: true, message: r.stdout.trim() };
+      const version = r.stdout.trim();
+      return { path, ok: true, message: path === bundled ? `${version} (bundled)` : version };
     } catch {
       return {
         path,
@@ -54,7 +61,7 @@ export async function health(store: Store): Promise<Health> {
     }
   }
   const [act, docker] = await Promise.all([
-    check("act", ["--version"], s.actPath),
+    check("act", ["--version"], s.actPath, bundledActPath),
     check("docker", ["info", "--format", "{{.ServerVersion}}"], s.dockerPath),
   ]);
   return { act, docker, version: APP_VERSION, executable: executablePath };

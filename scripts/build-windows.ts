@@ -1,6 +1,7 @@
 import { cp, mkdir, readdir, copyFile, rm } from 'node:fs/promises';
 import { join } from 'node:path';
 import { root,desktop,output,run,download,capture } from './lib';
+import { bundleAct } from './act';
 export async function buildWindows(){
   const cache=join(root,'.cache/windows');
   const core=join(cache,'core');const bundle=join(cache,'Act Dock');
@@ -25,6 +26,7 @@ export async function buildWindows(){
   await Bun.write(join(resources,'version.json'),JSON.stringify({version,hash:'source-'+(process.env.GITHUB_SHA||'local').slice(0,12),channel:'stable',name:'ActDock',displayName:'Act Dock',identifier:'sh.actdock.desktop',baseUrl:'https://github.com/MohammedIbrahim8887/act-dock/releases/latest/download'}));
   await run(['bun','build','src/bun/index.ts','--target=bun','--outdir',join(resources,'app/bun')],desktop);
   await run(['bun','build','--compile','--target=bun-windows-x64-baseline','src/cli/index.ts','--outfile',join(resources,'app/act-dock.exe')],desktop);
+  await bundleAct('win32-x64',join(resources,'app'));
   await cp(join(desktop,'dist'),join(resources,'app/views/mainview'),{recursive:true});
   const runner=await Bun.file(join(resources,'app/act-dock.exe')).bytes();
   if(runner[0]!==0x4d||runner[1]!==0x5a)throw new Error('Windows runner is not a PE executable');

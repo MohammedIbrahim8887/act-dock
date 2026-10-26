@@ -13,6 +13,7 @@ export function platformPaths(platform: string, home: string, env: NodeJS.Proces
       ? "\\\\.\\pipe\\act-dock-" + createHash("sha256").update(directory.toLowerCase()).digest("hex").slice(0, 24)
       : join(directory, "runner.sock"),
     executable: join(directory, "bin", platform === "win32" ? "act-dock.exe" : "act-dock"),
+    act: join(directory, "bin", platform === "win32" ? "act.exe" : "act"),
   };
 }
 const paths = platformPaths(process.platform, homedir(), process.env);
@@ -20,6 +21,7 @@ export const dataDir =
   paths.directory;
 export const socketPath = paths.socket;
 export const executablePath = paths.executable;
+export const bundledActPath = paths.act;
 export const tokenPath = join(dataDir, "runner.key");
 export function preparePaths() {
   mkdirSync(join(dataDir, "logs"), { recursive: true, mode: 0o700 });

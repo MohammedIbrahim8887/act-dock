@@ -108,13 +108,13 @@ export function SettingsView({
         {(["act", "docker"] as const).map((name) => (
           <div className="field" key={name}>
             <Label htmlFor={name}>
-              {name === "act" ? "act executable" : "Docker executable"}
+              {name === "act" ? "act engine" : "Docker executable"}
             </Label>
             <div className="file-field">
               <Input
                 id={name}
                 className="mono"
-                placeholder="Detect automatically"
+                placeholder={name === "act" ? "Use the bundled act engine" : "Detect automatically"}
                 value={draft[name === "act" ? "actPath" : "dockerPath"]}
                 onChange={(e) =>
                   setDraft({
