@@ -1,0 +1,34 @@
+import { cp, mkdir, readdir, copyFile, rm } from 'node:fs/promises';
+import { join } from 'node:path';
+import { root,desktop,output,run,download,capture } from './lib';
+export async function buildWindows(){
+  const cache=join(root,'.cache/windows');
+  const core=join(cache,'core');const bundle=join(cache,'Act Dock');
+  await mkdir(core,{recursive:true});await mkdir(output,{recursive:true});
+  const archive=await download('https://github.com/blackboardsh/electrobun/releases/download/v2.0.5/electrobun-core-win-x64.tar.gz',join(cache,'core.tar.gz'),'afae3152b0818b869df93a7a168d6cdc521f1eb9f512eed36356473c6f6d10be');
+  await run(['tar','-xzf',archive,'-C',core]);
+  const checksums=await capture(['curl','-4','-fsSL','--retry','3','--connect-timeout','20','https://github.com/oven-sh/bun/releases/download/bun-v1.4.4/SHASUMS256.txt']);
+  const runtimeHash=checksums.split('\n').find(l=>l.endsWith('bun-windows-x64-baseline.zip'))?.split(/\s+/)[0];
+  if(!runtimeHash)throw new Error('Windows runtime checksum was not found');
+  const runtime=await download('https://github.com/oven-sh/bun/releases/download/bun-v1.4.4/bun-windows-x64-baseline.zip',join(cache,'bun.zip'),runtimeHash);
+  await run(['unzip','-o','-q',runtime,'-d',cache]);
+  await rm(bundle,{recursive:true,force:true});
+  const bin=join(bundle,'bin'),resources=join(bundle,'Resources');
+  await mkdir(bin,{recursive:true});await mkdir(join(resources,'app/bun'),{recursive:true});
+  for(const name of await readdir(core))if(/\.(dll|exe)$/.test(name))await copyFile(join(core,name),join(bin,name));
+  await copyFile(join(core,'launcher.exe'),join(bin,'Act Dock.exe'));
+  await copyFile(join(cache,'bun-windows-x64-baseline/bun.exe'),join(bin,'bun.exe'));
+  for(const name of ['main.js','preload-full.js','preload-sandboxed.js'])await copyFile(join(core,name),join(resources,name));
+  await copyFile(join(core,'extractor.exe'),join(resources,'uninstall'));
+  const {version}=await Bun.file(join(desktop,'package.json')).json();
+  await Bun.write(join(resources,'build.json'),JSON.stringify({mainProcess:'bun',electrobunVersion:'2.0.5',runtimeVersions:{bun:'1.4.4'},defaultRenderer:'native',availableRenderers:['native'],buildEnvironment:'stable',runtime:{}}));
+  await Bun.write(join(resources,'version.json'),JSON.stringify({version,hash:'source-'+(process.env.GITHUB_SHA||'local').slice(0,12),channel:'stable',name:'ActDock',displayName:'Act Dock',identifier:'sh.actdock.desktop',baseUrl:'https://github.com/MohammedIbrahim8887/act-dock/releases/latest/download'}));
+  await run(['bun','build','src/bun/index.ts','--target=bun','--outdir',join(resources,'app/bun')],desktop);
+  await run(['bun','build','--compile','--target=bun-windows-x64-baseline','src/cli/index.ts','--outfile',join(resources,'app/act-dock.exe')],desktop);
+  await cp(join(desktop,'dist'),join(resources,'app/views/mainview'),{recursive:true});
+  const runner=await Bun.file(join(resources,'app/act-dock.exe')).bytes();
+  if(runner[0]!==0x4d||runner[1]!==0x5a)throw new Error('Windows runner is not a PE executable');
+  await run(['docker','run','--rm','--platform','linux/amd64','-v',`${cache}:/payload`,'-v',`${join(desktop,'assets/brand')}:/brand:ro`,'-v',`${join(desktop,'scripts/windows')}:/scripts:ro`,'-v',`${output}:/out`,'act-dock-build:0.2.0','bash','-lc',`convert /brand/app-icon.png -resize 256x256 /payload/icon.ico && makensis -V2 -DAPP_VERSION=${version} /scripts/installer.nsi`]);
+  console.log('Windows installer ready:',join(output,'windows-x64-ActDock-Setup.exe'));
+}
+if(import.meta.main)await buildWindows();

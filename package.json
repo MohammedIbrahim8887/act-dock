@@ -1,42 +1,28 @@
 {
-  "name": "act-dock",
-  "version": "0.1.2",
-  "description": "Local GitHub Actions runner for desktop and AI agents",
-  "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.32.2",
-    "class-variance-authority": "^0.7.1",
-    "clsx": "^2.1.1",
-    "lucide-react": "^1.61.0",
-    "next-themes": "^0.4.6",
-    "radix-ui": "^1.8.1",
-    "react": "^19",
-    "react-dom": "^19",
-    "sonner": "^2.0.8",
-    "tailwind-merge": "^3.7.0",
-    "yaml": "^2.9.1",
-    "zod": "^4.6.7"
+  "name": "act-dock-workspace",
+  "private": true,
+  "version": "0.2.0",
+  "packageManager": "bun@1.3.14",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "cd apps/web && bun run dev",
+    "dev:desktop": "cd apps/desktop && bun run dev",
+    "typecheck": "bun run --filter \"@act-dock/*\" typecheck && tsc --noEmit -p tsconfig.tools.json",
+    "test": "bun test apps/desktop/tests ./tests",
+    "build:web": "cd apps/web && bun run build",
+    "build:desktop": "cd apps/desktop && bun run build",
+    "check": "bun run typecheck && bun run test && bun run --filter @act-dock/desktop build:ui && bun run build:web",
+    "release": "bun scripts/release.ts",
+    "deploy": "cd apps/web && bun run deploy",
+    "cli": "bun apps/desktop/src/cli/index.ts",
+    "prepare:desktop": "bun scripts/prepare.ts",
+    "ci:local": "bun scripts/run-ci.ts",
+    "install:release-runner": "bun scripts/install-release-runner.ts"
   },
   "devDependencies": {
-    "@tailwindcss/vite": "^4.3.3",
-    "@types/bun": "latest",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "@vitejs/plugin-react": "^5.2.0",
-    "concurrently": "^9.2.5",
-    "tailwindcss": "^4.3.3",
-    "typescript": "~5.9.3",
-    "vite": "^7.3.7"
-  },
-  "scripts": {
-    "dev": "hutch run dev:hmr",
-    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.tools.json",
-    "test": "bun test",
-    "build:ui": "vite build",
-    "build:runner": "bun scripts/build-runner.ts",
-    "cli": "bun src/cli/index.ts",
-    "build": "hutch run build:canary",
-    "build:brand": "bun scripts/build-brand.ts stable",
-    "installer:mac": "bun scripts/macos/package.ts stable",
-    "verify:installer": "uv run --with dmgbuild==1.6.7 python scripts/macos/verify-dmg.py artifacts/macos-arm64-ActDock.dmg"
+    "@types/bun": "1.3.14",
+    "typescript": "~5.9.3"
   }
 }

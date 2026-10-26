@@ -1,0 +1,35 @@
+{
+  "name": "@act-dock/web",
+  "private": true,
+  "version": "0.2.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev --host 127.0.0.1 --port 3000",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1 --port 3000",
+    "typecheck": "tsc --noEmit",
+    "deploy": "vite build && wrangler deploy"
+  },
+  "dependencies": {
+    "@tanstack/react-router": "latest",
+    "@tanstack/react-start": "latest",
+    "react": "^19",
+    "react-dom": "^19",
+    "lucide-react": "^1.61.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.7.0",
+    "radix-ui": "^1.8.1"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "latest",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^6.1.2",
+    "tailwindcss": "^4.3.3",
+    "typescript": "~5.9.3",
+    "vite": "^8",
+    "wrangler": "4.152.0"
+  }
+}

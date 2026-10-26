@@ -1,0 +1,11 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "act-dock",
+  "account_id": "ab1872e3a470525e897b4b6ab11b8cfd",
+  "main": "@tanstack/react-start/server-entry",
+  "compatibility_date": "2026-10-26",
+  "compatibility_flags": ["nodejs_compat"],
+  "routes": [{"pattern":"act-dock.mohammedibrahim.dev","custom_domain":true}],
+  "workers_dev": true,
+  "observability": {"enabled":true}
+}

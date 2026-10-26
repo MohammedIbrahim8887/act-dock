@@ -1,0 +1,28 @@
+import {mkdir,cp,copyFile,readdir,rm} from 'node:fs/promises';
+import {join} from 'node:path';
+import {root,desktop,output,run,download,capture} from './lib';
+export async function buildLinux(){
+ const cache=join(root,'.cache/linux'),core=join(cache,'core'),bundle=join(cache,'Act Dock');
+ await mkdir(core,{recursive:true});await mkdir(output,{recursive:true});
+ const archive=await download('https://github.com/blackboardsh/electrobun/releases/download/v2.0.5/electrobun-core-linux-x64.tar.gz',join(cache,'core.tar.gz'),'29deec8eb7f8a017f786f95816bccccd91f514e57ea14868e4b97bd409268e88');
+ await run(['tar','-xzf',archive,'-C',core]);
+ const sums=await capture(['curl','-4','-fsSL','--retry','3','--connect-timeout','20','https://github.com/oven-sh/bun/releases/download/bun-v1.4.4/SHASUMS256.txt']);
+ const hash=sums.split('\n').find(l=>l.trim().endsWith('bun-linux-x64-baseline.zip'))?.split(/\s+/)[0];if(!hash)throw new Error('Linux Bun runtime checksum missing');
+ const runtime=await download('https://github.com/oven-sh/bun/releases/download/bun-v1.4.4/bun-linux-x64-baseline.zip',join(cache,'bun.zip'),hash);
+ await run(['unzip','-o','-q',runtime,'-d',cache]);
+ await rm(bundle,{recursive:true,force:true});const bin=join(bundle,'bin'),resources=join(bundle,'Resources');
+ await mkdir(bin,{recursive:true});await mkdir(join(resources,'app/bun'),{recursive:true});
+ for(const entry of await readdir(core,{withFileTypes:true}))if(entry.isFile()&&!/\.(js|json)$/.test(entry.name))await copyFile(join(core,entry.name),join(bin,entry.name));
+ await copyFile(join(cache,'bun-linux-x64-baseline/bun'),join(bin,'bun'));
+ for(const name of ['main.js','preload-full.js','preload-sandboxed.js'])await copyFile(join(core,name),join(resources,name));
+ await copyFile(join(core,'extractor'),join(resources,'uninstall'));
+ const {version}=await Bun.file(join(desktop,'package.json')).json();
+ await Bun.write(join(resources,'build.json'),JSON.stringify({mainProcess:'bun',electrobunVersion:'2.0.5',runtimeVersions:{bun:'1.4.4'},defaultRenderer:'native',availableRenderers:['native'],buildEnvironment:'stable',runtime:{}}));
+ await Bun.write(join(resources,'version.json'),JSON.stringify({version,hash:'source-'+(process.env.GITHUB_SHA||'local').slice(0,12),channel:'stable',name:'ActDock',displayName:'Act Dock',identifier:'sh.actdock.desktop',baseUrl:'https://github.com/MohammedIbrahim8887/act-dock/releases/latest/download'}));
+ await run(['bun','build','src/bun/index.ts','--target=bun','--outdir',join(resources,'app/bun')],desktop);
+ await run(['bun','build','--compile','--target=bun-linux-x64-baseline','src/cli/index.ts','--outfile',join(resources,'app/act-dock')],desktop);
+ await cp(join(desktop,'dist'),join(resources,'app/views/mainview'),{recursive:true});
+ await run(['tar','--zstd','-cf',join(output,'stable-linux-x64-ActDock.tar.zst'),'-C',cache,'Act Dock']);
+ await run(['docker','run','--rm','--platform','linux/amd64','-v',`${root}:/source:ro`,'-v',`${output}:/out`,'act-dock-build:0.2.0','bash','-lc','cp -a /source/apps/desktop/scripts /source/apps/desktop/assets /source/apps/desktop/package.json /workspace/ && ELECTROBUN_ARTIFACT_DIR=/out bun scripts/linux/package.ts']);
+}
+if(import.meta.main)await buildLinux();

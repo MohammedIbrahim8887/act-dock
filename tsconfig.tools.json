@@ -1,4 +1,1 @@
-{
-  "extends": "./tsconfig.json",
-  "include": ["scripts/**/*.ts", "tests/**/*.ts", "*.config.ts"]
-}
+{"extends":"./apps/desktop/tsconfig.json","include":["scripts","tests"],"exclude":["node_modules","apps"]}
