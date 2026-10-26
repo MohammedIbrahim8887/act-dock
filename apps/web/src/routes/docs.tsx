@@ -3,15 +3,15 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import { ArrowUpRight } from 'lucide-react'
 import { CodeBlock, SiteFooter, SiteHeader } from '@/components/site-chrome'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { repository } from '@/lib/releases'
+import { getRelease, repository } from '@/lib/releases'
+import { seo } from '@/lib/seo'
 
 export const Route = createFileRoute('/docs')({
-  head: () => ({
-    meta: [
-      { title: 'Docs — Act Dock' },
-      { name: 'description', content: 'Install Act Dock, run GitHub Actions locally, and connect Claude Code, Codex, Cursor, or any MCP client to your local pipeline runner.' },
-    ],
-    links: [{ rel: 'canonical', href: 'https://act-dock.mohammedibrahim.dev/docs' }],
+  loader: () => getRelease(),
+  head: ({ loaderData }) => seo({
+    title: 'Docs — Act Dock',
+    description: 'Install Act Dock, run GitHub Actions locally, and connect Claude Code, Codex, Cursor, or any MCP client to your local pipeline runner.',
+    path: '/docs', card: 'docs', version: loaderData?.version,
   }),
   component: Docs,
 })

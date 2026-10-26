@@ -6,8 +6,13 @@ import { Badge } from '@/components/ui/badge'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { getRelease, repository, type ReleaseManifest } from '@/lib/releases'
 import { AppDemo } from '@/components/app-demo'
+import { seo } from '@/lib/seo'
 import { CodeBlock, SiteFooter, SiteHeader } from '@/components/site-chrome'
-export const Route = createFileRoute('/')({loader:()=>getRelease(),component:Home})
+export const Route = createFileRoute('/')({
+  loader:()=>getRelease(),
+  head:({loaderData})=>seo({title:'Act Dock — Your pipelines. On your machine.',description:'Run GitHub Actions locally with a desktop workspace, live logs, and MCP tools for your AI agents. Download Act Dock for macOS, Windows, or Linux.',path:'/',card:'home',version:loaderData?.version}),
+  component:Home,
+})
 const platforms = [
   {kind:'macos-arm64',name:'macOS',detail:'Apple Silicon · macOS 14+',format:'DMG',icon:Laptop},
   {kind:'windows-x64',name:'Windows',detail:'Intel / AMD 64-bit · Windows 10+',format:'Installer',icon:Monitor},

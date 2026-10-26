@@ -11,15 +11,18 @@
     "deploy": "vite build && wrangler deploy"
   },
   "dependencies": {
+    "@resvg/resvg-wasm": "^2.6.2",
     "@tanstack/react-router": "latest",
     "@tanstack/react-start": "latest",
-    "react": "^19",
-    "react-dom": "^19",
-    "lucide-react": "^1.61.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "lucide-react": "^1.61.0",
+    "radix-ui": "^1.8.1",
+    "react": "^19",
+    "react-dom": "^19",
+    "satori": "0.15.2",
     "tailwind-merge": "^3.7.0",
-    "radix-ui": "^1.8.1"
+    "yoga-wasm-web": "0.3.3"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "latest",
