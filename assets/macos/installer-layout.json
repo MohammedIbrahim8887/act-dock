@@ -1,0 +1,17 @@
+{
+  "width": 820,
+  "height": 560,
+  "heroHeight": 244,
+  "iconSize": 112,
+  "appPosition": [
+    235,
+    350
+  ],
+  "applicationsPosition": [
+    585,
+    350
+  ],
+  "footerTop": 464,
+  "textSize": 13,
+  "titleBarHeight": 32
+}

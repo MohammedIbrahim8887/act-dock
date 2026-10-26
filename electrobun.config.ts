@@ -9,6 +9,7 @@ export default {
   },
   scripts: {
     preBuild: "scripts/macos/prebuild.ts",
+    postPackage: "scripts/macos/package.ts",
   },
   build: {
     mainProcess: "bun",
