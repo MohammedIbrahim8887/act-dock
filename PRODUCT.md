@@ -1,7 +1,7 @@
 # Act Dock
 
 ## Platform
-macOS-first Electrobun 2.x desktop app with a React webview and independent Bun background runner.
+Electrobun 2.0.5 desktop app for macOS Apple Silicon, Windows x64, and Linux x64, with a React webview and independent Bun background runner. The Bun workspace also contains a TanStack Start landing page hosted on Cloudflare Workers.
 
 ## People and purpose
 Developers and their local AI agents run GitHub Actions against local working files, inspect results, and iterate without pushing commits. Successful use means adding a project, finding a workflow, running it, and understanding its result from logs.
@@ -17,3 +17,6 @@ Projects are selected using the native folder picker or the built-in folder brow
 
 ## Running feedback
 Running workflows have a green animated outline, visible Running label, green status/count indicators, and a pinned current-step summary above output. Highlight the current step's log section while retaining readable neutral text. Parallel and nested steps follow act's lifecycle messages. Completed, queued, and cancelling runs use neutral status treatments. Reduced motion preserves the green outline without animation.
+
+## Distribution and releases
+The personal repository is MohammedIbrahim8887/act-dock. Public downloads live on GitHub Releases and are linked from https://act-dock.mohammedibrahim.dev. Packages include DMG, Windows installer, DEB, RPM, and AppImage. Native macOS and Linux startup can be checked locally; Windows GUI verification requires a Windows host. Main releases use a self-hosted runner on the owner's Mac, run checks through Act Dock, select a new patch version, publish installers and a checksummed manifest, and deploy the site without GitHub-hosted Actions minutes.

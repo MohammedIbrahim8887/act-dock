@@ -8,6 +8,7 @@ RequestExecutionLevel user
 SetCompressor /SOLID lzma
 !define MUI_ICON "/payload/icon.ico"
 !define MUI_UNICON "/payload/icon.ico"
+!define MUI_WELCOMEFINISHPAGE_BITMAP "/usr/share/nsis/Contrib/Graphics/Wizard/nsis3-grey.bmp"
 !define MUI_ABORTWARNING
 !define MUI_WELCOMEPAGE_TITLE "Your pipelines. Right here."
 !define MUI_WELCOMEPAGE_TEXT "Install Act Dock ${APP_VERSION} for your Windows account.$\r$\n$\r$\nRun local GitHub Actions, follow live output, and connect your AI agents.$\r$\n$\r$\nRequires act, Docker, and Microsoft Edge WebView2."

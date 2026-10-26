@@ -109,7 +109,7 @@ To install or reconnect that runner on an Apple Silicon Mac, authenticate `gh` t
 bun run install:release-runner
 ```
 
-A user LaunchAgent keeps the release runner online. Its installation, GitHub credentials, and service logs live outside the repository under `~/Library/Application Support/Act Dock/release-runner`. Remove or unload `~/Library/LaunchAgents/sh.actdock.release-runner.plist` to stop automatic local releases. When this Mac or Docker is unavailable, a release waits for it.
+A user LaunchAgent keeps the release runner online. Its installation, GitHub credentials, and service logs live outside the repository under `~/Library/Application Support/Act Dock/release-runner`. Remove or unload `~/Library/LaunchAgents/sh.actdock.release-runner.plist` to stop automatic local releases. When this Mac is offline, a release waits in GitHub’s queue. Once started, it waits up to 15 minutes for Docker before reporting a dependency error.
 
 For every push to `main`, the job runs `bun run release`. It creates an isolated checkout, chooses a new patch version (honoring a higher source version), runs CI through Act Dock, builds all five installer formats, generates SHA-256 checksums and a download manifest, publishes one GitHub Release, and deploys the website with Wrangler. A failed build leaves the public release unchanged. Version stamps stay in the isolated checkout, preserving a clean source tree.
 

@@ -1,6 +1,7 @@
 import {mkdtemp,mkdir,readdir,cp,rm,chmod} from 'node:fs/promises';
 import {join,resolve,dirname,relative} from 'node:path';
 import {tmpdir} from 'node:os';
+import {createHash} from 'node:crypto';
 import {run} from '../build-brand';
 async function findLauncher(dir:string):Promise<string|undefined>{
   for(const e of await readdir(dir,{withFileTypes:true})){const path=join(dir,e.name);if(e.isFile()&&e.name==='launcher')return path;if(e.isDirectory()){const found=await findLauncher(path);if(found)return found;}}
@@ -34,9 +35,19 @@ export async function packageLinux(){
     const appdir=join(stage,'ActDock.AppDir');await mkdir(join(appdir,'usr/lib'),{recursive:true});await cp(app,join(appdir,'usr/lib/act-dock'),{recursive:true});
     await cp(icon,join(appdir,'act-dock.png'));await Bun.write(join(appdir,'act-dock.desktop'),desktop);
     await Bun.write(join(appdir,'AppRun'),`#!/bin/sh\nAPPDIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"\nexec "$APPDIR/usr/lib/act-dock/${launcherRel}" "$@"\n`);await chmod(join(appdir,'AppRun'),0o755);
-    const tool=resolve('.cache/appimagetool.AppImage');await mkdir(dirname(tool),{recursive:true});
+    const tool=process.env.ACT_DOCK_APPIMAGETOOL || resolve('.cache/appimagetool.AppImage');await mkdir(dirname(tool),{recursive:true});
     if(!(await Bun.file(tool).exists())){const r=await fetch('https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage');if(!r.ok)throw new Error('AppImage tooling download failed');await Bun.write(tool,r);await chmod(tool,0o755);}
-    await run([tool,'--appimage-extract-and-run',appdir,join(artifacts,'linux-x64-ActDock.AppImage')]);
+    const toolBytes=Buffer.from(await Bun.file(tool).arrayBuffer());
+    if(createHash('sha256').update(toolBytes).digest('hex')!=='95cbe7cce9717fce90c484e34052ee7c7f1d7635b33c12525b4776826a7d29b6')throw new Error('AppImage tooling checksum mismatch');
+    // Rosetta cannot execute the static PIE AppImage runtime. Extract its
+    // SquashFS directly, then run the ordinary Linux packaging executable.
+    let offset=toolBytes.indexOf('hsqs');
+    while(offset>=0 && toolBytes.readUInt16LE(offset+28)!==4)offset=toolBytes.indexOf('hsqs',offset+4);
+    if(offset<0)throw new Error('AppImage tool filesystem missing');
+    const extracted=join(stage,'appimagetool');
+    await run(['unsquashfs','-quiet','-no-progress','-d',extracted,'-o',String(offset),tool]);
+    process.env.ARCH='x86_64';
+    await run([join(extracted,'AppRun'),appdir,join(artifacts,'linux-x64-ActDock.AppImage')]);
     await run(['dpkg-deb','--info',join(artifacts,'linux-x64-ActDock.deb')]);
     await run(['rpm','-qip',join(artifacts,'linux-x64-ActDock.rpm')]);
   }finally{await rm(stage,{recursive:true,force:true});}

@@ -332,3 +332,6 @@ Shared transitions resolve to the installed Tailwind default (150ms, standard ea
 - **Don't** treat this source extraction as proof of rendered contrast, focus behavior, or responsive correctness.
 - **Don't** flatten the draggable application or real Applications alias into installer artwork.
 - **Don't** promote installer typography, icon geometry, or system-owned chrome colors into app-wide tokens.
+
+## Workspace and download website
+Desktop source, assets, tests, and packaging now live under `apps/desktop/`; references above to root `src/`, `assets/`, or desktop `scripts/` resolve within that app. The public TanStack Start surface lives at `apps/web/`, using shadcn controls, the approved Pipeline Loop mark, system typography, grayscale surfaces, and green only for processing indicators in the product preview. It explains local workflows and agent controls, shows a labeled simulated pipeline screenshot, and presents one table of macOS, Windows, and Linux packages. Downloads come from a published checksummed GitHub Release manifest; missing assets have disabled Build pending controls. The site adapts to a single column on phones, keeps meaningful keyboard focus, and respects reduced motion.

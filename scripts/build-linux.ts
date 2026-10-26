@@ -22,7 +22,9 @@ export async function buildLinux(){
  await run(['bun','build','src/bun/index.ts','--target=bun','--outdir',join(resources,'app/bun')],desktop);
  await run(['bun','build','--compile','--target=bun-linux-x64-baseline','src/cli/index.ts','--outfile',join(resources,'app/act-dock')],desktop);
  await cp(join(desktop,'dist'),join(resources,'app/views/mainview'),{recursive:true});
- await run(['tar','--zstd','-cf',join(output,'stable-linux-x64-ActDock.tar.zst'),'-C',cache,'Act Dock']);
- await run(['docker','run','--rm','--platform','linux/amd64','-v',`${root}:/source:ro`,'-v',`${output}:/out`,'act-dock-build:0.2.0','bash','-lc','cp -a /source/apps/desktop/scripts /source/apps/desktop/assets /source/apps/desktop/package.json /workspace/ && ELECTROBUN_ARTIFACT_DIR=/out bun scripts/linux/package.ts']);
+ await run(['tar','--no-xattrs','--format=ustar','--zstd','-cf',join(output,'stable-linux-x64-ActDock.tar.zst'),'-C',cache,'Act Dock']);
+ const tools=join(root,'.cache/tools');
+ await download('https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage',join(tools,'appimagetool.AppImage'),'95cbe7cce9717fce90c484e34052ee7c7f1d7635b33c12525b4776826a7d29b6');
+ await run(['docker','run','--rm','--platform','linux/amd64','-v',`${root}:/source:ro`,'-v',`${output}:/out`,'-v',`${tools}:/tools:ro`,'-e','ACT_DOCK_APPIMAGETOOL=/tools/appimagetool.AppImage','act-dock-build:0.2.0','bash','-lc','cp -a /source/apps/desktop/scripts /source/apps/desktop/assets /source/apps/desktop/package.json /workspace/ && ELECTROBUN_ARTIFACT_DIR=/out bun scripts/linux/package.ts']);
 }
 if(import.meta.main)await buildLinux();

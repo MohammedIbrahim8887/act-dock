@@ -1,0 +1,27 @@
+name: Publish main locally
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: act-dock-release
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: [self-hosted, act-dock-release, macOS, ARM64]
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Publish desktop installers and deploy website
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          export PATH="$HOME/.bun/bin:$HOME/.hutch/bin:/opt/homebrew/bin:/usr/local/bin:$PATH"
+          bun install --frozen-lockfile
+          bun run release

@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "electrobun-react-tailwind-vite",
+      "name": "act-dock-workspace",
       "devDependencies": {
         "@types/bun": "1.3.14",
         "typescript": "~5.9.3",
