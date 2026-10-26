@@ -57,7 +57,7 @@ const tools: [string, string, string][] = [
 
 const errors: [string, string][] = [
   ['DOCKER_UNAVAILABLE', 'Docker isn’t answering. Start Docker Desktop (or the Docker daemon on Linux) and try again.'],
-  ['ACT_UNAVAILABLE', 'act couldn’t be found. Install it, or set its location in Settings → Dependencies.'],
+  ['ACT_UNAVAILABLE', 'The act engine couldn’t start. Reinstall Act Dock, or clear the custom act path in Settings → Dependencies.'],
   ['RUNNER_NOT_INSTALLED', 'The MCP or CLI binary can’t reach a runner. Open the desktop app once to install it.'],
   ['INPUT_REQUIRED', 'The workflow has a required workflow_dispatch input. Pass it in inputs or with --input NAME=VALUE.'],
   ['INVALID_PATH', 'Project paths must be absolute and point at an existing folder.'],
@@ -115,11 +115,10 @@ function Docs() {
 
           <section id="install">
             <h2>Install</h2>
-            <p>Act Dock drives act, and act runs your jobs in Docker containers. You’ll need both installed first.</p>
+            <p>Act Dock ships with <a href="https://nektosact.com">act</a> built in, so there’s nothing else to install for it. act runs your jobs in containers, so Docker is the one thing you need.</p>
             <ol className="docs-steps">
               <li><b>Install Docker</b> and make sure it’s running. On Windows, Docker Desktop must use Linux containers.</li>
-              <li><b>Install act</b> (macOS: <code>brew install act</code>). For other platforms, see the <a href="https://nektosact.com/installation/index.html">act installation guide</a>.</li>
-              <li><b>Download Act Dock</b> from the <Link to="/" hash="downloads">downloads table</Link> and install it.</li>
+                            <li><b>Download Act Dock</b> from the <Link to="/" hash="downloads">downloads table</Link> and install it.</li>
             </ol>
             <h3>Opening an unsigned build</h3>
             <p>Releases aren’t code-signed yet, so your OS will warn you the first time you open the app.</p>
@@ -215,6 +214,7 @@ act-dock runner status | start | stop`}/>
               <TableRow><TableCell>Linux</TableCell><TableCell><code>$XDG_DATA_HOME/act-dock</code> (default <code>~/.local/share/act-dock</code>)</TableCell></TableRow>
             </TableBody></Table></div>
             <ul className="docs-list">
+              <li>The runner and the bundled act engine are installed to <code>bin/</code> inside the data folder the first time you open the app, and updated with each new version.</li>
               <li>Projects, settings, and run history live in SQLite. Logs are stored per run as JSONL.</li>
               <li>Clients connect through a private Unix socket, or a per-user named pipe on Windows, with an installation key. No network port is opened.</li>
               <li>Completed runs are kept for 30 days, up to 200 runs. Runs interrupted by a shutdown aren’t retried automatically.</li>
@@ -232,6 +232,7 @@ act-dock runner status | start | stop`}/>
           <section id="faq">
             <h2>FAQ</h2>
             <dl className="docs-faq">
+              <dt>Do I need to install act?</dt><dd>No. Every installer includes act 0.2.89, checked against the official release checksums. To use a different build, choose its executable in Settings → Dependencies. Docker is still required, because act runs each job in a container.</dd>
               <dt>Do I need a GitHub account?</dt><dd>No. Everything runs locally, and there’s no sign-in or hosted service.</dd>
               <dt>Does it commit or push anything?</dt><dd>No. Workflows run against the files on disk, including uncommitted changes.</dd>
               <dt>Can I run several pipelines at once?</dt><dd>Runs from the app, CLI, and agents share one queue and run one at a time, so they don’t compete for Docker resources.</dd>

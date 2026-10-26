@@ -16,7 +16,7 @@ Run GitHub Actions locally from a desktop workspace, a CLI, or your AI agents. S
 
 Installers are unsigned. Windows packages are assembled from the pinned native Electrobun 2.0.5 core; Windows GUI verification requires a Windows machine. The AppImage uses system GTK/WebKit libraries and is not a universal bundle for older distributions.
 
-Install [act](https://nektosact.com/installation/index.html) and Docker separately, and start your Docker daemon before running pipelines. Windows needs Linux containers in Docker Desktop. Act Dock does not install these dependencies automatically.
+Every installer bundles a pinned, checksum-verified [act](https://github.com/nektos/act) engine (v0.2.89, MIT; license shipped as `act-LICENSE.txt`), so there's no separate act install. Docker is the only requirement: install it and start the daemon before running pipelines. Windows needs Linux containers in Docker Desktop. A custom act executable set in **Settings → Dependencies** overrides the bundled one.
 
 ## In the app
 
@@ -112,6 +112,8 @@ bun run install:release-runner
 A user LaunchAgent keeps the release runner online. Its installation, GitHub credentials, and service logs live outside the repository under `~/Library/Application Support/Act Dock/release-runner`. Job workspaces use `~/.local/share/act-dock-release-work` to avoid spaces in GitHub shell paths. Remove or unload `~/Library/LaunchAgents/sh.actdock.release-runner.plist` to stop automatic local releases. When this Mac is offline, a release waits in GitHub’s queue. Once started, it waits up to 15 minutes for Docker before reporting a dependency error.
 
 For every push to `main`, the job runs `bun run release`. It creates an isolated checkout, chooses a new patch version (honoring a higher source version), runs CI through Act Dock, builds all five installer formats, generates SHA-256 checksums and a download manifest, publishes one GitHub Release, and deploys the website with Wrangler. A failed build leaves the public release unchanged. Version stamps stay in the isolated checkout, preserving a clean source tree.
+
+The act engine is pinned in `scripts/act.ts` (version plus per-platform SHA-256 from the release's `checksums.txt`). Builds download it into the app's `Resources/app/` beside the runner, and the desktop app installs both into the data folder's `bin/`. To upgrade act, bump the version and all three hashes together.
 
 macOS uses the existing custom Finder DMG. Windows is bundled with the verified native Electrobun core and Bun runtime, then packaged with NSIS. Linux uses the verified native core and Bun runtime, then Docker builds DEB, RPM, and AppImage packages. This avoids a Rosetta limitation in Hutch's x64 Linux executable on Apple Silicon; the normal native Hutch workflow remains available on native hosts. Package outputs live in ignored `artifacts/` directories.
 

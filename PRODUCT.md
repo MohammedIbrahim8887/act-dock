@@ -12,6 +12,9 @@ Saved local projects, workflow/job discovery, manual inputs, file-based environm
 ## Constraints
 Electrobun 2.0.5 and Hutch; shadcn/ui components; grayscale light/dark themes following the system by default, with green reserved for actively running pipelines. System fonts, accessible keyboard controls, and labeled status icons. No workflow editor, remote runners, hosted service, or GitHub login. Signing and notarization are outside v1.
 
+## Bundled engine
+act is shipped inside every installer (pinned version, checksum-verified at build time, MIT license included) and installed beside the runner. Resolution order: a custom act path from Settings, then the bundled engine, then the system act. Docker is the only external dependency.
+
 ## Project selection and history
 Projects are selected using the native folder picker or the built-in folder browser, then explicitly confirmed; path typing is not required. Run history supports literal workflow/project/job/ID search, project/status/starter/date filters, counted pagination, and 10/25/50/100 rows per page. Filters and page selection survive opening a run and returning; removed projects remain filterable in retained history.
 

@@ -21,7 +21,7 @@ function Downloads({release}:{release:ReleaseManifest|null}) {
     <Table><TableHeader><TableRow><TableHead>Platform</TableHead><TableHead>Package</TableHead><TableHead className="download-column">Download</TableHead></TableRow></TableHeader><TableBody>
       {platforms.map(p=>{const asset=release?.assets.find(a=>a.kind===p.kind);return <TableRow key={p.kind}><TableCell><div className="platform-name"><p.icon size={19} aria-hidden="true"/><div><strong>{p.name}</strong><span>{p.detail}</span></div></div></TableCell><TableCell className="package-format">{p.format}</TableCell><TableCell className="download-column">{asset?<Button asChild variant="outline" size="sm"><a href={asset.url} aria-label={`Download ${p.name} ${p.format}`}><ArrowDownToLine size={14}/>Download</a></Button>:<Button variant="outline" size="sm" disabled>Build pending</Button>}</TableCell></TableRow>})}
     </TableBody></Table>
-    <div className="download-notes"><p>Requires <a href="https://nektosact.com/installation/index.html">act</a> and a running Docker daemon. Installers are currently unsigned.</p><a href={repository+'/releases/latest'}>Release notes & checksums <ArrowUpRight size={13}/></a></div>
+    <div className="download-notes"><p>The <a href="https://nektosact.com">act</a> engine is built in. You just need Docker running. Installers are currently unsigned.</p><a href={repository+'/releases/latest'}>Release notes & checksums <ArrowUpRight size={13}/></a></div>
   </section>
 }
 const tools = ['list_projects','add_project','list_workflows','run_pipeline','list_runs','get_run','get_run_logs','cancel_run']
