@@ -1,0 +1,41 @@
+{
+  "generator": "built-in image_gen",
+  "purpose": "Five monochrome Act Dock logo concepts for selection. Not applied to the app.",
+  "concepts": [
+    {
+      "slug": "01-docked-play",
+      "name": "1 · Docked Play",
+      "prompt": "Use case: logo-brand. Design a premium original logo option for Act Dock, a desktop developer tool that runs local CI/CD pipelines and exposes tools for AI agents. Flat black ink on a clean pure white square presentation canvas, generous whitespace. One large master symbol centered above a smaller beautifully kerned wordmark reading exactly 'Act Dock'. Confident contemporary industrial software identity; remarkable, simple silhouette that works at 24px. Carefully balanced negative space, mathematically intentional proportions, vector-like crisp edges. No colors, gradients, shadows, 3D, mockups, textures, mascots, stock clipart, watermarks, taglines, labels, extra words, or multiple concepts. This is one independent logo choice, not a contact sheet. Direction: DOCKED PLAY. A bold, sculptural U-shaped docking cradle supports and partly encloses a forward play triangle. Resolve cradle and triangle into one compact, ownable, visually interlocking mark with a clear negative-space channel. The triangle feels actively docking, not a generic media player button. Slightly rounded outer corners, precision angular internal cuts. Custom clean medium-weight sans-serif wordmark.",
+      "source": "/Users/doughnut/.synara/codex-home-overlay/generated_images/01a17796-0008-79e2-b09e-73003b149a43/exec-9f8592a0-d251-4ed2-ace6-bddc573e6ca3.png",
+      "file": "01-docked-play.png"
+    },
+    {
+      "slug": "02-ad-monogram",
+      "name": "2 · AD Monogram",
+      "prompt": "Use case: logo-brand. Design a premium original logo option for Act Dock, a desktop developer tool that runs local CI/CD pipelines and exposes tools for AI agents. Flat black ink on a clean pure white square presentation canvas, generous whitespace. One large master symbol centered above a smaller beautifully kerned wordmark reading exactly 'Act Dock'. Confident contemporary industrial software identity; remarkable, simple silhouette that works at 24px. Carefully balanced negative space, mathematically intentional proportions, vector-like crisp edges. No colors, gradients, shadows, 3D, mockups, textures, mascots, stock clipart, watermarks, taglines, labels, extra words, or multiple concepts. This is one independent logo choice, not a contact sheet. Direction: AD MONOGRAM. Invent an architectural intertwined A and D monogram from one continuous broad geometric ribbon. The A is implied by a strong diagonal and triangular white counter; the D by a substantial outer rounded return. A subtle rightward notch implies pipeline execution. Abstract and compact, the initials reward a second look. Strong visual asymmetry balanced optically. Pair with a precise modern sans-serif wordmark.",
+      "source": "/Users/doughnut/.synara/codex-home-overlay/generated_images/01a17796-0008-79e2-b09e-73003b149a43/exec-f6d5d341-9381-489c-ba44-248248a3dd51.png",
+      "file": "02-ad-monogram.png"
+    },
+    {
+      "slug": "03-pipeline-loop",
+      "name": "3 · Pipeline Loop",
+      "prompt": "Use case: logo-brand. Design a premium original logo option for Act Dock, a desktop developer tool that runs local CI/CD pipelines and exposes tools for AI agents. Flat black ink on a clean pure white square presentation canvas, generous whitespace. One large master symbol centered above a smaller beautifully kerned wordmark reading exactly 'Act Dock'. Confident contemporary industrial software identity; remarkable, simple silhouette that works at 24px. Carefully balanced negative space, mathematically intentional proportions, vector-like crisp edges. No colors, gradients, shadows, 3D, mockups, textures, mascots, stock clipart, watermarks, taglines, labels, extra words, or multiple concepts. This is one independent logo choice, not a contact sheet. Direction: PIPELINE LOOP. An original geometric emblem representing a self-contained local workflow: a continuous rounded-square loop with three small integral square node terminals and a single decisive arrow-like negative-space break. More like a beautiful interlocking mechanical clasp than a diagram. Use thick solid forms, very few elements, engineered silhouette. Avoid thin wire flowchart lines and generic refresh arrows. Elegant slightly condensed sans-serif wordmark.",
+      "source": "/Users/doughnut/.synara/codex-home-overlay/generated_images/01a17796-0008-79e2-b09e-73003b149a43/exec-0886a2a9-a431-4d10-879a-170b7812ec95.png",
+      "file": "03-pipeline-loop.png"
+    },
+    {
+      "slug": "04-terminal-dock",
+      "name": "4 · Terminal Dock",
+      "prompt": "Use case: logo-brand. Design a premium original logo option for Act Dock, a desktop developer tool that runs local CI/CD pipelines and exposes tools for AI agents. Flat black ink on a clean pure white square presentation canvas, generous whitespace. One large master symbol centered above a smaller beautifully kerned wordmark reading exactly 'Act Dock'. Confident contemporary industrial software identity; remarkable, simple silhouette that works at 24px. Carefully balanced negative space, mathematically intentional proportions, vector-like crisp edges. No colors, gradients, shadows, 3D, mockups, textures, mascots, stock clipart, watermarks, taglines, labels, extra words, or multiple concepts. This is one independent logo choice, not a contact sheet. Direction: TERMINAL DOCK. A striking compact terminal-bracket symbol. Two thick opposing architectural brackets form an almost-square open docking port; the right-pointing command chevron is carved from negative space so the symbol feels cut from a single slab. A small horizontal terminal foot grounds the shape and alludes to a dock. Crisp rectilinear engineering with softened exterior corners. Extremely disciplined, distinctive developer-tool mark. Pair with a subtle custom monospaced-influenced sans wordmark, not literal terminal text.",
+      "source": "/Users/doughnut/.synara/codex-home-overlay/generated_images/01a17796-0008-79e2-b09e-73003b149a43/exec-702ef1dc-ac5a-4aa3-8d03-05f5a9b45432.png",
+      "file": "04-terminal-dock.png"
+    },
+    {
+      "slug": "05-relay-bolt",
+      "name": "5 · Relay Bolt",
+      "prompt": "Use case: logo-brand. Design a premium original logo option for Act Dock, a desktop developer tool that runs local CI/CD pipelines and exposes tools for AI agents. Flat black ink on a clean pure white square presentation canvas, generous whitespace. One large master symbol centered above a smaller beautifully kerned wordmark reading exactly 'Act Dock'. Confident contemporary industrial software identity; remarkable, simple silhouette that works at 24px. Carefully balanced negative space, mathematically intentional proportions, vector-like crisp edges. No colors, gradients, shadows, 3D, mockups, textures, mascots, stock clipart, watermarks, taglines, labels, extra words, or multiple concepts. This is one independent logo choice, not a contact sheet. Direction: RELAY BOLT. Design an energetic abstract emblem made from two interlocking solid angular links whose negative space forms a lightning-like forward run signal. It conveys fast execution and stages handing work to one another. A compact diagonal composition with stepped ends, a beautifully simple chunky silhouette, sharp internal cuts and softly finished outside corners. Not a generic lightning bolt in a circle, not a chain clipart. Confident slightly wide geometric sans-serif wordmark.",
+      "source": "/Users/doughnut/.synara/codex-home-overlay/generated_images/01a17796-0008-79e2-b09e-73003b149a43/exec-8d603c19-f861-426d-8e5d-c1a19afea64d.png",
+      "file": "05-relay-bolt.png"
+    }
+  ]
+}
