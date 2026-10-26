@@ -6,7 +6,7 @@ import { repository } from '@/lib/releases'
 
 export function SiteHeader() {
   return <header className="site-header">
-    <Link className="brand" to="/" aria-label="Act Dock home"><img src="/mark.png" width="28" height="28" alt=""/><span>Act Dock</span></Link>
+    <Link className="brand" to="/" aria-label="Act Dock home"><img src="/mark.svg" width="28" height="28" alt=""/><span>Act Dock</span></Link>
     <nav aria-label="Main navigation">
       <Button asChild variant="ghost" size="sm" className="nav-docs"><Link to="/docs">Docs</Link></Button>
       <Button asChild variant="ghost" size="sm" className="nav-github"><a href={repository}>GitHub<ArrowUpRight size={13}/></a></Button>
@@ -17,7 +17,7 @@ export function SiteHeader() {
 
 export function SiteFooter() {
   return <footer className="site-footer">
-    <Link className="brand" to="/"><img src="/mark.png" width="21" height="21" alt=""/><span>Act Dock</span></Link>
+    <Link className="brand" to="/"><img src="/mark.svg" width="21" height="21" alt=""/><span>Act Dock</span></Link>
     <p>Made by <a href="https://mohammedibrahim.dev">Mohammed Ibrahim</a></p>
     <nav aria-label="Footer"><Link to="/docs">Docs</Link><a href={repository + '/releases'}>Releases</a><a href={repository}>Source<ArrowUpRight size={13}/></a></nav>
   </footer>

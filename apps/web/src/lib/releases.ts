@@ -2,7 +2,10 @@ import { createServerFn } from '@tanstack/react-start'
 export const repository = 'https://github.com/MohammedIbrahim8887/act-dock'
 export type ReleaseAsset = { kind:string; name:string; url:string; sha256:string; size:number; arch:string; platform:string; format:string }
 export type ReleaseManifest = { version:string; publishedAt:string; commit:string; assets:ReleaseAsset[] }
+// Baked in at build time by scripts/build-assets.tsx; falls back to fetching when the build couldn't reach GitHub.
+const baked = Object.values(import.meta.glob<ReleaseManifest|null>('../generated/release.json',{eager:true,import:'default'}))[0]
 export async function loadRelease():Promise<ReleaseManifest|null> {
+  if (baked) return baked
   const url = repository + '/releases/latest/download/manifest.json'
   const cache = (globalThis.caches as CacheStorage & { default?:Cache } | undefined)?.default
   const key = new Request('https://act-dock.mohammedibrahim.dev/_release-manifest-v1')

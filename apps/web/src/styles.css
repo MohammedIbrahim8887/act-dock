@@ -176,7 +176,7 @@
 .docs-table [data-slot=table-head]{font-size:12px;color:var(--muted-foreground);font-weight:400;padding:0 14px}
 .docs-table [data-slot=table-cell]{padding:12px 14px;white-space:normal;vertical-align:top;line-height:1.6}
 .docs-params{font-family:var(--font-mono);font-size:11.5px;color:var(--muted-foreground);max-width:220px}
-.docs-faq{margin:0}.docs-faq dt{font-weight:600;margin-top:22px}.docs-faq dt:first-child{margin-top:0}
+.docs-faq{margin:0}.docs-faq dt{font-weight:600}.docs-faq>div+div{margin-top:22px}
 .docs-faq dd{margin:6px 0 0;color:#454545;line-height:1.7}.docs-faq dd a{display:inline-flex;align-items:center;gap:2px}
 @media(max-width:900px){.docs{grid-template-columns:1fr;gap:0;padding-top:24px}.docs-nav{position:static;flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:16px;margin-bottom:32px;border-bottom:1px solid var(--border)}.docs-nav p{display:none}.docs-nav a{white-space:nowrap;flex-shrink:0}.docs-clients{grid-template-columns:minmax(0,1fr)}.docs-cards{grid-template-columns:1fr}}
 @media(max-width:600px){.demo{height:540px}.window-actions{width:auto}.window-actions .local-state{display:none}.window-bar>span:nth-child(2){display:none}.docs-flow li{grid-template-columns:1fr;gap:4px}.docs-toolbar{flex-direction:column;align-items:flex-start}.site-footer nav{gap:14px;margin-left:auto}.nav-github{display:none!important}}

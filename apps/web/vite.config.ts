@@ -6,5 +6,10 @@ import tailwindcss from '@tailwindcss/vite'
 import { fileURLToPath } from 'node:url'
 export default defineConfig({
   resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
-  plugins: [cloudflare({ viteEnvironment: { name: 'ssr' } }), tanstackStart(), react(), tailwindcss()],
+  plugins: [cloudflare({ viteEnvironment: { name: 'ssr' } }), tanstackStart({
+    // Both pages are static: release data and social cards are baked in by scripts/build-assets.tsx.
+    pages: [{ path: '/' }, { path: '/docs' }],
+    prerender: { enabled: true, crawlLinks: false, failOnError: true, autoSubfolderIndex: false },
+    sitemap: { enabled: true, host: 'https://act-dock.mohammedibrahim.dev' },
+  }), react(), tailwindcss()],
 })

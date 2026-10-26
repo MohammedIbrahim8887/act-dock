@@ -4,7 +4,7 @@ import { ArrowUpRight } from 'lucide-react'
 import { CodeBlock, SiteFooter, SiteHeader } from '@/components/site-chrome'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { getRelease, repository } from '@/lib/releases'
-import { seo } from '@/lib/seo'
+import { seo, siteUrl } from '@/lib/seo'
 
 export const Route = createFileRoute('/docs')({
   loader: () => getRelease(),
@@ -12,6 +12,10 @@ export const Route = createFileRoute('/docs')({
     title: 'Docs — Act Dock',
     description: 'Install Act Dock, run GitHub Actions locally, and connect Claude Code, Codex, Cursor, or any MCP client to your local pipeline runner.',
     path: '/docs', card: 'docs', version: loaderData?.version,
+    structuredData: [
+      { '@type': 'TechArticle', headline: 'Act Dock documentation', about: { '@id': siteUrl + '/#app' } },
+      { '@type': 'FAQPage', mainEntity: faq.map(([name, text]) => ({ '@type': 'Question', name, acceptedAnswer: { '@type': 'Answer', text } })) },
+    ],
   }),
   component: Docs,
 })
@@ -53,6 +57,15 @@ const tools: [string, string, string][] = [
   ['get_run', 'runId', 'Status, timing, and result of a run.'],
   ['get_run_logs', 'runId, cursor?, limit?', 'A page of up to 2,000 log entries. Keep passing nextCursor until end is true.'],
   ['cancel_run', 'runId', 'Cancel a queued or running pipeline and clean up its containers.'],
+]
+
+// Rendered in the FAQ section and as FAQPage structured data, so the two always match.
+const faq: [string, string][] = [
+  ['Do I need to install act?', 'No. Every installer includes act 0.2.89, checked against the official release checksums. To use a different build, choose its executable in Settings → Dependencies. Docker is still required, because act runs each job in a container.'],
+  ['Do I need a GitHub account?', 'No. Everything runs locally, and there’s no sign-in or hosted service.'],
+  ['Does it commit or push anything?', 'No. Workflows run against the files on disk, including uncommitted changes.'],
+  ['Can I run several pipelines at once?', 'Runs from the app, CLI, and agents share one queue and run one at a time, so they don’t compete for Docker resources.'],
+  ['Where’s the source?', 'Source, releases, and checksums are on GitHub.'],
 ]
 
 const errors: [string, string][] = [
@@ -232,11 +245,7 @@ act-dock runner status | start | stop`}/>
           <section id="faq">
             <h2>FAQ</h2>
             <dl className="docs-faq">
-              <dt>Do I need to install act?</dt><dd>No. Every installer includes act 0.2.89, checked against the official release checksums. To use a different build, choose its executable in Settings → Dependencies. Docker is still required, because act runs each job in a container.</dd>
-              <dt>Do I need a GitHub account?</dt><dd>No. Everything runs locally, and there’s no sign-in or hosted service.</dd>
-              <dt>Does it commit or push anything?</dt><dd>No. Workflows run against the files on disk, including uncommitted changes.</dd>
-              <dt>Can I run several pipelines at once?</dt><dd>Runs from the app, CLI, and agents share one queue and run one at a time, so they don’t compete for Docker resources.</dd>
-              <dt>Where’s the source?</dt><dd>Source, releases, and checksums are on <a href={repository}>GitHub <ArrowUpRight size={12}/></a>.</dd>
+              {faq.map(([q, a]) => <div key={q}><dt>{q}</dt><dd>{a}{q === 'Where’s the source?' && <> <a href={repository}>Open the repository <ArrowUpRight size={12}/></a></>}</dd></div>)}
             </dl>
           </section>
         </main>

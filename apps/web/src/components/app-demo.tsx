@@ -104,7 +104,7 @@ export function AppDemo({ paused }: { paused: boolean }) {
 
   return <div ref={frame} className="demo" data-state={state} aria-hidden="true" inert>
     <aside className="demo-sidebar">
-      <div className="demo-brand"><span><img src="/mark.png" alt="" width="20" height="20"/></span><div><strong>Act Dock</strong><small>Local pipeline runner</small></div></div>
+      <div className="demo-brand"><span><img src="/mark.svg" alt="" width="20" height="20"/></span><div><strong>Act Dock</strong><small>Local pipeline runner</small></div></div>
       <div className="demo-label">Projects <Plus size={13}/></div>
       <div className="demo-nav is-active"><Folder size={14}/><b>act-dock-demo</b>{running && <LoaderCircle size={13} className="demo-spin demo-green"/>}</div>
       <div className="demo-nav is-faint"><Plus size={14}/>Add project</div>

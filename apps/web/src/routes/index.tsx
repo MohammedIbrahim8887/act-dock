@@ -6,11 +6,22 @@ import { Badge } from '@/components/ui/badge'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { getRelease, repository, type ReleaseManifest } from '@/lib/releases'
 import { AppDemo } from '@/components/app-demo'
-import { seo } from '@/lib/seo'
+import { seo, siteUrl } from '@/lib/seo'
 import { CodeBlock, SiteFooter, SiteHeader } from '@/components/site-chrome'
 export const Route = createFileRoute('/')({
   loader:()=>getRelease(),
-  head:({loaderData})=>seo({title:'Act Dock — Your pipelines. On your machine.',description:'Run GitHub Actions locally with a desktop workspace, live logs, and MCP tools for your AI agents. Download Act Dock for macOS, Windows, or Linux.',path:'/',card:'home',version:loaderData?.version}),
+  head:({loaderData})=>seo({
+    title:'Act Dock — Your pipelines. On your machine.',
+    description:'Run GitHub Actions locally with a desktop workspace, live logs, and MCP tools for your AI agents. Download Act Dock for macOS, Windows, or Linux.',
+    path:'/',card:'home',version:loaderData?.version,
+    structuredData:[{
+      '@type':'SoftwareApplication','@id':siteUrl+'/#app',name:'Act Dock',
+      applicationCategory:'DeveloperApplication',operatingSystem:'macOS 14+, Windows 10+, Linux',
+      ...(loaderData?{softwareVersion:loaderData.version,downloadUrl:repository+'/releases/tag/v'+loaderData.version}:{}),
+      offers:{'@type':'Offer',price:'0',priceCurrency:'USD'},
+      sameAs:[repository],
+    }],
+  }),
   component:Home,
 })
 const platforms = [

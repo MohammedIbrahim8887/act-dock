@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://act-dock.mohammedibrahim.dev/sitemap.xml
