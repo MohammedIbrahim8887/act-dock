@@ -8,6 +8,9 @@ permissions:
 concurrency:
   group: act-dock-release
   cancel-in-progress: false
+defaults:
+  run:
+    shell: bash --noprofile --norc -eo pipefail "{0}"
 jobs:
   publish:
     runs-on: [self-hosted, act-dock-release, macOS, ARM64]
