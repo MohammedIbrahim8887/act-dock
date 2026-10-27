@@ -185,6 +185,8 @@ export async function validateRun(project: Project, request: RunRequest) {
     }
   return w;
 }
+/** The image act uses for ubuntu-* runners. */
+export const RUNNER_IMAGE = "catthehacker/ubuntu:act-latest";
 export function commandArgs(project: Project, r: RunRequest, runId: string) {
   const args = [
     r.event,
@@ -203,7 +205,7 @@ export function commandArgs(project: Project, r: RunRequest, runId: string) {
     "ubuntu-22.04",
     "ubuntu-24.04",
   ])
-    args.push("-P", `${label}=catthehacker/ubuntu:act-latest`);
+    args.push("-P", `${label}=${RUNNER_IMAGE}`);
   for (const [key, value] of Object.entries(r.inputs))
     args.push("--input", `${key}=${value}`);
   for (const [key, flag] of [

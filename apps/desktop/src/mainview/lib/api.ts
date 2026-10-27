@@ -82,3 +82,10 @@ export async function exportLogs(runId: string) {
   URL.revokeObjectURL(url);
   return "Downloads";
 }
+export async function openExternal(url: string) {
+  if (isDesktop()) await (await connection()).rpc!.request.openExternal({ url });
+  else window.open(url, "_blank", "noopener");
+}
+export async function revealPath(path: string) {
+  if (isDesktop()) await (await connection()).rpc!.request.revealPath({ path });
+}

@@ -22,6 +22,7 @@ import {
   LoaderCircle,
   Trash2,
   Terminal,
+  Activity,
 } from "lucide-react";
 import {
   SidebarProvider,
@@ -57,7 +58,7 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
-import { api } from "@/lib/api";
+import { api, openExternal } from "@/lib/api";
 import { AddProjectDialog } from "@/components/add-project-dialog";
 import {
   RunHistory,
@@ -69,15 +70,23 @@ import { RunDetail } from "@/components/run-detail";
 import { SettingsView, AgentsView } from "@/components/settings";
 import { Empty, IconButton, RunningBorder, fail } from "@/components/common";
 import {
+  HealthBanner,
+  HealthStatusText,
+  HealthView,
+  healthIssueCount,
+  type HealthActionHandler,
+} from "@/components/health";
+import {
   activeStates,
   settingsSchema,
   type Health,
+  type HealthReport,
   type Project,
   type Run,
   type Settings,
   type Workflow,
 } from "../shared/contracts";
-type View = "project" | "history" | "agents" | "settings";
+type View = "project" | "history" | "agents" | "settings" | "health";
 function Workspace() {
   const [projects, setProjects] = useState<Project[]>([]),
     [runs, setRuns] = useState<Run[]>([]),
@@ -145,6 +154,53 @@ function Workspace() {
       .then(setHealth)
       .catch((e) => toast.error(fail(e)));
   }, []);
+  const [report, setReport] = useState<HealthReport | null>(null),
+    [checking, setChecking] = useState(false),
+    [fixing, setFixing] = useState<string | null>(null);
+  const checkHealth = useCallback(async () => {
+    setChecking(true);
+    try {
+      setReport(await api("check_health"));
+    } catch {
+      // The connection banner already explains an unreachable runner.
+    } finally {
+      setChecking(false);
+    }
+  }, []);
+  const pendingFix = report?.checks.some((c) => c.status === "pending");
+  useEffect(() => {
+    if (runnerStopped) return;
+    void checkHealth();
+    // Poll quickly while a fix is in progress or the page is open, and gently otherwise.
+    const id = setInterval(() => void checkHealth(), pendingFix ? 2500 : view === "health" ? 6000 : 20000);
+    window.addEventListener("focus", checkHealth);
+    return () => {
+      clearInterval(id);
+      window.removeEventListener("focus", checkHealth);
+    };
+  }, [checkHealth, runnerStopped, pendingFix, view]);
+  const onHealthAction: HealthActionHandler = (check) => {
+    const action = check.action;
+    if (!action) return;
+    if (action.kind === "view") {
+      setView(action.target);
+      closeNavigation();
+    } else if (action.kind === "link") {
+      void openExternal(action.url);
+    } else {
+      setFixing(check.id);
+      void api("fix_health", { action: action.id })
+        .then((r) => toast.success(r.message))
+        .catch((e) => toast.error(fail(e)))
+        .finally(() => {
+          setFixing(null);
+          void checkHealth();
+          refreshHealth();
+        });
+    }
+  };
+  const blocked = report?.overall === "blocked";
+  const issueCount = healthIssueCount(report);
   useEffect(() => {
     if (runnerStopped) return;
     void refresh();
@@ -303,6 +359,7 @@ function Workspace() {
                 [
                   { id: "history", label: "Run history", icon: History },
                   { id: "agents", label: "Agent connections", icon: Cable },
+                  { id: "health", label: "System health", icon: Activity },
                 ] as const
               ).map((item) => (
                 <SidebarMenuItem key={item.id}>
@@ -323,6 +380,15 @@ function Workspace() {
                       >
                         {running.length || active.length}
                       </Badge>
+                    )}
+                    {item.id === "health" && issueCount > 0 && (
+                      <span
+                        className="ml-auto health-nav-badge"
+                        data-blocked={blocked || undefined}
+                        aria-label={blocked ? "Pipelines are blocked" : `${issueCount} suggestions`}
+                      >
+                        {blocked ? "!" : issueCount}
+                      </span>
                     )}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -413,7 +479,9 @@ function Workspace() {
                   ? "Run history"
                   : view === "agents"
                     ? "Agent connections"
-                    : "Settings"}
+                    : view === "health"
+                      ? "System health"
+                      : "Settings"}
             </strong>
           </div>
           <div className="topbar-meta">
@@ -439,6 +507,14 @@ function Workspace() {
               Reconnect
             </Button>
           </div>
+        )}
+        {!error && !runnerStopped && view !== "health" && (
+          <HealthBanner
+            report={report}
+            busy={fixing}
+            onAction={onHealthAction}
+            onOpen={() => setView("health")}
+          />
         )}
         {view === "project" && (
           <div className={`workspace ${mobileRun ? "show-run" : ""}`}>
@@ -646,18 +722,30 @@ function Workspace() {
               </ScrollArea>
               {project && workflow && (
                 <div className="workflow-action">
-                  <div>
-                    <span>
-                      {workflow.jobs.length}{" "}
-                      {workflow.jobs.length === 1 ? "job" : "jobs"}
-                    </span>
-                    <span>Current working files</span>
-                  </div>
+                  {blocked ? (
+                    <button
+                      type="button"
+                      className="workflow-blocked"
+                      onClick={() => setView("health")}
+                    >
+                      <span>Setup needs attention before running.</span>
+                      <span>Fix it</span>
+                    </button>
+                  ) : (
+                    <div>
+                      <span>
+                        {workflow.jobs.length}{" "}
+                        {workflow.jobs.length === 1 ? "job" : "jobs"}
+                      </span>
+                      <span>Current working files</span>
+                    </div>
+                  )}
                   <Button
                     className="w-full"
                     disabled={
                       !!workflow.diagnostic ||
                       runnerStopped ||
+                      blocked ||
                       workflowLoading ||
                       !!workflowError
                     }
@@ -709,6 +797,17 @@ function Workspace() {
             <AgentsView health={health} />
           </ScrollArea>
         )}
+        {view === "health" && (
+          <ScrollArea className="page-scroll">
+            <HealthView
+              report={report}
+              checking={checking}
+              busy={fixing}
+              onCheck={() => void checkHealth()}
+              onAction={onHealthAction}
+            />
+          </ScrollArea>
+        )}
         {view === "settings" && (
           <ScrollArea className="page-scroll">
             <SettingsView
@@ -739,7 +838,14 @@ function Workspace() {
             {queued.length > 0 && <span>{running.length ? " · " : ""}{queued.length} queued</span>}
             {cancelling.length > 0 && <span>{running.length || queued.length ? " · " : ""}{cancelling.length} cancelling</span>}
             <span className="status-separator">·</span>
-            {health?.docker.ok ? "Docker connected" : "Docker not connected"}
+            <button
+              type="button"
+              className="statusbar-health"
+              data-blocked={blocked || undefined}
+              onClick={() => setView("health")}
+            >
+              <HealthStatusText report={report} />
+            </button>
           </span>
         </footer>
       </SidebarInset>

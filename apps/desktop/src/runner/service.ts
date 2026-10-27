@@ -18,6 +18,7 @@ import {
 import { dataDir, preparePaths, socketPath } from "./paths";
 import { Store } from "./store";
 import { Scheduler, health } from "./process";
+import { checkHealth, fixHealth } from "./doctor";
 import { canonicalProject, discover, validateRun } from "./workflows";
 import { browseFolders } from "./folders";
 import { setLogin } from "./login";
@@ -146,6 +147,10 @@ export async function serve() {
       }
       case "health":
         return health(store);
+      case "check_health":
+        return checkHealth(store);
+      case "fix_health":
+        return fixHealth(store, methods[method].parse(raw).action);
       case "stop":
         setTimeout(() => void shutdown(), 50);
         return null;

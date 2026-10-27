@@ -18,6 +18,8 @@ export async function startMcp() {
     get_run_logs:
       "Read a bounded log page after a cursor. Continue using nextCursor until end.",
     cancel_run: "Cancel a queued or running pipeline.",
+    check_health:
+      "Check whether this machine can run pipelines: Docker installed and running, act engine, job image, disk space, and GitHub access. Each check has a status and a suggested fix.",
   };
   for (const name of Object.keys(
     descriptions,

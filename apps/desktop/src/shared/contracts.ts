@@ -116,6 +116,38 @@ export const folderListingSchema = z.object({
   hasWorkflows: z.boolean(),
 });
 export type FolderListing = z.infer<typeof folderListingSchema>;
+export const checkStatuses = ["ok", "warning", "error", "pending", "info", "skipped"] as const;
+export const healthActions = ["start_docker", "pull_image"] as const;
+export const healthCheckSchema = z.object({
+  id: z.string(),
+  group: z.enum(["required", "recommended", "environment"]),
+  title: z.string(),
+  status: z.enum(checkStatuses),
+  summary: z.string(),
+  detail: z.string().optional(),
+  facts: z.array(z.object({ label: z.string(), value: z.string(), mono: z.boolean().optional() })).default([]),
+  /** A fix the runner can perform, a place in the app, or documentation. */
+  action: z
+    .discriminatedUnion("kind", [
+      z.object({ kind: z.literal("runner"), id: z.enum(healthActions), label: z.string() }),
+      z.object({ kind: z.literal("view"), target: z.enum(["settings", "agents"]), label: z.string() }),
+      z.object({ kind: z.literal("link"), url: z.string().url(), label: z.string() }),
+    ])
+    .optional(),
+  command: z.string().optional(),
+  progress: z.object({ label: z.string(), fraction: z.number().min(0).max(1).optional() }).optional(),
+});
+export type HealthCheck = z.infer<typeof healthCheckSchema>;
+export type HealthCheckInput = z.input<typeof healthCheckSchema>;
+export type CheckStatus = HealthCheck["status"];
+export type HealthAction = (typeof healthActions)[number];
+export const healthReportSchema = z.object({
+  checkedAt: z.string(),
+  /** blocked: pipelines can't run; attention: they can, with caveats; ready: everything passed. */
+  overall: z.enum(["ready", "attention", "blocked"]),
+  checks: z.array(healthCheckSchema),
+});
+export type HealthReport = z.infer<typeof healthReportSchema>;
 const id = z.object({ runId: z.string().min(1) });
 export const methods = {
   list_projects: z.object({}),
@@ -145,6 +177,8 @@ export const methods = {
   get_settings: z.object({}),
   update_settings: settingsSchema,
   health: z.object({}),
+  check_health: z.object({}),
+  fix_health: z.object({ action: z.enum(healthActions) }),
   stop: z.object({}),
 } as const;
 export type Method = keyof typeof methods;
@@ -164,6 +198,8 @@ export type Results = {
   get_settings: Settings;
   update_settings: Settings;
   health: Health;
+  check_health: HealthReport;
+  fix_health: { message: string };
   stop: null;
 };
 export class AppError extends Error {
@@ -280,6 +316,8 @@ export const responses = {
     version: z.string(),
     executable: z.string(),
   }),
+  check_health: healthReportSchema,
+  fix_health: z.object({ message: z.string() }),
   stop: z.null(),
 } satisfies { [M in Method]: z.ZodType<Results[M]> };
 export const serviceReplySchema = z.discriminatedUnion("ok", [

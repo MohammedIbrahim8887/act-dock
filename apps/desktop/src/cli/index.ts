@@ -4,7 +4,7 @@ import { call, request, ensureRunner, isAlive } from "../runner/client";
 import { serve } from "../runner/service";
 import { startMcp } from "./mcp";
 import { errorMessage, AppError, runRequestSchema } from "../shared/contracts";
-const help = `Act Dock — local GitHub Actions\n\nprojects list | projects add /absolute/path\nworkflows list PROJECT_ID\nrun --project ID --workflow .github/workflows/ci.yml --event push [--job ID]\n    [--input NAME=VALUE] [--event-file PATH] [--env-file PATH]\n    [--var-file PATH] [--secret-file PATH] [--architecture auto|linux/amd64]\n    [--idempotency-key KEY]\nruns list [--project ID] [--cursor 0] [--limit 100] [--status STATE] [--source desktop|cli|mcp] [--search TEXT] [--since ISO_DATE]\nstatus RUN_ID | logs RUN_ID [--follow] [--cursor 0] | cancel RUN_ID\nrunner start | runner stop | runner status\nmcp\n\nResponses are JSON. MCP reserves stdout for protocol messages.`;
+const help = `Act Dock — local GitHub Actions\n\nprojects list | projects add /absolute/path\nworkflows list PROJECT_ID\nrun --project ID --workflow .github/workflows/ci.yml --event push [--job ID]\n    [--input NAME=VALUE] [--event-file PATH] [--env-file PATH]\n    [--var-file PATH] [--secret-file PATH] [--architecture auto|linux/amd64]\n    [--idempotency-key KEY]\nruns list [--project ID] [--cursor 0] [--limit 100] [--status STATE] [--source desktop|cli|mcp] [--search TEXT] [--since ISO_DATE]\nstatus RUN_ID | logs RUN_ID [--follow] [--cursor 0] | cancel RUN_ID\ndoctor\nrunner start | runner stop | runner status\nmcp\n\nResponses are JSON. MCP reserves stdout for protocol messages.`;
 async function main() {
   const { positionals: a, values: v } = parseArgs({
     args: process.argv.slice(2),
@@ -103,6 +103,7 @@ async function main() {
     return print(await call("run_pipeline", r));
   }
   if (a[0] === "status") return print(await call("get_run", { runId: a[1] }));
+  if (a[0] === "doctor") return print(await call("check_health"));
   if (a[0] === "cancel")
     return print(await call("cancel_run", { runId: a[1] }));
   if (a[0] === "logs") {

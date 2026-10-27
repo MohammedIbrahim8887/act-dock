@@ -11,6 +11,8 @@ export type DesktopRPC = {
       chooseFile: { params: {}; response: string | null };
       exportLogs: { params: { runId: string }; response: string | null };
       restartRunner: { params: {}; response: boolean };
+      openExternal: { params: { url: string }; response: boolean };
+      revealPath: { params: { path: string }; response: boolean };
     };
     messages: {};
   }>;

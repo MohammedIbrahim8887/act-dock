@@ -85,7 +85,7 @@ test("MCP and CLI share one on-demand service, runs survive client exit, and res
       }),
     );
     const list = await client.listTools();
-    expect(list.tools).toHaveLength(8);
+    expect(list.tools).toHaveLength(9);
     expect(list.tools.map((t) => t.name)).toContain("run_pipeline");
     const invoke = async <T>(
       name: string,
@@ -95,6 +95,9 @@ test("MCP and CLI share one on-demand service, runs survive client exit, and res
       expect(r.isError).not.toBe(true);
       return (r.structuredContent as { result: T }).result;
     };
+    const report = await invoke<{ overall: string; checks: { id: string; status: string }[] }>("check_health", {});
+    expect(["ready", "attention", "blocked"]).toContain(report.overall);
+    expect(report.checks.find((c) => c.id === "act")?.status).toBe("ok");
     const p = await invoke<Project>("add_project", {
       path: join(dir, "project"),
     });

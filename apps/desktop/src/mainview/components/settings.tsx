@@ -249,6 +249,7 @@ export function AgentsView({ health }: { health: Health | null }) {
             ["get_run", "Check status and exit code"],
             ["get_run_logs", "Read output with a resumable cursor"],
             ["cancel_run", "Cancel queued or active work"],
+            ["check_health", "Check Docker, act, and setup before running"],
           ].map(([name, desc]) => (
             <div key={name}>
               <code>{name}</code>

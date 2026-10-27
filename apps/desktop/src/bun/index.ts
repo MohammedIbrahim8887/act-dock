@@ -48,6 +48,12 @@ const rpc = BrowserView.defineRPC<DesktopRPC>({
             allowsMultipleSelection: false,
           })
         )[0] || null,
+      openExternal: async ({ url }) =>
+        /^https:\/\//.test(url) ? Utils.openExternal(url) : false,
+      revealPath: async ({ path }) => {
+        Utils.showItemInFolder(path);
+        return true;
+      },
       restartRunner: async () => {
         await ensureRunner();
         return true;
