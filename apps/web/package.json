@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev --host 127.0.0.1 --port 3000",
-    "build": "bun scripts/build-assets.tsx && vite build",
+    "build": "bun scripts/build-assets.tsx && vite build && bun scripts/verify-build.ts",
     "preview": "vite preview --host 127.0.0.1 --port 3000",
     "typecheck": "tsc --noEmit",
     "deploy": "bun run build && wrangler deploy",

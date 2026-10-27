@@ -22,3 +22,6 @@ jobs:
         run: bun scripts/prepare.ts
       - name: Check workspace
         run: bun run check
+        env:
+          # The deploy build prerenders natively; workerd can't serve it under x86 emulation here.
+          ACT_DOCK_SKIP_PRERENDER: '1'
