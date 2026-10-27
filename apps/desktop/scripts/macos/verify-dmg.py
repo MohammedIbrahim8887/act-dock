@@ -22,6 +22,11 @@ def verify(image):
             info = plistlib.loads((app / "Contents/Info.plist").read_bytes())
             assert info["CFBundleIdentifier"].startswith("sh.actdock.desktop")
             assert (app / "Contents/MacOS/bun").is_file(), "Not the expanded runnable app"
+            # An unsealed bundle is reported as "damaged" once a browser quarantines the download.
+            signed = subprocess.run(["/usr/bin/codesign", "--verify", "--deep", "--strict", str(app)], capture_output=True, text=True)
+            assert signed.returncode == 0, "App bundle signature is not valid: " + signed.stderr.strip()
+            details = subprocess.run(["/usr/bin/codesign", "-dv", str(app)], capture_output=True, text=True).stderr
+            assert "Sealed Resources version=2" in details, "App bundle resources are not sealed"
             icon = info.get("CFBundleIconFile", "")
             icon_file = app / "Contents/Resources" / (icon if icon.endswith(".icns") else icon + ".icns")
             assert icon_file.stat().st_size > 0, "Application icon missing"

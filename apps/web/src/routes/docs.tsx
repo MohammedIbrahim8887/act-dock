@@ -136,7 +136,7 @@ function Docs() {
             <h3>Opening an unsigned build</h3>
             <p>Releases aren’t code-signed yet, so your OS will warn you the first time you open the app.</p>
             <ul className="docs-list">
-              <li><b>macOS:</b> drag Act Dock to Applications and open it. If macOS blocks it, go to System Settings → Privacy & Security and click <em>Open Anyway</em>.</li>
+              <li><b>macOS:</b> drag Act Dock to Applications and open it. When macOS says it can’t verify the app, open System Settings → Privacy & Security and click <em>Open Anyway</em>. Version 0.2.2 and earlier may say the app “is damaged” instead. That’s a packaging bug, not a broken download. Run <code>xattr -dr com.apple.quarantine "/Applications/Act Dock.app"</code> once, or install a newer version.</li>
               <li><b>Windows:</b> if SmartScreen appears, click <em>More info</em>, then <em>Run anyway</em>. Edge WebView2 is required (it ships with Windows 11).</li>
               <li><b>Linux:</b> install the <code>.deb</code> or <code>.rpm</code> with your package manager. For the AppImage, run <code>chmod +x</code> on it first. It needs GTK 3 and WebKitGTK 4.1.</li>
             </ul>

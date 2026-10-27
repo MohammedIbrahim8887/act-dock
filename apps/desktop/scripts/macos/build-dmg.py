@@ -59,7 +59,8 @@ def build(args):
         "icon_locations": {app_name: tuple(layout["appPosition"]), "Applications": tuple(layout["applicationsPosition"])},
         "icon_size": layout["iconSize"], "text_size": layout["textSize"],
         "label_pos": "bottom", "arrange_by": None,
-        "hide_extensions": [app_name], "default_view": "icon-view",
+        # No hide_extensions: it writes Finder info onto the signed bundle, which strict Gatekeeper checks reject.
+        "default_view": "icon-view",
         "show_toolbar": False, "show_sidebar": False, "show_status_bar": False,
         "show_tab_view": False, "show_pathbar": False, "show_icon_preview": False,
         "include_icon_view_settings": True, "include_list_view_settings": False,

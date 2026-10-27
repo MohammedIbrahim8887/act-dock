@@ -14,7 +14,7 @@ Run GitHub Actions locally from a desktop workspace, a CLI, or your AI agents. S
 | Linux x64 | [RPM](https://github.com/MohammedIbrahim8887/act-dock/releases/latest/download/linux-x64-ActDock.rpm) | Fedora 40+ with WebKitGTK 4.1 |
 | Linux x64 | [AppImage](https://github.com/MohammedIbrahim8887/act-dock/releases/latest/download/linux-x64-ActDock.AppImage) | glibc 2.39+, GTK 3, WebKitGTK 4.1, Ayatana AppIndicator, librsvg |
 
-Installers are unsigned. Windows packages are assembled from the pinned native Electrobun 2.0.5 core; Windows GUI verification requires a Windows machine. The AppImage uses system GTK/WebKit libraries and is not a universal bundle for older distributions.
+Installers are not notarized. The macOS app is ad-hoc signed during packaging so Gatekeeper offers **Open Anyway** (System Settings → Privacy & Security); builds up to v0.2.2 shipped an unsealed bundle that macOS reports as "damaged" — clear it with `xattr -dr com.apple.quarantine "/Applications/Act Dock.app"` or upgrade. Windows packages are assembled from the pinned native Electrobun 2.0.5 core; Windows GUI verification requires a Windows machine. The AppImage uses system GTK/WebKit libraries and is not a universal bundle for older distributions.
 
 Every installer bundles a pinned, checksum-verified [act](https://github.com/nektos/act) engine (v0.2.89, MIT; license shipped as `act-LICENSE.txt`), so there's no separate act install. Docker is the only requirement: install it and start the daemon before running pipelines. Windows needs Linux containers in Docker Desktop. A custom act executable set in **Settings → Dependencies** overrides the bundled one.
 
