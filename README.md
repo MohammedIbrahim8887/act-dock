@@ -55,6 +55,7 @@ Windows uses `act-dock.exe`; JSON configurations must escape backslashes. No Bun
 | `get_run` | Inspect status and results |
 | `get_run_logs` | Read logs with reconnect cursors |
 | `cancel_run` | Cancel queued or active work |
+| `check_health` | Check Docker, the act engine, the job image, disk space, and GitHub access, with a fix for each problem |
 
 ## Bun workspace
 
@@ -96,6 +97,7 @@ bun run cli runs list --status failed --source mcp --search ci.yml
 bun run cli status RUN_ID
 bun run cli logs RUN_ID --follow
 bun run cli cancel RUN_ID
+bun run cli doctor
 bun run cli runner status
 ```
 

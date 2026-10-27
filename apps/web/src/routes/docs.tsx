@@ -57,6 +57,7 @@ const tools: [string, string, string][] = [
   ['get_run', 'runId', 'Status, timing, and result of a run.'],
   ['get_run_logs', 'runId, cursor?, limit?', 'A page of up to 2,000 log entries. Keep passing nextCursor until end is true.'],
   ['cancel_run', 'runId', 'Cancel a queued or running pipeline and clean up its containers.'],
+  ['check_health', '—', 'Check whether this machine can run pipelines: Docker installed and running, the act engine, the job image, disk space, and GitHub access. Each check has a status and a suggested fix.'],
 ]
 
 // Rendered in the FAQ section and as FAQPage structured data, so the two always match.
@@ -203,6 +204,7 @@ act-dock logs RUN_ID --follow
 act-dock cancel RUN_ID
 
 act-dock runs list --status failed --source mcp --search ci.yml
+act-dock doctor                 # system health as JSON
 act-dock runner status | start | stop`}/>
           </section>
 
@@ -236,6 +238,7 @@ act-dock runner status | start | stop`}/>
 
           <section id="troubleshooting">
             <h2>Troubleshooting</h2>
+            <p>Start with <em>System health</em> in the sidebar. It checks Docker, the act engine, the job image, disk space, and GitHub access, and offers a fix for each problem, such as starting Docker or downloading the job image ahead of your first run.</p>
             <div className="docs-table"><Table><TableHeader><TableRow><TableHead>Error code</TableHead><TableHead>What to do</TableHead></TableRow></TableHeader><TableBody>
               {errors.map(([code, fix]) => <TableRow key={code}><TableCell><code>{code}</code></TableCell><TableCell>{fix}</TableCell></TableRow>)}
             </TableBody></Table></div>

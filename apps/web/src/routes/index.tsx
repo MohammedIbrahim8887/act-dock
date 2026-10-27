@@ -40,7 +40,7 @@ function Downloads({release}:{release:ReleaseManifest|null}) {
     <div className="download-notes"><p>The <a href="https://nektosact.com">act</a> engine is built in. You just need Docker running. Installers are currently unsigned.</p><a href={repository+'/releases/latest'}>Release notes & checksums <ArrowUpRight size={13}/></a></div>
   </section>
 }
-const tools = ['list_projects','add_project','list_workflows','run_pipeline','list_runs','get_run','get_run_logs','cancel_run']
+const tools = ['list_projects','add_project','list_workflows','run_pipeline','list_runs','get_run','get_run_logs','cancel_run','check_health']
 const mcpConfig = `{
   "mcpServers": {
     "act-dock": {
@@ -60,7 +60,7 @@ function ProductWindow() {
 }
 function AgentSection() {
   return <section className="agent-section">
-    <div><h2>Part of your agent’s toolkit.</h2><p>Eight focused MCP tools. Your agent can add a project, run a pipeline, read its logs, and cancel it. It uses the same queue and history you see in the app.</p>
+    <div><h2>Part of your agent’s toolkit.</h2><p>Nine focused MCP tools. Your agent can check the machine is ready, add a project, run a pipeline, read its logs, and cancel it. It uses the same queue and history you see in the app.</p>
       <CodeBlock label="mcp.json" code={mcpConfig}/>
       <Button asChild variant="outline"><Link to="/docs" hash="mcp">Set up your agent<ArrowRight size={14}/></Link></Button></div>
     <div className="tool-list" aria-label="Available MCP tools">{tools.map(t=><div key={t}><Check size={14} aria-hidden="true"/><code>{t}</code></div>)}</div>
