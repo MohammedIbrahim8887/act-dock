@@ -128,7 +128,17 @@ export class LogWriter {
           "a",
           0o600,
         );
-        await this.fd.writeFile(batch.map((r) => r.line).join(""));
+        // Bun's Linux writeFile on an append handle can insert a sparse gap
+        // between batches. Explicit writes also account for short writes.
+        const buffer = Buffer.from(batch.map((r) => r.line).join(""));
+        let written = 0;
+        while (written < buffer.length) {
+          const { bytesWritten } = await this.fd.write(
+            buffer, written, buffer.length - written, null,
+          );
+          if (!bytesWritten) throw new Error("Log write made no progress.");
+          written += bytesWritten;
+        }
         await this.fd.sync();
         let offset = this.offset;
         this.store.db.transaction(() => {
