@@ -1,0 +1,27 @@
+{
+  "installer": "apps/desktop/artifacts/macos-arm64-ActDock.dmg",
+  "visibleItems": [
+    "Act Dock.app",
+    "Applications"
+  ],
+  "version": "0.2.0",
+  "positions": {
+    "Act Dock.app": [
+      235,
+      350
+    ],
+    "Applications": [
+      585,
+      350
+    ]
+  },
+  "applicationsAlias": "/Applications",
+  "customIcons": true,
+  "customBackground": true,
+  "runnablePayload": true,
+  "helperChecksum": "54230f4e39a1b6164a4cf72f7d2228db613006b304a9600d3f8c59220fc86488",
+  "helperExecutable": true,
+  "engineVersion": "0.2.89",
+  "bundleSignature": true,
+  "dependencyNotices": true
+}

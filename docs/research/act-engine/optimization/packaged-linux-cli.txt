@@ -1,0 +1,9 @@
+bun test v1.3.14 (0d9b296a)
+
+apps/desktop/tests/service.test.ts:
+(pass) MCP and CLI share one on-demand service, runs survive client exit, and restart preserves results [9657.73ms]
+
+ 1 pass
+ 0 fail
+ 37 expect() calls
+Ran 1 test across 1 file. [10.41s]

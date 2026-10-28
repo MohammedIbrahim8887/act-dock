@@ -1,0 +1,78 @@
+{
+  "time": "2026-10-28T13:50:54.320Z",
+  "platform": "darwin",
+  "arch": "arm64",
+  "results": [
+    {
+      "check": "independent workflows admitted together",
+      "passed": true
+    },
+    {
+      "check": "independent workflows succeed",
+      "passed": true,
+      "detail": [
+        null,
+        null
+      ]
+    },
+    {
+      "check": "real step execution overlaps",
+      "passed": true
+    },
+    {
+      "check": "same project serializes",
+      "passed": true
+    },
+    {
+      "check": "same Act namespace serializes across projects",
+      "passed": true
+    },
+    {
+      "check": "cancellation isolates one active run",
+      "passed": true
+    },
+    {
+      "check": "real action snapshot acquired",
+      "passed": true
+    },
+    {
+      "check": "cached-only action executes",
+      "passed": true
+    },
+    {
+      "check": "cached-only does not refresh acquisition metadata",
+      "passed": true
+    },
+    {
+      "check": "cached-only does not delegate remote action fetches",
+      "passed": true
+    },
+    {
+      "check": "npm download volume works",
+      "passed": true
+    },
+    {
+      "check": "warm npm cache works with npm offline",
+      "passed": true
+    },
+    {
+      "check": "official Act preserves tabs, quotes, multiline values and trailing backslashes",
+      "passed": true
+    },
+    {
+      "check": "secret values stay out of history, logs and durable events",
+      "passed": true
+    },
+    {
+      "check": "Auto uses the daemon platform consistently for image and Act arguments",
+      "passed": true
+    },
+    {
+      "check": "fixture runs leave no recorded owned containers",
+      "passed": true,
+      "detail": {
+        "anyLabeledContainers": false
+      }
+    }
+  ]
+}

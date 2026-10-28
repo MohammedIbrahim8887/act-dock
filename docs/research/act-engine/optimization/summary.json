@@ -1,0 +1,114 @@
+{
+  "persistent": {
+    "0": {
+      "baseline": {
+        "n": 20,
+        "elapsedMs": {
+          "median": 2419.3549994999994,
+          "min": 2048.2647080000006,
+          "max": 21295.292792000007
+        },
+        "hostCpuMs": {
+          "median": 78.309,
+          "min": 65.636,
+          "max": 434.12
+        },
+        "firstStepMs": {
+          "median": 2230.5,
+          "min": 1885,
+          "max": 21131
+        }
+      },
+      "optimized": {
+        "n": 20,
+        "elapsedMs": {
+          "median": 1402.9437289999987,
+          "min": 1118.8017499999987,
+          "max": 1974.9194159999897
+        },
+        "hostCpuMs": {
+          "median": 93.06049999999999,
+          "min": 78.875,
+          "max": 127.291
+        },
+        "firstStepMs": {
+          "median": 922.0,
+          "min": 748,
+          "max": 1456
+        }
+      }
+    },
+    "1": {
+      "baseline": {
+        "n": 20,
+        "elapsedMs": {
+          "median": 2586.544207999992,
+          "min": 2265.7171670000243,
+          "max": 3826.201417000004
+        },
+        "hostCpuMs": {
+          "median": 81.214,
+          "min": 70.225,
+          "max": 104.46
+        },
+        "firstStepMs": {
+          "median": 2384.0,
+          "min": 2059,
+          "max": 3117
+        }
+      },
+      "optimized": {
+        "n": 20,
+        "elapsedMs": {
+          "median": 1407.2948334999965,
+          "min": 1219.4574590000266,
+          "max": 3010.240625000006
+        },
+        "hostCpuMs": {
+          "median": 92.172,
+          "min": 77.588,
+          "max": 170.938
+        },
+        "firstStepMs": {
+          "median": 982.5,
+          "min": 835,
+          "max": 2589
+        }
+      }
+    }
+  },
+  "logging": {
+    "baseline": {
+      "n": 20,
+      "elapsedMs": {
+        "median": 642.5286875000006,
+        "min": 581.8366660000011,
+        "max": 864.5477500000002
+      },
+      "hostCpuMs": {
+        "median": 516.098,
+        "min": 474.924,
+        "max": 661.251
+      }
+    },
+    "optimized": {
+      "n": 20,
+      "elapsedMs": {
+        "median": 36.059749999999894,
+        "min": 25.969208000000435,
+        "max": 66.38520799999992
+      },
+      "hostCpuMs": {
+        "median": 37.9885,
+        "min": 23.191,
+        "max": 87.378
+      }
+    }
+  },
+  "eventP95Ms": 54.02970800000003,
+  "sources": {
+    "persistent": "persistent-benchmark-continuous.json",
+    "logging": "log-benchmark.json",
+    "finalCoreExploratory": "persistent-benchmark.json"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "surface": "desktop webview in development transport",
+  "backend": "isolated synthetic fixture; no user runner data",
+  "visualViewports": {
+    "lightDesktop": [
+      1280,
+      900
+    ],
+    "darkDialog": [
+      1280,
+      900
+    ],
+    "compact": [
+      720,
+      850
+    ]
+  },
+  "horizontalOverflow": false,
+  "inheritedGlobalPolicyDisplayed": true,
+  "untouchedProjectOverridesRemainEmpty": true,
+  "blockedDependencyCanQueue": true,
+  "queueAutomaticallyResumesAfterFixtureFix": true,
+  "secretDeletionConfirmationNamesSecret": true,
+  "secretDialogRefocusObserved": "secret-name",
+  "finishReview": "ship for three scored integration fixes",
+  "designDocumentation": "incumbent system unchanged",
+  "keyboardRuntimeMatrix": "not established by shared browser; native verification pending",
+  "reducedMotion": "existing CSS retained; runtime reduced-motion preference was false"
+}

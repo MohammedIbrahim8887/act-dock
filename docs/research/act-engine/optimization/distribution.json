@@ -1,0 +1,40 @@
+{
+  "time": "2026-10-28T13:52:48.173243+00:00",
+  "linuxExecution": "AMD64 Docker emulation on macOS ARM64",
+  "results": [
+    {
+      "format": "deb",
+      "helperSha256": "5a0d06fb66f6e462e6e6f8572cfcb2ea4bd15350c2d62014406cb15abf4f5b87",
+      "dependenciesPresent": true,
+      "noticesPresent": true,
+      "helperExecuted": true,
+      "nativeWindowsVerified": false
+    },
+    {
+      "format": "rpm",
+      "helperSha256": "5a0d06fb66f6e462e6e6f8572cfcb2ea4bd15350c2d62014406cb15abf4f5b87",
+      "dependenciesPresent": true,
+      "noticesPresent": true,
+      "helperExecuted": true,
+      "nativeWindowsVerified": false
+    },
+    {
+      "format": "appimage",
+      "helperSha256": "5a0d06fb66f6e462e6e6f8572cfcb2ea4bd15350c2d62014406cb15abf4f5b87",
+      "dependenciesPresent": true,
+      "noticesPresent": true,
+      "helperExecuted": true,
+      "nativeWindowsVerified": false
+    },
+    {
+      "format": "windows",
+      "helperSha256": "8afeb50b47c827d2edc45d20915b12aca2d95791848cf5165d73c907e6b8d276",
+      "dependenciesPresent": true,
+      "noticesPresent": true,
+      "helperExecuted": false,
+      "nativeWindowsVerified": false
+    }
+  ],
+  "packagedLinuxCliMcpIntegration": true,
+  "windowsNativeGate": "not run"
+}

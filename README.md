@@ -22,11 +22,23 @@ Every installer bundles a pinned, checksum-verified [act](https://github.com/nek
 
 - Pick a folder and discover `.github/workflows/*.yml` or `*.yaml`. Invalid workflows report individual diagnostics.
 - Select a workflow or job, event, typed manual inputs, optional event/env/variable/secrets files, and container architecture.
-- Queue runs FIFO, follow logs, search/copy/export output, cancel, and run again. Green outlines and a current-step summary identify active work.
+- Queue runs with explicit waiting reasons, follow durable live logs, search/copy/export output, cancel, and run again. Green outlines and a current-step summary identify active work.
 - Search run history and filter by project, status, source, and date, with counted pagination.
 - Copy an MCP configuration from **Agent connections**, or use the same runner through the CLI.
 
-Run configurations store file references rather than secret contents. Workflows run against current working files. The app honors act configuration and maps common Ubuntu labels to `catthehacker/ubuntu:act-latest`. This is local GitHub Actions execution with [act's supported functionality](https://nektosact.com/usage/index.html).
+Run configurations store file references rather than secret contents. Workflows run against current working files. The app honors managed `.actrc` preferences. Ubuntu labels resolve independently: `ubuntu-latest` and `ubuntu-24.04` use `catthehacker/ubuntu:act-24.04`, while 22.04 and legacy 20.04 use their matching tags. Medium remains the default; full/custom images are optional. This is local GitHub Actions execution with [act's supported functionality](https://nektosact.com/usage/index.html).
+
+## Execution preferences
+
+Global settings, recognized `.actrc` flags, project preferences and explicit run overrides share one validated execution contract. **Project settings** contains runner mappings, optional npm/pnpm/Bun download caches, reservations, cache maintenance, and **Secrets & environment**. The run dialog previews effective configuration and provenance. Copied workspaces and fresh containers remain the default; `auto` architecture follows Docker's Linux architecture.
+
+Image pulls default to `if-missing`; compatible cached images need no registry request. Action sources use immutable project snapshots: pinned commits are reused, floating refs refresh after 24 hours, and **Cached sources only** refuses acquisition. pnpm needs the documented `--store-dir /var/cache/act-dock/pnpm` command in your workflow; commands are never rewritten.
+
+Saved project secrets live in macOS Keychain, Windows Credential Manager, or Linux Secret Service. Only names and opaque references enter SQLite/history. Existing secret files work; selected saved secrets override them, then unsaved run values take precedence. Unsaved values are lost on runner restart and must be resupplied. Background reads never request an unlock dialog; unlock/authorize the vault or replace a secret when access is unavailable. Linux file-backed secrets remain usable without Secret Service.
+
+Workflow concurrency is opt-in (initially two, configurable 1–8). Shared worktrees, Act namespaces, writable caches and uncertain resources serialize. CPU/RAM reservations govern admission against 75% of Docker capacity; they are not hard container limits. Ambiguous resources remain visible and are never deleted automatically.
+
+See [optimization architecture and verification](docs/research/act-engine/optimization/README.md) for contracts, reproducible benchmarks and platform release gates. Official Act remains the shipping engine; the isolated readiness patch is research only. No release is triggered by these local changes.
 
 ## AI agents (MCP)
 
@@ -56,6 +68,15 @@ Windows uses `act-dock.exe`; JSON configurations must escape backslashes. No Bun
 | `get_run_logs` | Read logs with reconnect cursors |
 | `cancel_run` | Cancel queued or active work |
 | `check_health` | Check Docker, the act engine, the job image, disk space, and GitHub access, with a fix for each problem |
+| `get_capabilities`, `get_runner_snapshot` | Negotiate features and begin an event subscription |
+| `preflight_run` | Preview effective setup, provenance, dependencies, images, caches and secret names |
+| `list_runner_images`, `inspect_image`, `list_image_operations` | Inspect presets, platform compatibility and preparation |
+| `pull_image`, `cancel_image_pull` | **Mutating:** start/cancel shared image downloads |
+| `list_caches` | Inspect project cache metadata and leases |
+| `clear_cache`, `refresh_project_cache` | **Mutating:** remove inactive app-owned caches |
+| `list_project_secrets` | Read names, grants and revisions; never values |
+| `read_events`, `get_run_metrics` | Resume progress and resource samples with cursors |
+
 
 ## Bun workspace
 
@@ -65,7 +86,7 @@ Windows uses `act-dock.exe`; JSON configurations must escape backslashes. No Bun
 - `.github/workflows/ci.yml`: checks executed locally with act through Act Dock.
 - `.github/workflows/release.yml`: pushes to `main` publish through a self-hosted runner on the owner's Mac.
 
-Use Bun 1.3.14. Hutch remains pinned in the desktop app. Install Hutch using its official installer if it is not already on PATH:
+Use Bun 1.3.14 and Go 1.25.0 for the bundled native helper. End users need neither toolchain. Hutch remains pinned in the desktop app. Install Hutch using its official installer if it is not already on PATH:
 
 ```sh
 curl -fsSL https://hutch.blackboard.sh/hutch/install.sh | sh
@@ -98,6 +119,15 @@ bun run cli status RUN_ID
 bun run cli logs RUN_ID --follow
 bun run cli cancel RUN_ID
 bun run cli doctor
+bun run cli images list
+bun run cli cache list --project PROJECT_ID
+bun run cli secrets list --project PROJECT_ID
+# Read unsaved run overrides as a JSON object on stdin:
+bun run cli run --project PROJECT_ID --workflow .github/workflows/ci.yml --secrets-stdin < run-overrides.json
+# After a restart, resupply a queued run with a JSON object on stdin:
+bun run cli secrets resupply RUN_ID < run-overrides.json
+bun run cli events RUN_ID --cursor 0 --wait 10000
+bun run cli metrics RUN_ID
 bun run cli runner status
 ```
 

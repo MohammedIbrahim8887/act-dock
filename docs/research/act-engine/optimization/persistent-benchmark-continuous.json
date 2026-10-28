@@ -1,0 +1,731 @@
+{
+  "time": "2026-10-28T12:43:13.012Z",
+  "platform": "darwin",
+  "arch": "arm64",
+  "baseline": "b71aad8",
+  "act": "0.2.89",
+  "fixture": "single command, same workflow/project/image content, Linux AMD64",
+  "notes": "Host CPU is the Bun process, not Docker/Act children; two interleaved batches, 20 repetitions per variant per batch. Warm cache, separate disposable persistent stores. No speed claim for cold image pulls.",
+  "samples": [
+    {
+      "name": "baseline",
+      "batch": 0,
+      "repetition": 0,
+      "elapsedMs": 2653.1652920000006,
+      "hostCpuMs": 78.879,
+      "firstStepMs": 2502,
+      "records": 40
+    },
+    {
+      "name": "optimized",
+      "batch": 0,
+      "repetition": 0,
+      "elapsedMs": 1323.4346250000017,
+      "hostCpuMs": 92.832,
+      "firstStepMs": 778,
+      "records": 40
+    },
+    {
+      "name": "optimized",
+      "batch": 0,
+      "repetition": 1,
+      "elapsedMs": 1400.890125,
+      "hostCpuMs": 102.761,
+      "firstStepMs": 988,
+      "records": 40
+    },
+    {
+      "name": "baseline",
+      "batch": 0,
+      "repetition": 1,
+      "elapsedMs": 2048.2647080000006,
+      "hostCpuMs": 69.429,
+      "firstStepMs": 1885,
+      "records": 40
+    },
+    {
+      "name": "baseline",
+      "batch": 0,
+      "repetition": 2,
+      "elapsedMs": 2085.663084,
+      "hostCpuMs": 68.332,
+      "firstStepMs": 1922,
+      "records": 40
+    },
+    {
+      "name": "optimized",
+      "batch": 0,
+      "repetition": 2,
+      "elapsedMs": 1342.374125000002,
+      "hostCpuMs": 93.289,
+      "firstStepMs": 874,
+      "records": 40
+    },
+    {
+      "name": "optimized",
+      "batch": 0,
+      "repetition": 3,
+      "elapsedMs": 1405.7125000000015,
+      "hostCpuMs": 91.477,
+      "firstStepMs": 797,
+      "records": 40
+    },
+    {
+      "name": "baseline",
+      "batch": 0,
+      "repetition": 3,
+      "elapsedMs": 2214.964666,
+      "hostCpuMs": 71.19,
+      "firstStepMs": 2076,
+      "records": 40
+    },
+    {
+      "name": "baseline",
+      "batch": 0,
+      "repetition": 4,
+      "elapsedMs": 2051.7706249999974,
+      "hostCpuMs": 72.351,
+      "firstStepMs": 1890,
+      "records": 40
+    },
+    {
+      "name": "optimized",
+      "batch": 0,
+      "repetition": 4,
+      "elapsedMs": 1453.2436249999992,
+      "hostCpuMs": 101.357,
+      "firstStepMs": 927,
+      "records": 40
+    },
+    {
+      "name": "optimized",
+      "batch": 0,
+      "repetition": 5,
+      "elapsedMs": 1185.2316250000003,
+      "hostCpuMs": 79.51,
+      "firstStepMs": 748,
+      "records": 40
+    },
+    {
+      "name": "baseline",
+      "batch": 0,
+      "repetition": 5,
+      "elapsedMs": 21260.95325,
+      "hostCpuMs": 434.12,
+      "firstStepMs": 21102,
+      "records": 40
+    },
+    {
+      "name": "baseline",
+      "batch": 0,
+      "repetition": 6,
+      "elapsedMs": 2487.2893330000006,
+      "hostCpuMs": 77.739,
+      "firstStepMs": 2266,
+      "records": 40
+    },
+    {
+      "name": "optimized",
+      "batch": 0,
+      "repetition": 6,
+      "elapsedMs": 1402.559083,
+      "hostCpuMs": 94.877,
+      "firstStepMs": 917,
+      "records": 40
+    },
+    {
+      "name": "optimized",
+      "batch": 0,
+      "repetition": 7,
+      "elapsedMs": 1237.8622909999976,
+      "hostCpuMs": 79.305,
+      "firstStepMs": 767,
+      "records": 40
+    },
+    {
+      "name": "baseline",
+      "batch": 0,
+      "repetition": 7,
+      "elapsedMs": 2242.128417,
+      "hostCpuMs": 73.837,
+      "firstStepMs": 2073,
+      "records": 40
+    },
+    {
+      "name": "baseline",
+      "batch": 0,
+      "repetition": 8,
+      "elapsedMs": 3575.7678749999977,
+      "hostCpuMs": 116.1,
+      "firstStepMs": 3326,
+      "records": 40
+    },
+    {
+      "name": "optimized",
+      "batch": 0,
+      "repetition": 8,
+      "elapsedMs": 1765.6868329999998,
+      "hostCpuMs": 127.03,
+      "firstStepMs": 1039,
+      "records": 40
+    },
+    {
+      "name": "optimized",
+      "batch": 0,
+      "repetition": 9,
+      "elapsedMs": 1118.8017499999987,
+      "hostCpuMs": 81.714,
+      "firstStepMs": 771,
+      "records": 40
+    },
+    {
+      "name": "baseline",
+      "batch": 0,
+      "repetition": 9,
+      "elapsedMs": 2187.926999999996,
+      "hostCpuMs": 65.636,
+      "firstStepMs": 2002,
+      "records": 40
+    },
+    {
+      "name": "baseline",
+      "batch": 0,
+      "repetition": 10,
+      "elapsedMs": 2204.286666999993,
+      "hostCpuMs": 83.953,
+      "firstStepMs": 2028,
+      "records": 40
+    },
+    {
+      "name": "optimized",
+      "batch": 0,
+      "repetition": 10,
+      "elapsedMs": 1393.9670420000039,
+      "hostCpuMs": 90.329,
+      "firstStepMs": 952,
+      "records": 40
+    },
+    {
+      "name": "optimized",
+      "batch": 0,
+      "repetition": 11,
+      "elapsedMs": 1316.837458000009,
+      "hostCpuMs": 78.875,
+      "firstStepMs": 869,
+      "records": 40
+    },
+    {
+      "name": "baseline",
+      "batch": 0,
+      "repetition": 11,
+      "elapsedMs": 2462.222290999998,
+      "hostCpuMs": 75.961,
+      "firstStepMs": 2255,
+      "records": 40
+    },
+    {
+      "name": "baseline",
+      "batch": 0,
+      "repetition": 12,
+      "elapsedMs": 3629.164374999993,
+      "hostCpuMs": 99.553,
+      "firstStepMs": 3470,
+      "records": 40
+    },
+    {
+      "name": "optimized",
+      "batch": 0,
+      "repetition": 12,
+      "elapsedMs": 1974.9194159999897,
+      "hostCpuMs": 106.762,
+      "firstStepMs": 1046,
+      "records": 40
+    },
+    {
+      "name": "optimized",
+      "batch": 0,
+      "repetition": 13,
+      "elapsedMs": 1427.9913339999912,
+      "hostCpuMs": 82.628,
+      "firstStepMs": 875,
+      "records": 40
+    },
+    {
+      "name": "baseline",
+      "batch": 0,
+      "repetition": 13,
+      "elapsedMs": 3648.518458999999,
+      "hostCpuMs": 100.216,
+      "firstStepMs": 3465,
+      "records": 40
+    },
+    {
+      "name": "baseline",
+      "batch": 0,
+      "repetition": 14,
+      "elapsedMs": 2692.9523330000084,
+      "hostCpuMs": 85.082,
+      "firstStepMs": 2505,
+      "records": 40
+    },
+    {
+      "name": "optimized",
+      "batch": 0,
+      "repetition": 14,
+      "elapsedMs": 1803.5397499999963,
+      "hostCpuMs": 104.013,
+      "firstStepMs": 1140,
+      "records": 40
+    },
+    {
+      "name": "optimized",
+      "batch": 0,
+      "repetition": 15,
+      "elapsedMs": 1254.9640409999993,
+      "hostCpuMs": 88.913,
+      "firstStepMs": 978,
+      "records": 40
+    },
+    {
+      "name": "baseline",
+      "batch": 0,
+      "repetition": 15,
+      "elapsedMs": 2376.4877080000006,
+      "hostCpuMs": 82.276,
+      "firstStepMs": 2206,
+      "records": 40
+    },
+    {
+      "name": "baseline",
+      "batch": 0,
+      "repetition": 16,
+      "elapsedMs": 2071.464791999999,
+      "hostCpuMs": 67.004,
+      "firstStepMs": 1913,
+      "records": 40
+    },
+    {
+      "name": "optimized",
+      "batch": 0,
+      "repetition": 16,
+      "elapsedMs": 1726.0179169999901,
+      "hostCpuMs": 127.291,
+      "firstStepMs": 1456,
+      "records": 40
+    },
+    {
+      "name": "optimized",
+      "batch": 0,
+      "repetition": 17,
+      "elapsedMs": 1403.3283749999973,
+      "hostCpuMs": 105.607,
+      "firstStepMs": 988,
+      "records": 40
+    },
+    {
+      "name": "baseline",
+      "batch": 0,
+      "repetition": 17,
+      "elapsedMs": 2488.4875420000026,
+      "hostCpuMs": 83.249,
+      "firstStepMs": 2314,
+      "records": 40
+    },
+    {
+      "name": "baseline",
+      "batch": 0,
+      "repetition": 18,
+      "elapsedMs": 2174.808625000005,
+      "hostCpuMs": 76.444,
+      "firstStepMs": 2004,
+      "records": 40
+    },
+    {
+      "name": "optimized",
+      "batch": 0,
+      "repetition": 18,
+      "elapsedMs": 1539.7138750000013,
+      "hostCpuMs": 95.202,
+      "firstStepMs": 970,
+      "records": 40
+    },
+    {
+      "name": "optimized",
+      "batch": 0,
+      "repetition": 19,
+      "elapsedMs": 1844.9028749999998,
+      "hostCpuMs": 88.517,
+      "firstStepMs": 858,
+      "records": 40
+    },
+    {
+      "name": "baseline",
+      "batch": 0,
+      "repetition": 19,
+      "elapsedMs": 21295.292792000007,
+      "hostCpuMs": 363.74,
+      "firstStepMs": 21131,
+      "records": 40
+    },
+    {
+      "name": "optimized",
+      "batch": 1,
+      "repetition": 0,
+      "elapsedMs": 1741.255999999994,
+      "hostCpuMs": 129.337,
+      "firstStepMs": 1443,
+      "records": 40
+    },
+    {
+      "name": "baseline",
+      "batch": 1,
+      "repetition": 0,
+      "elapsedMs": 3826.201417000004,
+      "hostCpuMs": 93.696,
+      "firstStepMs": 2638,
+      "records": 40
+    },
+    {
+      "name": "baseline",
+      "batch": 1,
+      "repetition": 1,
+      "elapsedMs": 3759.5422499999986,
+      "hostCpuMs": 92.089,
+      "firstStepMs": 2568,
+      "records": 40
+    },
+    {
+      "name": "optimized",
+      "batch": 1,
+      "repetition": 1,
+      "elapsedMs": 2180.2969169999997,
+      "hostCpuMs": 118.9,
+      "firstStepMs": 997,
+      "records": 40
+    },
+    {
+      "name": "optimized",
+      "batch": 1,
+      "repetition": 2,
+      "elapsedMs": 1359.4449999999779,
+      "hostCpuMs": 83.038,
+      "firstStepMs": 882,
+      "records": 40
+    },
+    {
+      "name": "baseline",
+      "batch": 1,
+      "repetition": 2,
+      "elapsedMs": 2927.3850000000093,
+      "hostCpuMs": 81.818,
+      "firstStepMs": 2784,
+      "records": 40
+    },
+    {
+      "name": "baseline",
+      "batch": 1,
+      "repetition": 3,
+      "elapsedMs": 2625.582374999998,
+      "hostCpuMs": 71.999,
+      "firstStepMs": 2380,
+      "records": 40
+    },
+    {
+      "name": "optimized",
+      "batch": 1,
+      "repetition": 3,
+      "elapsedMs": 1808.0656670000171,
+      "hostCpuMs": 126.5,
+      "firstStepMs": 1418,
+      "records": 40
+    },
+    {
+      "name": "optimized",
+      "batch": 1,
+      "repetition": 4,
+      "elapsedMs": 1456.9900420000195,
+      "hostCpuMs": 92.27,
+      "firstStepMs": 1046,
+      "records": 40
+    },
+    {
+      "name": "baseline",
+      "batch": 1,
+      "repetition": 4,
+      "elapsedMs": 2422.291500000021,
+      "hostCpuMs": 73.983,
+      "firstStepMs": 2248,
+      "records": 40
+    },
+    {
+      "name": "baseline",
+      "batch": 1,
+      "repetition": 5,
+      "elapsedMs": 3288.7886250000156,
+      "hostCpuMs": 92.96,
+      "firstStepMs": 3110,
+      "records": 40
+    },
+    {
+      "name": "optimized",
+      "batch": 1,
+      "repetition": 5,
+      "elapsedMs": 2196.589874999976,
+      "hostCpuMs": 127.27,
+      "firstStepMs": 1306,
+      "records": 40
+    },
+    {
+      "name": "optimized",
+      "batch": 1,
+      "repetition": 6,
+      "elapsedMs": 1277.7284589999763,
+      "hostCpuMs": 94.171,
+      "firstStepMs": 968,
+      "records": 40
+    },
+    {
+      "name": "baseline",
+      "batch": 1,
+      "repetition": 6,
+      "elapsedMs": 3120.574458999996,
+      "hostCpuMs": 80.889,
+      "firstStepMs": 2932,
+      "records": 40
+    },
+    {
+      "name": "baseline",
+      "batch": 1,
+      "repetition": 7,
+      "elapsedMs": 2547.506040999986,
+      "hostCpuMs": 73.771,
+      "firstStepMs": 2388,
+      "records": 40
+    },
+    {
+      "name": "optimized",
+      "batch": 1,
+      "repetition": 7,
+      "elapsedMs": 1442.7950830000045,
+      "hostCpuMs": 84.513,
+      "firstStepMs": 891,
+      "records": 40
+    },
+    {
+      "name": "optimized",
+      "batch": 1,
+      "repetition": 8,
+      "elapsedMs": 1222.9406250000175,
+      "hostCpuMs": 79.804,
+      "firstStepMs": 884,
+      "records": 40
+    },
+    {
+      "name": "baseline",
+      "batch": 1,
+      "repetition": 8,
+      "elapsedMs": 2511.5274590000045,
+      "hostCpuMs": 89.662,
+      "firstStepMs": 2240,
+      "records": 40
+    },
+    {
+      "name": "baseline",
+      "batch": 1,
+      "repetition": 9,
+      "elapsedMs": 2340.491333999991,
+      "hostCpuMs": 79.458,
+      "firstStepMs": 2164,
+      "records": 40
+    },
+    {
+      "name": "optimized",
+      "batch": 1,
+      "repetition": 9,
+      "elapsedMs": 1371.7945839999884,
+      "hostCpuMs": 92.074,
+      "firstStepMs": 1022,
+      "records": 40
+    },
+    {
+      "name": "optimized",
+      "batch": 1,
+      "repetition": 10,
+      "elapsedMs": 1363.3984170000185,
+      "hostCpuMs": 85.767,
+      "firstStepMs": 893,
+      "records": 40
+    },
+    {
+      "name": "baseline",
+      "batch": 1,
+      "repetition": 10,
+      "elapsedMs": 2309.7062090000254,
+      "hostCpuMs": 72.898,
+      "firstStepMs": 2145,
+      "records": 40
+    },
+    {
+      "name": "baseline",
+      "batch": 1,
+      "repetition": 11,
+      "elapsedMs": 3188.5679169999785,
+      "hostCpuMs": 81.539,
+      "firstStepMs": 3024,
+      "records": 40
+    },
+    {
+      "name": "optimized",
+      "batch": 1,
+      "repetition": 11,
+      "elapsedMs": 2265.9169999999867,
+      "hostCpuMs": 113.577,
+      "firstStepMs": 1059,
+      "records": 40
+    },
+    {
+      "name": "optimized",
+      "batch": 1,
+      "repetition": 12,
+      "elapsedMs": 1269.3592500000086,
+      "hostCpuMs": 88.277,
+      "firstStepMs": 835,
+      "records": 40
+    },
+    {
+      "name": "baseline",
+      "batch": 1,
+      "repetition": 12,
+      "elapsedMs": 2265.7171670000243,
+      "hostCpuMs": 70.225,
+      "firstStepMs": 2059,
+      "records": 40
+    },
+    {
+      "name": "baseline",
+      "batch": 1,
+      "repetition": 13,
+      "elapsedMs": 2738.1234169999952,
+      "hostCpuMs": 82.219,
+      "firstStepMs": 2552,
+      "records": 40
+    },
+    {
+      "name": "optimized",
+      "batch": 1,
+      "repetition": 13,
+      "elapsedMs": 1519.3631659999955,
+      "hostCpuMs": 102.837,
+      "firstStepMs": 1051,
+      "records": 40
+    },
+    {
+      "name": "optimized",
+      "batch": 1,
+      "repetition": 14,
+      "elapsedMs": 1219.4574590000266,
+      "hostCpuMs": 85.954,
+      "firstStepMs": 909,
+      "records": 40
+    },
+    {
+      "name": "baseline",
+      "batch": 1,
+      "repetition": 14,
+      "elapsedMs": 2496.359708999982,
+      "hostCpuMs": 71.828,
+      "firstStepMs": 2339,
+      "records": 40
+    },
+    {
+      "name": "baseline",
+      "batch": 1,
+      "repetition": 15,
+      "elapsedMs": 2274.9299170000013,
+      "hostCpuMs": 75.318,
+      "firstStepMs": 2121,
+      "records": 40
+    },
+    {
+      "name": "optimized",
+      "batch": 1,
+      "repetition": 15,
+      "elapsedMs": 1342.907166000019,
+      "hostCpuMs": 86.428,
+      "firstStepMs": 910,
+      "records": 40
+    },
+    {
+      "name": "optimized",
+      "batch": 1,
+      "repetition": 16,
+      "elapsedMs": 1362.9858329999843,
+      "hostCpuMs": 88.146,
+      "firstStepMs": 836,
+      "records": 40
+    },
+    {
+      "name": "baseline",
+      "batch": 1,
+      "repetition": 16,
+      "elapsedMs": 2496.962917000026,
+      "hostCpuMs": 74.079,
+      "firstStepMs": 2267,
+      "records": 40
+    },
+    {
+      "name": "baseline",
+      "batch": 1,
+      "repetition": 17,
+      "elapsedMs": 2921.4906669999764,
+      "hostCpuMs": 87.347,
+      "firstStepMs": 2695,
+      "records": 40
+    },
+    {
+      "name": "optimized",
+      "batch": 1,
+      "repetition": 17,
+      "elapsedMs": 1637.4003340000054,
+      "hostCpuMs": 109.004,
+      "firstStepMs": 1225,
+      "records": 40
+    },
+    {
+      "name": "optimized",
+      "batch": 1,
+      "repetition": 18,
+      "elapsedMs": 1360.2139580000076,
+      "hostCpuMs": 77.588,
+      "firstStepMs": 850,
+      "records": 40
+    },
+    {
+      "name": "baseline",
+      "batch": 1,
+      "repetition": 18,
+      "elapsedMs": 2525.231541999994,
+      "hostCpuMs": 85.9,
+      "firstStepMs": 2319,
+      "records": 40
+    },
+    {
+      "name": "baseline",
+      "batch": 1,
+      "repetition": 19,
+      "elapsedMs": 3579.148375000019,
+      "hostCpuMs": 104.46,
+      "firstStepMs": 3117,
+      "records": 40
+    },
+    {
+      "name": "optimized",
+      "batch": 1,
+      "repetition": 19,
+      "elapsedMs": 3010.240625000006,
+      "hostCpuMs": 170.938,
+      "firstStepMs": 2589,
+      "records": 40
+    }
+  ]
+}

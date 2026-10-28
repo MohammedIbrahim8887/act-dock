@@ -1,0 +1,391 @@
+{
+  "time": "2026-10-28T12:43:47.116Z",
+  "platform": "darwin",
+  "arch": "arm64",
+  "baseline": "b71aad8",
+  "notes": "20 interleaved 10,000-line bursts per implementation. Optimized includes fsync; baseline retains its original sync append and per-line index commits. Event samples include the 50ms timer and committed file/index visibility.",
+  "samples": [
+    {
+      "name": "baseline",
+      "repetition": 0,
+      "elapsedMs": 625.629334,
+      "hostCpuMs": 511.494,
+      "count": 10000
+    },
+    {
+      "name": "optimized",
+      "repetition": 0,
+      "elapsedMs": 62.23583400000007,
+      "hostCpuMs": 56.972,
+      "count": 10000
+    },
+    {
+      "name": "optimized",
+      "repetition": 1,
+      "elapsedMs": 66.38520799999992,
+      "hostCpuMs": 87.378,
+      "count": 10000
+    },
+    {
+      "name": "baseline",
+      "repetition": 1,
+      "elapsedMs": 768.835791,
+      "hostCpuMs": 597.607,
+      "count": 10000
+    },
+    {
+      "name": "baseline",
+      "repetition": 2,
+      "elapsedMs": 715.7667080000001,
+      "hostCpuMs": 537.202,
+      "count": 10000
+    },
+    {
+      "name": "optimized",
+      "repetition": 2,
+      "elapsedMs": 54.43741699999964,
+      "hostCpuMs": 44.011,
+      "count": 10000
+    },
+    {
+      "name": "optimized",
+      "repetition": 3,
+      "elapsedMs": 42.803833999999824,
+      "hostCpuMs": 42.493,
+      "count": 10000
+    },
+    {
+      "name": "baseline",
+      "repetition": 3,
+      "elapsedMs": 864.5477500000002,
+      "hostCpuMs": 661.251,
+      "count": 10000
+    },
+    {
+      "name": "baseline",
+      "repetition": 4,
+      "elapsedMs": 635.0874170000002,
+      "hostCpuMs": 518.08,
+      "count": 10000
+    },
+    {
+      "name": "optimized",
+      "repetition": 4,
+      "elapsedMs": 41.69566699999996,
+      "hostCpuMs": 39.96,
+      "count": 10000
+    },
+    {
+      "name": "optimized",
+      "repetition": 5,
+      "elapsedMs": 51.80595799999992,
+      "hostCpuMs": 44.4,
+      "count": 10000
+    },
+    {
+      "name": "baseline",
+      "repetition": 5,
+      "elapsedMs": 752.5942500000006,
+      "hostCpuMs": 595.828,
+      "count": 10000
+    },
+    {
+      "name": "baseline",
+      "repetition": 6,
+      "elapsedMs": 675.393,
+      "hostCpuMs": 514.116,
+      "count": 10000
+    },
+    {
+      "name": "optimized",
+      "repetition": 6,
+      "elapsedMs": 25.969208000000435,
+      "hostCpuMs": 23.191,
+      "count": 10000
+    },
+    {
+      "name": "optimized",
+      "repetition": 7,
+      "elapsedMs": 39.55845899999986,
+      "hostCpuMs": 37.041,
+      "count": 10000
+    },
+    {
+      "name": "baseline",
+      "repetition": 7,
+      "elapsedMs": 605.5044170000001,
+      "hostCpuMs": 481.417,
+      "count": 10000
+    },
+    {
+      "name": "baseline",
+      "repetition": 8,
+      "elapsedMs": 625.2825409999996,
+      "hostCpuMs": 510.39,
+      "count": 10000
+    },
+    {
+      "name": "optimized",
+      "repetition": 8,
+      "elapsedMs": 31.563249999999243,
+      "hostCpuMs": 43.505,
+      "count": 10000
+    },
+    {
+      "name": "optimized",
+      "repetition": 9,
+      "elapsedMs": 35.213582999999744,
+      "hostCpuMs": 38.475,
+      "count": 10000
+    },
+    {
+      "name": "baseline",
+      "repetition": 9,
+      "elapsedMs": 607.4628750000002,
+      "hostCpuMs": 504.965,
+      "count": 10000
+    },
+    {
+      "name": "baseline",
+      "repetition": 10,
+      "elapsedMs": 638.2347500000005,
+      "hostCpuMs": 508.363,
+      "count": 10000
+    },
+    {
+      "name": "optimized",
+      "repetition": 10,
+      "elapsedMs": 26.04570800000147,
+      "hostCpuMs": 30.824,
+      "count": 10000
+    },
+    {
+      "name": "optimized",
+      "repetition": 11,
+      "elapsedMs": 31.42924999999923,
+      "hostCpuMs": 32.733,
+      "count": 10000
+    },
+    {
+      "name": "baseline",
+      "repetition": 11,
+      "elapsedMs": 646.8226250000007,
+      "hostCpuMs": 518.08,
+      "count": 10000
+    },
+    {
+      "name": "baseline",
+      "repetition": 12,
+      "elapsedMs": 690.9125000000004,
+      "hostCpuMs": 536.327,
+      "count": 10000
+    },
+    {
+      "name": "optimized",
+      "repetition": 12,
+      "elapsedMs": 36.905917000000045,
+      "hostCpuMs": 37.502,
+      "count": 10000
+    },
+    {
+      "name": "optimized",
+      "repetition": 13,
+      "elapsedMs": 27.803334000000177,
+      "hostCpuMs": 32.864,
+      "count": 10000
+    },
+    {
+      "name": "baseline",
+      "repetition": 13,
+      "elapsedMs": 581.8366660000011,
+      "hostCpuMs": 490.001,
+      "count": 10000
+    },
+    {
+      "name": "baseline",
+      "repetition": 14,
+      "elapsedMs": 613.9227499999997,
+      "hostCpuMs": 493.935,
+      "count": 10000
+    },
+    {
+      "name": "optimized",
+      "repetition": 14,
+      "elapsedMs": 27.308584000000337,
+      "hostCpuMs": 31.124,
+      "count": 10000
+    },
+    {
+      "name": "optimized",
+      "repetition": 15,
+      "elapsedMs": 32.5252500000006,
+      "hostCpuMs": 36.1,
+      "count": 10000
+    },
+    {
+      "name": "baseline",
+      "repetition": 15,
+      "elapsedMs": 681.6086250000008,
+      "hostCpuMs": 532.268,
+      "count": 10000
+    },
+    {
+      "name": "baseline",
+      "repetition": 16,
+      "elapsedMs": 754.8167090000006,
+      "hostCpuMs": 570.257,
+      "count": 10000
+    },
+    {
+      "name": "optimized",
+      "repetition": 16,
+      "elapsedMs": 37.60583399999996,
+      "hostCpuMs": 34.974,
+      "count": 10000
+    },
+    {
+      "name": "optimized",
+      "repetition": 17,
+      "elapsedMs": 28.38850000000093,
+      "hostCpuMs": 35.291,
+      "count": 10000
+    },
+    {
+      "name": "baseline",
+      "repetition": 17,
+      "elapsedMs": 630.7974589999994,
+      "hostCpuMs": 489.873,
+      "count": 10000
+    },
+    {
+      "name": "baseline",
+      "repetition": 18,
+      "elapsedMs": 700.4264590000002,
+      "hostCpuMs": 519.339,
+      "count": 10000
+    },
+    {
+      "name": "optimized",
+      "repetition": 18,
+      "elapsedMs": 38.177583000000595,
+      "hostCpuMs": 39.145,
+      "count": 10000
+    },
+    {
+      "name": "optimized",
+      "repetition": 19,
+      "elapsedMs": 33.81908300000032,
+      "hostCpuMs": 38.64,
+      "count": 10000
+    },
+    {
+      "name": "baseline",
+      "repetition": 19,
+      "elapsedMs": 608.2295830000003,
+      "hostCpuMs": 474.924,
+      "count": 10000
+    }
+  ],
+  "eventSamplesMs": [
+    63.82695799999965,
+    51.758083000000624,
+    54.02970800000003,
+    51.90558299999975,
+    51.934416000000056,
+    53.93383300000096,
+    52.222083000000566,
+    51.789708000000246,
+    50.94549999999981,
+    51.36124999999993,
+    51.14304099999936,
+    51.91816699999981,
+    52.34033399999862,
+    52.17620799999895,
+    52.531457999999475,
+    51.67366700000093,
+    54.781584000000294,
+    52.15024999999878,
+    53.07416699999885,
+    52.40691599999991,
+    51.489166999999725,
+    52.57600000000093,
+    51.74304200000006,
+    51.11070800000016,
+    52.530165999998644,
+    52.10754199999974,
+    51.69445799999994,
+    51.797207999999955,
+    51.06316700000025,
+    52.20270800000071,
+    52.447416999999405,
+    51.599458999999115,
+    53.431375000000116,
+    52.357583999999406,
+    51.97833300000093,
+    57.839875000001484,
+    51.53412499999831,
+    50.98316700000214,
+    51.37645899999916,
+    51.378874999998516,
+    51.315042000001995,
+    50.423165999996854,
+    51.324500000002445,
+    52.20637500000157,
+    52.046667000002344,
+    52.0334580000017,
+    51.72491699999955,
+    51.64608399999997,
+    51.318624999999884,
+    51.434832999999344,
+    51.540750000000116,
+    51.42570800000249,
+    51.76645899999858,
+    51.042624999998225,
+    52.14704200000051,
+    54.6092499999977,
+    52.16279199999917,
+    51.430459000002884,
+    52.171667000002344,
+    52.748625000000175,
+    51.77104200000031,
+    52.32266600000003,
+    58.82837500000096,
+    53.49445900000137,
+    51.647415999999794,
+    51.32879200000025,
+    52.31424999999945,
+    53.34958299999926,
+    51.79670800000167,
+    51.63195799999812,
+    50.648583999998664,
+    51.7590420000015,
+    51.73254200000156,
+    51.90241600000081,
+    53.0971669999999,
+    52.1351250000007,
+    52.17058300000281,
+    52.12225000000035,
+    51.231292000000394,
+    52.30333299999984,
+    53.28783399999884,
+    52.00954199999978,
+    51.992833000000246,
+    51.965957999997045,
+    51.97554200000013,
+    52.10291700000016,
+    50.3784169999999,
+    51.9900000000016,
+    51.51883299999827,
+    53.64624999999796,
+    51.558750000000146,
+    52.691249999999854,
+    52.221959000002244,
+    52.85883299999841,
+    53.459624999999505,
+    52.38750000000073,
+    52.36579100000017,
+    52.65362499999901,
+    52.03812499999913,
+    53.41899999999805
+  ]
+}

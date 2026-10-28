@@ -1,0 +1,40 @@
+{
+  "time": "2026-10-28T12:49:53.118Z",
+  "platform": "darwin",
+  "arch": "arm64",
+  "results": [
+    {
+      "check": "matrix namespaces serialize across projects",
+      "passed": true
+    },
+    {
+      "check": "matrix runs retain results",
+      "passed": true,
+      "detail": [
+        null,
+        null
+      ]
+    },
+    {
+      "check": "service cancellation completes owned cleanup",
+      "passed": true
+    },
+    {
+      "check": "resource reservations queue excess admission",
+      "passed": true
+    },
+    {
+      "check": "released reservations admit queued work",
+      "passed": true
+    },
+    {
+      "check": "runner crash marks active work interrupted",
+      "passed": true
+    },
+    {
+      "check": "crash reconciliation clears proven owned resources",
+      "passed": true,
+      "detail": "Runner stopped unexpectedly. Review logs before running again."
+    }
+  ]
+}
