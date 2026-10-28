@@ -13,13 +13,14 @@
     "test": "bun test apps/desktop/tests ./tests",
     "build:web": "cd apps/web && bun run build",
     "build:desktop": "cd apps/desktop && bun run build",
-    "check": "bun run typecheck && bun run test && bun run --filter @act-dock/desktop build:ui && bun run build:web",
+    "check": "bun run typecheck && bun run test && bun run test:helper && bun run --filter @act-dock/desktop build:ui && bun run build:web",
     "release": "bun scripts/release.ts",
     "deploy": "cd apps/web && bun run deploy",
     "cli": "bun apps/desktop/src/cli/index.ts",
     "prepare:desktop": "bun scripts/prepare.ts",
     "ci:local": "bun scripts/run-ci.ts",
-    "install:release-runner": "bun scripts/install-release-runner.ts"
+    "install:release-runner": "bun scripts/install-release-runner.ts",
+    "test:helper": "cd tools/act-dock-helper && go test -mod=readonly ./..."
   },
   "devDependencies": {
     "@types/bun": "1.3.14",

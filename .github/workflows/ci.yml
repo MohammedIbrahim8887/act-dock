@@ -16,6 +16,10 @@ jobs:
           grep ' bun-linux-x64-baseline.zip$' SHASUMS256.txt | sha256sum --check
           unzip -q bun-linux-x64-baseline.zip
           echo /tmp/act-dock-bun/bun-linux-x64-baseline >> "$GITHUB_PATH"
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.25.0'
+          cache-dependency-path: tools/act-dock-helper/go.sum
       - name: Install workspace dependencies
         run: bun install --frozen-lockfile
       - name: Prepare pinned desktop SDK

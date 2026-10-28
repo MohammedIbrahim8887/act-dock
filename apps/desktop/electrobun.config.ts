@@ -11,7 +11,10 @@ export default {
     preBuild: "scripts/macos/prebuild.ts",
     postPackage: "scripts/package.ts",
   },
-  release: { baseUrl: "https://github.com/MohammedIbrahim8887/act-dock/releases/latest/download" },
+  release: {
+    baseUrl:
+      "https://github.com/MohammedIbrahim8887/act-dock/releases/latest/download",
+  },
   build: {
     mainProcess: "bun",
     bun: {
@@ -19,10 +22,26 @@ export default {
     },
     // Vite builds to dist/, we copy from there
     copy: {
-      [process.platform === "win32" ? "dist-runner/act-dock.exe" : "dist-runner/act-dock"]: process.platform === "win32" ? "act-dock.exe" : "act-dock",
-      [process.platform === "win32" ? "dist-runner/act.exe" : "dist-runner/act"]: process.platform === "win32" ? "act.exe" : "act",
+      [process.platform === "win32"
+        ? "dist-runner/act-dock.exe"
+        : "dist-runner/act-dock"]:
+        process.platform === "win32" ? "act-dock.exe" : "act-dock",
+      [process.platform === "win32"
+        ? "dist-runner/act.exe"
+        : "dist-runner/act"]: process.platform === "win32" ? "act.exe" : "act",
       "dist-runner/act-LICENSE.txt": "act-LICENSE.txt",
-      [process.platform === "win32" ? "dist-runner/act-dock-helper.exe" : "dist-runner/act-dock-helper"]: process.platform === "win32" ? "act-dock-helper.exe" : "act-dock-helper",
+      [process.platform === "win32"
+        ? "dist-runner/act-dock-helper.exe"
+        : "dist-runner/act-dock-helper"]:
+        process.platform === "win32"
+          ? "act-dock-helper.exe"
+          : "act-dock-helper",
+      [process.platform === "win32"
+        ? "dist-runner/act-dock-helper.exe.sha256"
+        : "dist-runner/act-dock-helper.sha256"]:
+        process.platform === "win32"
+          ? "act-dock-helper.exe.sha256"
+          : "act-dock-helper.sha256",
       "dist-runner/helper-LICENSES.txt": "helper-LICENSES.txt",
       "dist-runner/helper-dependencies.jsonl": "helper-dependencies.jsonl",
       "dist/index.html": "views/mainview/index.html",

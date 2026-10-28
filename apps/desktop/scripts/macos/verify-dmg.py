@@ -1,5 +1,6 @@
 """Verify the actual read-only Finder image, including native layout and payload."""
 import json
+import hashlib
 from pathlib import Path
 import plistlib
 import struct
@@ -27,6 +28,14 @@ def verify(image):
             assert signed.returncode == 0, "App bundle signature is not valid: " + signed.stderr.strip()
             details = subprocess.run(["/usr/bin/codesign", "-dv", str(app)], capture_output=True, text=True).stderr
             assert "Sealed Resources version=2" in details, "App bundle resources are not sealed"
+            payload = app / "Contents/Resources/app"
+            for name in ["act-dock", "act", "act-dock-helper", "act-LICENSE.txt", "helper-LICENSES.txt", "helper-dependencies.jsonl"]:
+                assert (payload / name).is_file(), "Bundled dependency missing: " + name
+            helper_hash = hashlib.sha256((payload / "act-dock-helper").read_bytes()).hexdigest()
+            assert helper_hash == (payload / "act-dock-helper.sha256").read_text().split()[0], "Signed helper checksum differs"
+            assert "0.2.89" in subprocess.check_output([str(payload / "act"), "--version"], text=True)
+            parsed = json.loads(subprocess.check_output([str(payload / "act-dock-helper")], input='{"op":"parse_dotenv","value":"FIXTURE=value"}', text=True))
+            assert parsed.get("ok") and parsed.get("value", {}).get("FIXTURE") == "value", "Packaged helper cannot execute"
             icon = info.get("CFBundleIconFile", "")
             icon_file = app / "Contents/Resources" / (icon if icon.endswith(".icns") else icon + ".icns")
             assert icon_file.stat().st_size > 0, "Application icon missing"
@@ -51,6 +60,7 @@ def verify(image):
                 assert view["backgroundType"] == 2, "Custom background not applied"
             assert list(mount.glob(".background*")), "Retina background missing"
             report = {"installer": str(Path(image).resolve()), "visibleItems": visible, "version": info.get("CFBundleShortVersionString", info.get("CFBundleVersion")), "positions":positions, "applicationsAlias":resolved, "customIcons":True,"customBackground":True,"runnablePayload":True}
+            report.update({"helperChecksum":helper_hash,"helperExecutable":True,"engineVersion":"0.2.89","bundleSignature":True,"dependencyNotices":True})
             print(json.dumps(report, indent=2))
         finally:
             subprocess.run(["/usr/bin/hdiutil", "detach", str(mount)], check=True, capture_output=True)

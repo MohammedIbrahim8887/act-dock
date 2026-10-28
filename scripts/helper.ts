@@ -60,7 +60,18 @@ export async function bundleHelper(target: ActTarget, destination: string) {
   const text = await new Response(modules.stdout).text();
   if ((await modules.exited) !== 0)
     throw new Error("Unable to record helper dependency inventory");
-  await Bun.write(join(destination, "helper-dependencies.jsonl"), text);
+  const modulesParsed = text
+    .trim()
+    .split(/\n(?=\{)/)
+    .map((row) => JSON.parse(row));
+  await Bun.write(
+    join(destination, "helper-dependencies.jsonl"),
+    modulesParsed
+      .map(({ Path, Version, Sum, GoModSum, GoVersion }) =>
+        JSON.stringify({ Path, Version, Sum, GoModSum, GoVersion }),
+      )
+      .join("\n") + "\n",
+  );
   const inventory = Bun.spawn(
     [
       "go",
@@ -83,14 +94,24 @@ export async function bundleHelper(target: ActTarget, destination: string) {
     .split("\n");
   if ((await inventory.exited) !== 0)
     throw new Error("Helper license inventory failed");
+  const goRoot = Bun.spawn(["go", "env", "GOROOT"], {
+    env,
+    stdout: "pipe",
+    stderr: "inherit",
+  });
+  const goRootPath = (await new Response(goRoot.stdout).text()).trim();
+  if ((await goRoot.exited) !== 0)
+    throw new Error("Go runtime license path unavailable");
   const notices: string[] = [
+    "Go runtime — BSD license\n" +
+      (await readFile(join(goRootPath, "LICENSE"), "utf8")),
     "Act Dock native helper dependency notices. Source versions are locked in tools/act-dock-helper/go.sum.",
   ];
   for (const row of new Set(entries.filter(Boolean))) {
     const [module, version, directory] = row.split("\t");
     if (module === "act-dock/helper") continue;
     const licenses = (await readdir(directory)).filter((name) =>
-      /^(LICENSE|COPYING|NOTICE)(\.|$)/i.test(name),
+      /^(LICEN[CS]E|COPYING|NOTICE)(\.|$)/i.test(name),
     );
     if (!licenses.length) throw new Error(`Missing license notice: ${module}`);
     for (const name of licenses)

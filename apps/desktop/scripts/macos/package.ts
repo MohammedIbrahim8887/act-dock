@@ -23,10 +23,21 @@ async function isMachO(file: string) {
 export async function signAppBundle(app: string) {
   await run(["/usr/bin/xattr", "-cr", app]);
   const launcher = join(app, "Contents/MacOS/launcher");
-  for (const entry of await readdir(app, { recursive: true, withFileTypes: true })) {
+  for (const entry of await readdir(app, {
+    recursive: true,
+    withFileTypes: true,
+  })) {
     const file = join(entry.parentPath, entry.name);
-    if (!entry.isFile() || file === launcher || !(await isMachO(file))) continue;
+    if (!entry.isFile() || file === launcher || !(await isMachO(file)))
+      continue;
     await run(["/usr/bin/codesign", "--force", "--sign", "-", file]);
+    if (entry.name === "act-dock-helper")
+      await Bun.write(
+        file + ".sha256",
+        createHash("sha256")
+          .update(await Bun.file(file).bytes())
+          .digest("hex") + "  act-dock-helper\n",
+      );
   }
   await run(["/usr/bin/codesign", "--force", "--sign", "-", app]);
   await run(["/usr/bin/codesign", "--verify", "--deep", "--strict", app]);
