@@ -11,6 +11,48 @@ import { existsSync } from "node:fs";
 import { call, ensureRunner, installRunner } from "../runner/client";
 import { AppError, errorMessage } from "../shared/contracts";
 import type { DesktopRPC } from "../shared/rpc";
+import { APP_VERSION } from "../shared/version";
+import { dataDir } from "../runner/paths";
+import { DesktopUpdater } from "./updater";
+const updater = new DesktopUpdater({
+  version: APP_VERSION,
+  channel: await Updater.localInfo.channel(),
+  platform: process.platform,
+  arch: process.arch,
+  execPath: process.execPath,
+  env: process.env,
+  dataDir,
+  async busy() {
+    const counts = await Promise.all(
+      (["queued", "running", "cancelling"] as const).map(
+        async (state) =>
+          (await call("list_runs", { state, limit: 100 }, "desktop")).length,
+      ),
+    );
+    const n = counts.reduce((a, b) => a + b, 0);
+    return n
+      ? `Waiting for ${n} pipeline${n === 1 ? "" : "s"} to finish`
+      : null;
+  },
+  notify: (title, body) => Utils.showNotification({ title, body }),
+  quit: () => Utils.quit(),
+  exec(cmd) {
+    try {
+      const r = Bun.spawnSync(cmd, { stdout: "pipe", stderr: "ignore" });
+      return { code: r.exitCode ?? 1, stdout: r.stdout.toString() };
+    } catch {
+      return { code: 1, stdout: "" };
+    }
+  },
+  spawnDetached(cmd) {
+    Bun.spawn(cmd, {
+      detached: true,
+      stdio: ["ignore", "ignore", "ignore"],
+    }).unref();
+  },
+  fetch,
+});
+updater.start();
 const bundled = join(PATHS.RESOURCES_FOLDER, "app", process.platform === "win32" ? "act-dock.exe" : "act-dock");
 if (existsSync(bundled)) await installRunner(bundled);
 const rpc = BrowserView.defineRPC<DesktopRPC>({
@@ -54,6 +96,22 @@ const rpc = BrowserView.defineRPC<DesktopRPC>({
         Utils.showItemInFolder(path);
         return true;
       },
+      getUpdateState: async () => updater.state,
+      checkForUpdates: async () => {
+        await updater.check();
+        return updater.state;
+      },
+      downloadUpdate: async () => {
+        void updater.download();
+        return updater.state;
+      },
+      installUpdate: async () => {
+        await updater.install();
+        return updater.state;
+      },
+      postponeUpdate: async () => updater.postpone(),
+      setUpdatePreferences: async (preferences) =>
+        updater.setPreferences(preferences),
       restartRunner: async () => {
         await ensureRunner();
         return true;

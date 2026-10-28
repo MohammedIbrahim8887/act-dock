@@ -1,5 +1,6 @@
 import type { RPCSchema } from "electrobun/main";
 import type { Method, ServiceReply } from "./contracts";
+import type { UpdatePreferences, UpdateState } from "./updates";
 export type DesktopRPC = {
   bun: RPCSchema<{
     requests: {
@@ -13,6 +14,15 @@ export type DesktopRPC = {
       restartRunner: { params: {}; response: boolean };
       openExternal: { params: { url: string }; response: boolean };
       revealPath: { params: { path: string }; response: boolean };
+      getUpdateState: { params: {}; response: UpdateState };
+      checkForUpdates: { params: {}; response: UpdateState };
+      downloadUpdate: { params: {}; response: UpdateState };
+      installUpdate: { params: {}; response: UpdateState };
+      postponeUpdate: { params: {}; response: UpdateState };
+      setUpdatePreferences: {
+        params: Partial<UpdatePreferences>;
+        response: UpdateState;
+      };
     };
     messages: {};
   }>;
