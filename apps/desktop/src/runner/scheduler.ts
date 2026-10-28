@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 import { readFileSync, realpathSync } from "node:fs";
+import { open } from "node:fs/promises";
 import { spawn } from "node:child_process";
 import { join, relative, isAbsolute } from "node:path";
 import { actionSourceGuard } from "./executor/action-network";
@@ -207,11 +208,23 @@ export class Scheduler {
       };
     const first = selected[0],
       last = selected.at(-1)!;
-    const text = await Bun.file(
-      join(this.store.directory, "logs", id + ".jsonl"),
-    )
-      .slice(first.offset, last.offset + last.length)
-      .text();
+    const file = await open(join(this.store.directory, "logs", id + ".jsonl"), "r");
+    const buffer = Buffer.alloc(last.offset + last.length - first.offset);
+    try {
+      // Read the indexed range completely, including when a syscall returns a
+      // short read while the writer continues appending to this file.
+      let read = 0;
+      while (read < buffer.length) {
+        const { bytesRead } = await file.read(
+          buffer, read, buffer.length - read, first.offset + read,
+        );
+        if (!bytesRead) throw new Error("Indexed log data is incomplete.");
+        read += bytesRead;
+      }
+    } finally {
+      await file.close();
+    }
+    const text = buffer.toString("utf8");
     const entries = text
       .trim()
       .split("\n")

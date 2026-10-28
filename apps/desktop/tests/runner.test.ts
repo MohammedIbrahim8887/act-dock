@@ -283,8 +283,11 @@ test("idempotency ignores input key ordering and log pagination stays bounded", 
   const first = await scheduler.logs(a.id, 0, 2000);
   expect(first.entries.length).toBeLessThan(50);
   expect(first.nextCursor).toBeGreaterThan(0);
+  expect(first.entries.every((entry) => entry.message === "x".repeat(65536))).toBe(true);
   const second = await scheduler.logs(a.id, first.nextCursor, 2000);
   expect(second.entries[0].cursor).toBe(first.nextCursor + 1);
+  expect(second.entries.every((entry) => entry.message === "x".repeat(65536))).toBe(true);
+  expect(first.entries.length + second.entries.length).toBe(50);
   scheduler.cancel(a.id);
 });
 
