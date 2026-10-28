@@ -56,6 +56,7 @@ export type Job = {
   name: string;
   needs: string[];
   runners: string[];
+  uses?: string;
 };
 export type Workflow = {
   projectId: string;
@@ -268,6 +269,7 @@ const workflowSchema = z.object({
       name: z.string(),
       needs: z.array(z.string()),
       runners: z.array(z.string()),
+      uses: z.string().optional(),
     }),
   ),
   inputs: z.array(
@@ -297,6 +299,7 @@ const runSchema = z.object({
   command: z.array(z.string()),
   phase: z.enum(runPhases).optional(),
   queueReason: z.string().optional(),
+  ephemeralSecretNames: z.array(z.string()).optional(),
   snapshot: executionSnapshotSchema.optional(),
 });
 export const historyPageSchema = z.object({

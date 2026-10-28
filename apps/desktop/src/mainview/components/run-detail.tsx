@@ -16,9 +16,15 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import { subscribeEvents } from "@/lib/events";
 import { api, exportLogs } from "@/lib/api";
-import { activeStates, type LogEntry, type Run } from "../../shared/contracts";
-import { advanceProgress, currentSteps, isCurrentStepLine, type RunProgress } from "../../shared/run-progress";
+import { activeStates, type LogEntry, type Run, type RunMetric } from "../../shared/contracts";
+import {
+  advanceProgress,
+  currentSteps,
+  isCurrentStepLine,
+  type RunProgress,
+} from "../../shared/run-progress";
 import { Empty, Status, IconButton, duration, fail } from "./common";
 export function RunDetail({
   run,
@@ -35,7 +41,10 @@ export function RunDetail({
     [tab, setTab] = useState("logs"),
     [error, setError] = useState(""),
     [busy, setBusy] = useState(false);
-  const [progress, setProgress] = useState<{ runId: string; steps: RunProgress }>({ runId: "", steps: {} });
+  const [progress, setProgress] = useState<{
+    runId: string;
+    steps: RunProgress;
+  }>({ runId: "", steps: {} });
   const viewportRef = useRef<HTMLDivElement | null>(null);
   const attachViewport = useCallback(
     (node: HTMLDivElement | null) => {
@@ -45,9 +54,16 @@ export function RunDetail({
     [follow],
   );
   const cursor = useRef(0);
+  const [metrics,setMetrics]=useState<RunMetric[]>([]),[resupply,setResupply]=useState<Record<string,string>>({});
+  useEffect(()=>{let alive=true;let next=0;setMetrics([]);setResupply({});let pending=false;
+    const read=async()=>{if(!run||pending)return;pending=true;try{const page=await api("get_run_metrics",{runId:run.id,cursor:next,limit:500});if(alive){next=page.nextCursor;setMetrics(previous=>[...previous,...page.entries].slice(-500));}}catch{}finally{pending=false;}};
+    const unsubscribe=subscribeEvents(events=>{if(events.some(e=>e.kind==="metrics"&&e.runId===run?.id))void read();});void read();return()=>{alive=false;unsubscribe();};
+  },[run?.id]);
   useEffect(() => {
     let alive = true;
     let timer: ReturnType<typeof setTimeout>;
+    let fetching = false,
+      again = false;
     cursor.current = 0;
     setLogs([]);
     setProgress({ runId: run?.id || "", steps: {} });
@@ -56,6 +72,11 @@ export function RunDetail({
     setTab("logs");
     async function poll() {
       if (!run) return;
+      if (fetching) {
+        again = true;
+        return;
+      }
+      fetching = true;
       try {
         const page = await api("get_run_logs", {
           runId: run.id,
@@ -65,23 +86,38 @@ export function RunDetail({
         if (!alive) return;
         cursor.current = page.nextCursor;
         setLogs((prev) => [...prev, ...page.entries].slice(-2000));
-        setProgress(prev => ({ runId: run.id, steps: advanceProgress(prev.steps, page.entries) }));
+        setProgress((prev) => ({
+          runId: run.id,
+          steps: advanceProgress(prev.steps, page.entries),
+        }));
         setError("");
-        if (!page.end)
-          timer = setTimeout(
-            () => void poll(),
-            page.entries.length === 1000 ? 50 : 800,
-          );
+        if (!page.end && page.entries.length === 1000) again = true;
       } catch (e) {
         if (alive) {
           setError(fail(e));
           timer = setTimeout(() => void poll(), 3000);
         }
+      } finally {
+        fetching = false;
+        if (again && alive) {
+          again = false;
+          void poll();
+        }
       }
     }
+    const unsubscribe = subscribeEvents((events) => {
+      if (
+        events.some(
+          (e) =>
+            e.runId === run?.id && ["logs", "run", "step"].includes(e.kind),
+        )
+      )
+        void poll();
+    });
     void poll();
     return () => {
       alive = false;
+      unsubscribe();
       clearTimeout(timer);
     };
   }, [run?.id]);
@@ -104,7 +140,10 @@ export function RunDetail({
   const visible = logs.filter(
     (l) => !filter || l.message.toLowerCase().includes(filter.toLowerCase()),
   );
-  const steps = run.state === "running" && progress.runId === run.id ? currentSteps(progress.steps) : [];
+  const steps =
+    run.state === "running" && progress.runId === run.id
+      ? currentSteps(progress.steps)
+      : [];
   async function action(kind: "cancel" | "rerun") {
     setBusy(true);
     try {
@@ -157,6 +196,14 @@ export function RunDetail({
             </p>
           </div>
           <Status state={run.state} />
+          {run.phase && activeStates.includes(run.state) && (
+            <span role="status">{run.phase}</span>
+          )}
+          {run.queueReason && (
+            <p role="status" className="field-help">
+              Waiting: {run.queueReason.replaceAll("-", " ")}
+            </p>
+          )}
         </div>
         <div className="run-metadata">
           <span title={run.createdAt}>
@@ -202,19 +249,41 @@ export function RunDetail({
         </div>
         <TabsContent value="logs" className="log-tab">
           {run.state === "running" && (
-            <div className="run-progress" role="status" aria-live="polite" aria-atomic="true">
+            <div
+              className="run-progress"
+              role="status"
+              aria-live="polite"
+              aria-atomic="true"
+            >
               <div className="run-progress-label">
-                <LoaderCircle className="size-3.5 animate-spin" aria-hidden="true" />
+                <LoaderCircle
+                  className="size-3.5 animate-spin"
+                  aria-hidden="true"
+                />
                 {steps.length > 1 ? "Current steps" : "Current step"}
               </div>
               <ScrollArea className="run-progress-scroll">
                 <div className="run-progress-steps">
-                  {steps.length ? steps.map(step => (
-                    <div className="run-progress-step" key={step.jobKey}>
-                      {step.job && <span className="run-progress-job mono">{step.job}</span>}
-                      <span className="run-progress-name" title={step.name}>{step.name.replace(/^Main\s+/, "")}</span>
-                    </div>
-                  )) : <span className="run-progress-wait">{logs.length ? "Preparing the next step…" : "Preparing workflow…"}</span>}
+                  {steps.length ? (
+                    steps.map((step) => (
+                      <div className="run-progress-step" key={step.jobKey}>
+                        {step.job && (
+                          <span className="run-progress-job mono">
+                            {step.job}
+                          </span>
+                        )}
+                        <span className="run-progress-name" title={step.name}>
+                          {step.name.replace(/^Main\s+/, "")}
+                        </span>
+                      </div>
+                    ))
+                  ) : (
+                    <span className="run-progress-wait">
+                      {logs.length
+                        ? "Preparing the next step…"
+                        : "Preparing workflow…"}
+                    </span>
+                  )}
                 </div>
               </ScrollArea>
             </div>
@@ -277,7 +346,10 @@ export function RunDetail({
               aria-live="off"
             >
               {visible.map((l) => (
-                <div className={`log-line ${isCurrentStepLine(l, steps) ? "is-current-step" : ""}`} key={l.cursor}>
+                <div
+                  className={`log-line ${isCurrentStepLine(l, steps) ? "is-current-step" : ""}`}
+                  key={l.cursor}
+                >
                   <span className="line-number">{l.cursor}</span>
                   <code>
                     {l.job && <span className="log-job">[{l.job}] </span>}
@@ -318,6 +390,8 @@ export function RunDetail({
           </div>
         </TabsContent>
         <TabsContent value="details" className="details-tab">
+          {run.queueReason==="secret-input-required"&&<div className="field-stack"><h3>Re-enter one-run secrets</h3><p className="field-help">The runner restarted before admission. The unsaved values were discarded.</p>{(run.ephemeralSecretNames||[]).map(name=><div className="field" key={name}><label htmlFor={`resupply-${name}`}>{name}</label><Input id={`resupply-${name}`} type="password" autoComplete="off" value={resupply[name]||""} onChange={e=>setResupply(values=>({...values,[name]:e.target.value}))}/></div>)}<Button disabled={busy} onClick={async()=>{setBusy(true);try{await api("supply_run_secrets",{runId:run.id,values:resupply});setResupply({});toast.success("Secret input supplied");}catch(e){toast.error(fail(e));}finally{setBusy(false);}}}>Resume queued run</Button></div>}
+          {metrics.length>0&&<div className="field-stack"><h3>Container metrics</h3>{metrics.slice(-4).map(metric=><p className="field-help" key={metric.cursor}><code>{metric.containerId.slice(0,12)}</code> · {metric.cpuPercent?.toFixed(1)??"Unknown"}% CPU · {metric.memoryBytes===null?"Memory unknown":`${(metric.memoryBytes/1024**2).toFixed(1)} MiB`}</p>)}</div>}
           <dl className="detail-list">
             <dt>Run ID</dt>
             <dd className="mono">{run.id}</dd>
@@ -345,6 +419,7 @@ export function RunDetail({
             </dd>
           </dl>
           <Separator />
+          {run.snapshot&&<details className="mt-5"><summary>Frozen execution configuration</summary><dl className="detail-list"><dt>Engine</dt><dd>{run.snapshot.engine?.version||"Resolved at admission"}</dd><dt>Selected secret names</dt><dd>{run.snapshot.secretNames.join(", ")||"None"}</dd><dt>Image policy</dt><dd>{run.snapshot.options.imagePullPolicy}</dd><dt>Action sources</dt><dd>{run.snapshot.options.actionCachePolicy}</dd>{run.snapshot.images.map(image=><div key={image.reference}><dt>{image.platform}</dt><dd className="technical-wrap">{image.resolved}</dd></div>)}</dl><pre className="command-block">{JSON.stringify(run.snapshot,null,2)}</pre></details>}
           <h3 className="mt-5 mb-2">Invocation</h3>
           <p className="field-help mb-3">
             act also reads your global and project .actrc files.

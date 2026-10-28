@@ -308,7 +308,7 @@ export function RunHistory({
                   </TableCell>
                   <TableCell>{r.projectName}</TableCell>
                   <TableCell>
-                    <Status state={r.state} />
+                    <Status state={r.state} />{r.queueReason&&<p className="field-help">{r.queueReason.replaceAll("-"," ")}</p>}
                   </TableCell>
                   <TableCell className="tabular-nums">
                     {duration(r.startedAt, r.finishedAt)}
