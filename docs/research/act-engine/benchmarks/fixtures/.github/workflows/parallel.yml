@@ -1,0 +1,38 @@
+{
+  "name": "research-parallel",
+  "on": "workflow_dispatch",
+  "jobs": {
+    "job0": {
+      "runs-on": "ubuntu-latest",
+      "steps": [
+        {
+          "run": "echo BENCH_FIRST; sleep 2"
+        }
+      ]
+    },
+    "job1": {
+      "runs-on": "ubuntu-latest",
+      "steps": [
+        {
+          "run": "echo BENCH_FIRST; sleep 2"
+        }
+      ]
+    },
+    "job2": {
+      "runs-on": "ubuntu-latest",
+      "steps": [
+        {
+          "run": "echo BENCH_FIRST; sleep 2"
+        }
+      ]
+    },
+    "job3": {
+      "runs-on": "ubuntu-latest",
+      "steps": [
+        {
+          "run": "echo BENCH_FIRST; sleep 2"
+        }
+      ]
+    }
+  }
+}

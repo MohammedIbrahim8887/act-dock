@@ -1,0 +1,14 @@
+{
+  "name": "research-logs",
+  "on": "workflow_dispatch",
+  "jobs": {
+    "bench": {
+      "runs-on": "ubuntu-latest",
+      "steps": [
+        {
+          "run": "echo BENCH_FIRST; seq 1 10000"
+        }
+      ]
+    }
+  }
+}

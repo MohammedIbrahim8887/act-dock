@@ -1,0 +1,432 @@
+[
+  {
+    "section": "Primary paired cohort",
+    "groups": [
+      {
+        "group": "dag / current",
+        "n": 3,
+        "median_s": 9.428923041000417,
+        "min_s": 9.107634541999687,
+        "max_s": 9.76584316699973,
+        "first_main_median_s": 2.7091130839999096,
+        "rss_median_mib": 39.265625,
+        "cpu_median_s": 0.21000000000000002
+      },
+      {
+        "group": "dag / optimized",
+        "n": 3,
+        "median_s": 9.488218832999337,
+        "min_s": 8.80937754200022,
+        "max_s": 9.523770624999997,
+        "first_main_median_s": 2.6696511250002004,
+        "rss_median_mib": 39.15625,
+        "cpu_median_s": 0.2
+      },
+      {
+        "group": "minimal / current",
+        "n": 3,
+        "median_s": 2.248288499999944,
+        "min_s": 2.1132079589997375,
+        "max_s": 3.123677750000752,
+        "first_main_median_s": 2.0957190409999384,
+        "rss_median_mib": 39.015625,
+        "cpu_median_s": 0.1
+      },
+      {
+        "group": "minimal / optimized",
+        "n": 3,
+        "median_s": 2.673654625000381,
+        "min_s": 2.4962240000004385,
+        "max_s": 2.9614131669995913,
+        "first_main_median_s": 2.5314993340007277,
+        "rss_median_mib": 39.109375,
+        "cpu_median_s": 0.09
+      },
+      {
+        "group": "multistep / current",
+        "n": 3,
+        "median_s": 4.027476625000418,
+        "min_s": 3.4012644999993427,
+        "max_s": 5.707838500000435,
+        "first_main_median_s": 2.0395334579998234,
+        "rss_median_mib": 39.484375,
+        "cpu_median_s": 0.25
+      },
+      {
+        "group": "multistep / optimized",
+        "n": 3,
+        "median_s": 3.8651831669994863,
+        "min_s": 3.2933058339995114,
+        "max_s": 4.246716457999355,
+        "first_main_median_s": 2.463115791999371,
+        "rss_median_mib": 39.296875,
+        "cpu_median_s": 0.26
+      },
+      {
+        "group": "node / current",
+        "n": 3,
+        "median_s": 8.473041415999433,
+        "min_s": 7.726868457999444,
+        "max_s": 8.936825917000533,
+        "first_main_median_s": 1.8482708749997983,
+        "rss_median_mib": 39.21875,
+        "cpu_median_s": 0.13
+      },
+      {
+        "group": "node / optimized",
+        "n": 3,
+        "median_s": 10.04241945800004,
+        "min_s": 7.883646791000501,
+        "max_s": 11.183064833000572,
+        "first_main_median_s": 2.087263250000433,
+        "rss_median_mib": 39.0625,
+        "cpu_median_s": 0.15000000000000002
+      },
+      {
+        "group": "parallel / current",
+        "n": 3,
+        "median_s": 6.091640417000235,
+        "min_s": 5.485535542000434,
+        "max_s": 25.008656750000227,
+        "first_main_median_s": 2.286807709000641,
+        "rss_median_mib": 39.265625,
+        "cpu_median_s": 0.26
+      },
+      {
+        "group": "parallel / optimized",
+        "n": 3,
+        "median_s": 5.442818915999851,
+        "min_s": 5.208292041000277,
+        "max_s": 5.948727250000047,
+        "first_main_median_s": 2.710568250000506,
+        "rss_median_mib": 39.46875,
+        "cpu_median_s": 0.29000000000000004
+      },
+      {
+        "group": "typescript / current",
+        "n": 3,
+        "median_s": 11.648390209000354,
+        "min_s": 9.865721334000227,
+        "max_s": 13.547158250000393,
+        "first_main_median_s": 2.2608561249999184,
+        "rss_median_mib": 38.765625,
+        "cpu_median_s": 0.15000000000000002
+      },
+      {
+        "group": "typescript / optimized",
+        "n": 3,
+        "median_s": 11.085534374999952,
+        "min_s": 10.683615832999749,
+        "max_s": 15.527139374999933,
+        "first_main_median_s": 2.5168095419994643,
+        "rss_median_mib": 38.984375,
+        "cpu_median_s": 0.16
+      }
+    ]
+  },
+  {
+    "section": "Platform-specific digest versus mutable tag, clean later paired cohort",
+    "groups": [
+      {
+        "group": "minimal / current",
+        "n": 3,
+        "median_s": 3.075027000000773,
+        "min_s": 2.0864298329997837,
+        "max_s": 3.1784012500002063,
+        "first_main_median_s": 1.9839716249998673,
+        "rss_median_mib": 38.890625,
+        "cpu_median_s": 0.09
+      },
+      {
+        "group": "minimal / pinned",
+        "n": 3,
+        "median_s": 1.0470248749998063,
+        "min_s": 0.9449177500000587,
+        "max_s": 1.2805303340001046,
+        "first_main_median_s": 0.7418354579995139,
+        "rss_median_mib": 39.25,
+        "cpu_median_s": 0.07
+      },
+      {
+        "group": "parallel / current",
+        "n": 3,
+        "median_s": 6.153272416999243,
+        "min_s": 5.500827374999972,
+        "max_s": 8.834281958000247,
+        "first_main_median_s": 2.736879916000362,
+        "rss_median_mib": 39.578125,
+        "cpu_median_s": 0.31000000000000005
+      },
+      {
+        "group": "parallel / pinned",
+        "n": 3,
+        "median_s": 3.2815164169996933,
+        "min_s": 3.2567989580002177,
+        "max_s": 3.3682895000001736,
+        "first_main_median_s": 0.9767002919998049,
+        "rss_median_mib": 38.96875,
+        "cpu_median_s": 0.17
+      },
+      {
+        "group": "typescript / current",
+        "n": 3,
+        "median_s": 17.179020958000365,
+        "min_s": 12.293397417000051,
+        "max_s": 18.256690709000395,
+        "first_main_median_s": 2.4241261249999297,
+        "rss_median_mib": 39.0625,
+        "cpu_median_s": 0.16
+      },
+      {
+        "group": "typescript / pinned",
+        "n": 3,
+        "median_s": 11.426827917000082,
+        "min_s": 10.520017083000312,
+        "max_s": 12.374124208000467,
+        "first_main_median_s": 0.671243833000517,
+        "rss_median_mib": 39.140625,
+        "cpu_median_s": 0.15000000000000002
+      }
+    ]
+  },
+  {
+    "section": "Native ARM64 / auto architecture, later paired cohort",
+    "groups": [
+      {
+        "group": "minimal / native-current",
+        "n": 3,
+        "median_s": 2.90032279100069,
+        "min_s": 2.3518885830008003,
+        "max_s": 4.862844208999377,
+        "first_main_median_s": 2.7671122080000714,
+        "rss_median_mib": 39.171875,
+        "cpu_median_s": 0.09
+      },
+      {
+        "group": "minimal / native-optimized",
+        "n": 3,
+        "median_s": 1.5088877919997685,
+        "min_s": 1.348941709000428,
+        "max_s": 1.5507961249995788,
+        "first_main_median_s": 0.4203389579997747,
+        "rss_median_mib": 39.09375,
+        "cpu_median_s": 0.07
+      },
+      {
+        "group": "typescript / native-current",
+        "n": 3,
+        "median_s": 7.71067312499963,
+        "min_s": 5.943541124999683,
+        "max_s": 13.504511500000262,
+        "first_main_median_s": 2.5847410000005766,
+        "rss_median_mib": 39.21875,
+        "cpu_median_s": 0.16
+      },
+      {
+        "group": "typescript / native-optimized",
+        "n": 3,
+        "median_s": 9.082421165999222,
+        "min_s": 8.136665707999782,
+        "max_s": 10.307790833000581,
+        "first_main_median_s": 0.4763114580000547,
+        "rss_median_mib": 40.03125,
+        "cpu_median_s": 0.15000000000000002
+      }
+    ]
+  },
+  {
+    "section": "External action: cold and warm caches",
+    "groups": [
+      {
+        "group": "current / cold action cache",
+        "n": 1,
+        "median_s": 69.58762099999967,
+        "min_s": 69.58762099999967,
+        "max_s": 69.58762099999967,
+        "first_main_median_s": 66.26248687499992,
+        "rss_median_mib": 495.796875,
+        "cpu_median_s": 20.3
+      },
+      {
+        "group": "current / warm action cache",
+        "n": 2,
+        "median_s": 8.271399791999556,
+        "min_s": 7.793443083999591,
+        "max_s": 8.749356499999521,
+        "first_main_median_s": 4.648797541499789,
+        "rss_median_mib": 42.6015625,
+        "cpu_median_s": 0.895
+      },
+      {
+        "group": "newcache / cold action cache",
+        "n": 1,
+        "median_s": 27.97121766700002,
+        "min_s": 27.97121766700002,
+        "max_s": 27.97121766700002,
+        "first_main_median_s": 25.071907208000084,
+        "rss_median_mib": 61.609375,
+        "cpu_median_s": 0.38
+      },
+      {
+        "group": "newcache / warm action cache",
+        "n": 2,
+        "median_s": 7.558465208499911,
+        "min_s": 6.528138791999481,
+        "max_s": 8.58879162500034,
+        "first_main_median_s": 4.34878499999968,
+        "rss_median_mib": 55.875,
+        "cpu_median_s": 0.26
+      },
+      {
+        "group": "optimized / cold action cache",
+        "n": 1,
+        "median_s": 48.62520570900051,
+        "min_s": 48.62520570900051,
+        "max_s": 48.62520570900051,
+        "first_main_median_s": 45.30657874999997,
+        "rss_median_mib": 326.640625,
+        "cpu_median_s": 8.79
+      },
+      {
+        "group": "optimized / warm action cache",
+        "n": 2,
+        "median_s": 6.478727562499898,
+        "min_s": 5.273468875000617,
+        "max_s": 7.68398624999918,
+        "first_main_median_s": 3.222248811999634,
+        "rss_median_mib": 39.21875,
+        "cpu_median_s": 0.345
+      }
+    ]
+  },
+  {
+    "section": "Additional controlled probes",
+    "groups": [
+      {
+        "group": "minimal / dryrun",
+        "n": 3,
+        "median_s": 1.102006916999926,
+        "min_s": 1.0061101669998607,
+        "max_s": 1.259037083000294,
+        "first_main_median_s": 0.13777858299999934,
+        "rss_median_mib": 39.515625,
+        "cpu_median_s": 0.07
+      },
+      {
+        "group": "minimal / small / cached image",
+        "n": 3,
+        "median_s": 4.8516350829995645,
+        "min_s": 4.460704041999634,
+        "max_s": 5.079008042000169,
+        "first_main_median_s": 4.6567007499998,
+        "rss_median_mib": 39.375,
+        "cpu_median_s": 0.11
+      },
+      {
+        "group": "minimal / small / cold image",
+        "n": 1,
+        "median_s": 39.17994079100026,
+        "min_s": 39.17994079100026,
+        "max_s": 39.17994079100026,
+        "first_main_median_s": 39.015679791000366,
+        "rss_median_mib": 39.484375,
+        "cpu_median_s": 0.13
+      },
+      {
+        "group": "node / npmcache / cold npm cache",
+        "n": 1,
+        "median_s": 9.953510082999856,
+        "min_s": 9.953510082999856,
+        "max_s": 9.953510082999856,
+        "first_main_median_s": 3.208128625000427,
+        "rss_median_mib": 38.75,
+        "cpu_median_s": 0.11
+      },
+      {
+        "group": "node / npmcache / warm npm cache",
+        "n": 2,
+        "median_s": 5.385312833499938,
+        "min_s": 5.3008187920004275,
+        "max_s": 5.469806874999449,
+        "first_main_median_s": 2.5581698959999812,
+        "rss_median_mib": 39.421875,
+        "cpu_median_s": 0.14500000000000002
+      },
+      {
+        "group": "parallel / serial",
+        "n": 3,
+        "median_s": 21.548981417000505,
+        "min_s": 20.586960374999762,
+        "max_s": 24.753529290999722,
+        "first_main_median_s": 4.094838834000257,
+        "rss_median_mib": 38.796875,
+        "cpu_median_s": 0.27
+      },
+      {
+        "group": "workspace / bind",
+        "n": 3,
+        "median_s": 2.950627958000041,
+        "min_s": 2.687113375000081,
+        "max_s": 5.739088499999525,
+        "first_main_median_s": 2.686431332999746,
+        "rss_median_mib": 39.5,
+        "cpu_median_s": 0.12000000000000001
+      },
+      {
+        "group": "workspace / copy",
+        "n": 3,
+        "median_s": 3.63322212499952,
+        "min_s": 3.5873949580000044,
+        "max_s": 4.103499916000146,
+        "first_main_median_s": 2.378376374999789,
+        "rss_median_mib": 38.765625,
+        "cpu_median_s": 0.4
+      }
+    ]
+  },
+  {
+    "section": "Actual scheduler versus direct subprocess, separate cohort",
+    "groups": [
+      {
+        "group": "logs / current",
+        "n": 3,
+        "median_s": 3.3009114170008615,
+        "min_s": 3.2360188749998997,
+        "max_s": 3.4448889170007533,
+        "first_main_median_s": 2.97244050000063,
+        "rss_median_mib": 39.28125,
+        "cpu_median_s": 0.16
+      },
+      {
+        "group": "logs / integration",
+        "n": 3,
+        "median_s": 4.576287582999612,
+        "min_s": 4.321558417000233,
+        "max_s": 4.962828957999591,
+        "first_main_median_s": 3.5674662919991533,
+        "rss_median_mib": 123.0,
+        "cpu_median_s": 1.38
+      },
+      {
+        "group": "minimal / current",
+        "n": 3,
+        "median_s": 3.781113375000132,
+        "min_s": 2.894850666999446,
+        "max_s": 4.13809612499972,
+        "first_main_median_s": 3.5104203330001837,
+        "rss_median_mib": 38.96875,
+        "cpu_median_s": 0.11
+      },
+      {
+        "group": "minimal / integration",
+        "n": 3,
+        "median_s": 3.82097395800065,
+        "min_s": 3.7011280419992545,
+        "max_s": 4.6537200829998255,
+        "first_main_median_s": 3.540921583000454,
+        "rss_median_mib": 100.640625,
+        "cpu_median_s": 0.75
+      }
+    ]
+  }
+]

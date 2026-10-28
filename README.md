@@ -126,3 +126,7 @@ The web app obtains a short-lived cached manifest from the latest published GitH
 macOS uses `~/Library/Application Support/Act Dock`, Linux uses `$XDG_DATA_HOME/act-dock` (default `~/.local/share/act-dock`), and Windows uses `%LOCALAPPDATA%\Act Dock`. SQLite metadata, user settings, and per-run JSONL logs persist there. `ACT_DOCK_DATA_DIR` provides an isolated data directory for tests.
 
 Clients use a private Unix socket on macOS/Linux and a per-user named pipe on Windows, plus a private installation key. No TCP port is exposed. Start at login uses a macOS LaunchAgent, a Linux user autostart entry, or a Windows user Startup command. Closing the desktop app leaves the runner working; **Stop runner** explicitly cancels active work. Completed runs are retained for 30 days, up to 200. Interrupted runs are not retried automatically.
+
+## Engineering research
+
+See the [execution-engine feasibility study](docs/research/act-engine/README.md) for the comparison of keeping Act, expanding orchestration, or building an engine, with reproducible benchmarks and REA findings.

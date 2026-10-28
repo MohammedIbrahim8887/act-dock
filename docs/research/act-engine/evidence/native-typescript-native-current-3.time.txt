@@ -1,0 +1,20 @@
+level=warning msg= ⚠ You are using Apple M-series chip and you have not specified container architecture, you might encounter issues while running act. If so, try running it with '--container-architecture linux/amd64'. ⚠ 
+
+       13.49 real         0.08 user         0.09 sys
+            40517632  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+                9598  page reclaims
+                 277  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                 184  messages sent
+                 253  messages received
+                  87  signals received
+                  85  voluntary context switches
+                5877  involuntary context switches
+           551946460  instructions retired
+           338047007  cycles elapsed
+            16630528  peak memory footprint

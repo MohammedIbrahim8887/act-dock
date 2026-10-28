@@ -1,0 +1,63 @@
+File: model.test
+Type: alloc_space
+Time: 2026-10-28 11:28:51 EAT
+Showing nodes accounting for 4373.70MB, 98.40% of 4444.67MB total
+Dropped 92 nodes (cum <= 22.22MB)
+      flat  flat%   sum%        cum   cum%
+ 1062.09MB 23.90% 23.90%  1062.09MB 23.90%  gopkg.in/yaml%2ev3.newDecoder (inline)
+  742.61MB 16.71% 40.60%  1518.18MB 34.16%  github.com/nektos/act/pkg/model.decodeNode
+  631.27MB 14.20% 54.81%   631.27MB 14.20%  reflect.mapassign_faststr0
+  401.62MB  9.04% 63.84%  1523.93MB 34.29%  github.com/nektos/act/pkg/schema.GetWorkflowSchema (inline)
+  354.01MB  7.96% 71.81%  2021.69MB 45.49%  github.com/nektos/act/pkg/model.createStages
+     174MB  3.91% 75.72%      174MB  3.91%  github.com/nektos/act/pkg/model.(*Plan).mergeStages
+  153.52MB  3.45% 79.18%  1122.31MB 25.25%  encoding/json.Unmarshal
+  149.50MB  3.36% 82.54%  1667.68MB 37.52%  github.com/nektos/act/pkg/model.(*Job).Needs
+  113.50MB  2.55% 85.09%   113.50MB  2.55%  gopkg.in/yaml%2ev3.(*decoder).scalar
+  109.02MB  2.45% 87.55%   109.02MB  2.45%  reflect.growslice
+   93.52MB  2.10% 89.65%    93.52MB  2.10%  reflect.unsafe_New
+   85.50MB  1.92% 91.57%   483.03MB 10.87%  github.com/nektos/act/pkg/model.(*Workflow).On
+      77MB  1.73% 93.31%  1121.31MB 25.23%  encoding/json.(*decodeState).object
+      63MB  1.42% 94.72%   158.51MB  3.57%  encoding/json.(*decodeState).literalStore
+   60.50MB  1.36% 96.09%  2739.22MB 61.63%  github.com/nektos/act/pkg/model.(*workflowPlanner).PlanEvent
+   32.02MB  0.72% 96.81%    32.02MB  0.72%  regexp/syntax.(*compiler).inst (inline)
+   26.50MB   0.6% 97.40%    26.50MB   0.6%  regexp/syntax.(*parser).newRegexp (inline)
+      23MB  0.52% 97.92%    25.50MB  0.57%  gopkg.in/yaml%2ev3.(*parser).node
+       6MB  0.14% 98.05%    90.02MB  2.03%  github.com/nektos/act/pkg/schema.(*Node).checkMapping
+       4MB  0.09% 98.14%    78.02MB  1.76%  regexp.compile
+    3.50MB 0.079% 98.22%    36.50MB  0.82%  gopkg.in/yaml%2ev3.(*parser).parseChild (inline)
+       3MB 0.068% 98.29%    39.50MB  0.89%  regexp/syntax.parse
+    2.50MB 0.056% 98.35%    64.51MB  1.45%  github.com/nektos/act/pkg/schema.(*Node).checkOneOf
+    1.50MB 0.034% 98.38%  1700.50MB 38.26%  github.com/nektos/act/pkg/model.ReadWorkflow
+       1MB 0.022% 98.40%    30.01MB  0.68%  github.com/nektos/act/pkg/schema.(*Node).checkSequence
+         0     0% 98.40%   153.02MB  3.44%  encoding/json.(*decodeState).array
+         0     0% 98.40%  1121.31MB 25.23%  encoding/json.(*decodeState).unmarshal
+         0     0% 98.40%  1121.31MB 25.23%  encoding/json.(*decodeState).value
+         0     0% 98.40%       34MB  0.76%  encoding/json.indirect
+         0     0% 98.40%  1632.97MB 36.74%  github.com/nektos/act/pkg/model.(*Workflow).UnmarshalYAML
+         0     0% 98.40%  2747.37MB 61.81%  github.com/nektos/act/pkg/model.BenchmarkResearchPlan
+         0     0% 98.40%  1692.36MB 38.08%  github.com/nektos/act/pkg/model.BenchmarkResearchReadWorkflow
+         0     0% 98.40%   220.52MB  4.96%  github.com/nektos/act/pkg/schema.(*MappingProperty).UnmarshalJSON
+         0     0% 98.40%    90.02MB  2.03%  github.com/nektos/act/pkg/schema.(*Node).UnmarshalYAML
+         0     0% 98.40%  1682.98MB 37.87%  gopkg.in/yaml%2ev3.(*Decoder).Decode
+         0     0% 98.40%  1192.11MB 26.82%  gopkg.in/yaml%2ev3.(*Node).Decode
+         0     0% 98.40%  1632.97MB 36.74%  gopkg.in/yaml%2ev3.(*decoder).callUnmarshaler
+         0     0% 98.40%  1632.97MB 36.74%  gopkg.in/yaml%2ev3.(*decoder).document (inline)
+         0     0% 98.40%  1632.97MB 36.74%  gopkg.in/yaml%2ev3.(*decoder).prepare
+         0     0% 98.40%  1746.47MB 39.29%  gopkg.in/yaml%2ev3.(*decoder).unmarshal
+         0     0% 98.40%       37MB  0.83%  gopkg.in/yaml%2ev3.(*parser).document
+         0     0% 98.40%    36.50MB  0.82%  gopkg.in/yaml%2ev3.(*parser).mapping
+         0     0% 98.40%    48.51MB  1.09%  gopkg.in/yaml%2ev3.(*parser).parse
+         0     0% 98.40%    93.52MB  2.10%  reflect.New
+         0     0% 98.40%   109.02MB  2.45%  reflect.Value.Grow
+         0     0% 98.40%   631.27MB 14.20%  reflect.Value.SetMapIndex
+         0     0% 98.40%   109.02MB  2.45%  reflect.Value.grow
+         0     0% 98.40%   631.27MB 14.20%  reflect.mapassign_faststr
+         0     0% 98.40%    78.02MB  1.76%  regexp.Compile (inline)
+         0     0% 98.40%    78.02MB  1.76%  regexp.MustCompile
+         0     0% 98.40%    31.52MB  0.71%  regexp/syntax.(*compiler).compile
+         0     0% 98.40%    31.52MB  0.71%  regexp/syntax.(*compiler).rune
+         0     0% 98.40%       26MB  0.59%  regexp/syntax.(*parser).literal
+         0     0% 98.40%    33.02MB  0.74%  regexp/syntax.Compile
+         0     0% 98.40%    39.50MB  0.89%  regexp/syntax.Parse (inline)
+         0     0% 98.40%  4437.11MB 99.83%  testing.(*B).launch
+         0     0% 98.40%  4439.72MB 99.89%  testing.(*B).runN

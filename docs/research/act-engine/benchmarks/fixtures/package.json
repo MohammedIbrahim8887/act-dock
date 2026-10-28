@@ -1,0 +1,1 @@
+{"name": "act-engine-research-fixture", "private": true, "version": "1.0.0", "dependencies": {"lodash": "4.17.21"}, "devDependencies": {"typescript": "5.9.3"}, "scripts": {"build": "tsc", "test": "node --test test.cjs"}}

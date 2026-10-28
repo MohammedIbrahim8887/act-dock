@@ -1,0 +1,17 @@
+{
+  "name": "research-external",
+  "on": "workflow_dispatch",
+  "jobs": {
+    "bench": {
+      "runs-on": "ubuntu-latest",
+      "steps": [
+        {
+          "uses": "actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020"
+        },
+        {
+          "run": "echo BENCH_FIRST; node --version"
+        }
+      ]
+    }
+  }
+}

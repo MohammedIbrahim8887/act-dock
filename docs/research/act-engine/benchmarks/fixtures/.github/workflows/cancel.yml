@@ -1,0 +1,14 @@
+{
+  "name": "research-cancel",
+  "on": "workflow_dispatch",
+  "jobs": {
+    "bench": {
+      "runs-on": "ubuntu-latest",
+      "steps": [
+        {
+          "run": "echo BENCH_FIRST; sleep 60"
+        }
+      ]
+    }
+  }
+}

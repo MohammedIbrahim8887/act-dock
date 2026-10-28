@@ -1,0 +1,5 @@
+{
+  "go": "go version go1.26.6 darwin/arm64",
+  "act_commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+  "note": "Added only research benchmark test file to cache checkout. Model APIs are upstream. Release uses Go 1.25.0; benchmark uses installed Go 1.26.6."
+}

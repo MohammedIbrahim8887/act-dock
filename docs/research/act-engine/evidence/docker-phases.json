@@ -1,0 +1,4014 @@
+[
+  {
+    "run": "minimal-current-1",
+    "container_id": "484e41ef84d5d67fa8e4e364917a97388ab766689e0c0eefaf3a99de10176f04",
+    "create_offset_s": 2.5421862602233887,
+    "create_to_start_s": 0.14263701438903809,
+    "start_to_destroy_s": 0.4147768020629883,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.06667923927307129
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.057300567626953125
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 0.07136654853820801
+      }
+    ]
+  },
+  {
+    "run": "minimal-optimized-1",
+    "container_id": "c9310bde935e81068b4692707f60b6f74579905b168a502cefb6a8a70e00431f",
+    "create_offset_s": 2.3099400997161865,
+    "create_to_start_s": 0.06584358215332031,
+    "start_to_destroy_s": 0.2776768207550049,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.04143118858337402
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.02098679542541504
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 0.04966592788696289
+      }
+    ]
+  },
+  {
+    "run": "minimal-optimized-2",
+    "container_id": "1ca329184c25b71b773215769cd988b12e1dc3cf1fa514153dac633d477f5fdd",
+    "create_offset_s": 2.5940797328948975,
+    "create_to_start_s": 0.06237983703613281,
+    "start_to_destroy_s": 0.28496479988098145,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.05030560493469238
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.022327184677124023
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 0.051817893981933594
+      }
+    ]
+  },
+  {
+    "run": "minimal-current-2",
+    "container_id": "e946b0ba7eec66b8c3602e04afa84ded26414cc1309df9a33455e3b3e9136353",
+    "create_offset_s": 1.8496313095092773,
+    "create_to_start_s": 0.05739116668701172,
+    "start_to_destroy_s": 0.32114529609680176,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.06149911880493164
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.03773093223571777
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 0.05641341209411621
+      }
+    ]
+  },
+  {
+    "run": "minimal-current-3",
+    "container_id": "e741b625cdefa8e70e0e422994856686f4abf2f835a14b8f682736ffec39649d",
+    "create_offset_s": 1.73358154296875,
+    "create_to_start_s": 0.07120919227600098,
+    "start_to_destroy_s": 0.28752636909484863,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.0443568229675293
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.02389669418334961
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 0.046468496322631836
+      }
+    ]
+  },
+  {
+    "run": "minimal-optimized-3",
+    "container_id": "d6f2842d36fca04b113ac4d1805755f90e2b442cf6c97fdead673a06eeda302a",
+    "create_offset_s": 2.098196268081665,
+    "create_to_start_s": 0.06848669052124023,
+    "start_to_destroy_s": 0.3101186752319336,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.042211294174194336
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.034533023834228516
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 0.05042457580566406
+      }
+    ]
+  },
+  {
+    "run": "node-current-1",
+    "container_id": "b2badf8bc56658997bced39fee327e7edc02611273730039aa420a2ce6333622",
+    "create_offset_s": 1.560502290725708,
+    "create_to_start_s": 0.06171679496765137,
+    "start_to_destroy_s": 7.288381338119507,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.0540308952331543
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.03745555877685547
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/1",
+        "duration_s": 6.494871616363525
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/2",
+        "duration_s": 0.3760678768157959
+      }
+    ]
+  },
+  {
+    "run": "node-optimized-1",
+    "container_id": "78db4fccc9c503d426bc44fa2c12cc0c14248a728cc63a7537e37ba23b4dbf7a",
+    "create_offset_s": 1.8429923057556152,
+    "create_to_start_s": 0.056627750396728516,
+    "start_to_destroy_s": 9.256438255310059,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.05041003227233887
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.04366445541381836
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/1",
+        "duration_s": 8.456892728805542
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/2",
+        "duration_s": 0.3618314266204834
+      }
+    ]
+  },
+  {
+    "run": "node-optimized-2",
+    "container_id": "c921ad43002f6690731a07c6a4ff42a2ffec686bf54de3260d22b8f984ce26f4",
+    "create_offset_s": 1.9756500720977783,
+    "create_to_start_s": 0.08764839172363281,
+    "start_to_destroy_s": 5.792053937911987,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.05109405517578125
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.021993398666381836
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/1",
+        "duration_s": 5.011817455291748
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/2",
+        "duration_s": 0.3572852611541748
+      }
+    ]
+  },
+  {
+    "run": "node-current-2",
+    "container_id": "53e70cad3695a2d2db802d03a0ea9b19cd6398f2a27134298cbe24f446ff4567",
+    "create_offset_s": 1.607896089553833,
+    "create_to_start_s": 0.05935215950012207,
+    "start_to_destroy_s": 6.774569511413574,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.04873228073120117
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.03908848762512207
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/1",
+        "duration_s": 5.975165128707886
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/2",
+        "duration_s": 0.35751771926879883
+      }
+    ]
+  },
+  {
+    "run": "node-current-3",
+    "container_id": "118a66c278aa6f785715434367c8dd23a2c33463315762a16faea1f845501bf1",
+    "create_offset_s": 2.142698049545288,
+    "create_to_start_s": 0.07300925254821777,
+    "start_to_destroy_s": 5.48343563079834,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.05423903465270996
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.05872774124145508
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/1",
+        "duration_s": 4.605208873748779
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/2",
+        "duration_s": 0.34391045570373535
+      }
+    ]
+  },
+  {
+    "run": "node-optimized-3",
+    "container_id": "d69c1bbf970c069e39d30e44613d8c16e60627be43848f6b90e2f5e8b265e771",
+    "create_offset_s": 1.732468605041504,
+    "create_to_start_s": 0.0709528923034668,
+    "start_to_destroy_s": 8.2099769115448,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.04450678825378418
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.022261857986450195
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/1",
+        "duration_s": 7.465428829193115
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/2",
+        "duration_s": 0.3426640033721924
+      }
+    ]
+  },
+  {
+    "run": "typescript-current-1",
+    "container_id": "5275367ec78d8708d64007837248313067352048c1ec77d8bb35d416f019c9a7",
+    "create_offset_s": 1.5824604034423828,
+    "create_to_start_s": 0.06360769271850586,
+    "start_to_destroy_s": 9.972352981567383,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.04235672950744629
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.0352938175201416
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/1",
+        "duration_s": 6.266003131866455
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/2",
+        "duration_s": 2.025960683822632
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/3",
+        "duration_s": 1.2117445468902588
+      }
+    ]
+  },
+  {
+    "run": "typescript-optimized-1",
+    "container_id": "fbf330d90b3903217a8b5bcbe0a165b7bc4bff6ed2ad73006a8b2dff58a9c185",
+    "create_offset_s": 3.560589075088501,
+    "create_to_start_s": 0.06443119049072266,
+    "start_to_destroy_s": 7.3954758644104,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.03224945068359375
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.03802180290222168
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/1",
+        "duration_s": 3.7541074752807617
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/2",
+        "duration_s": 1.949418544769287
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/3",
+        "duration_s": 1.246872901916504
+      }
+    ]
+  },
+  {
+    "run": "typescript-optimized-2",
+    "container_id": "63f650d35aaf2ee0821ecdbb25f8f8ceeff3f8aa66707867f1d651652c01a1bd",
+    "create_offset_s": 2.301910161972046,
+    "create_to_start_s": 0.052307844161987305,
+    "start_to_destroy_s": 8.296581268310547,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.043474674224853516
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.0228116512298584
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/1",
+        "duration_s": 4.712028980255127
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/2",
+        "duration_s": 1.9522433280944824
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/3",
+        "duration_s": 1.2024948596954346
+      }
+    ]
+  },
+  {
+    "run": "typescript-current-2",
+    "container_id": "874c9ecaf99c6ce49be0b8bd3fea9e13e8bc3366244330840aca4d9d96a23fac",
+    "create_offset_s": 2.223179340362549,
+    "create_to_start_s": 0.056655168533325195,
+    "start_to_destroy_s": 11.237897634506226,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.04887652397155762
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.04222369194030762
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/1",
+        "duration_s": 7.5872766971588135
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/2",
+        "duration_s": 1.9607062339782715
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/3",
+        "duration_s": 1.230337381362915
+      }
+    ]
+  },
+  {
+    "run": "typescript-current-3",
+    "container_id": "4636f7002a1279efa918b2ddfeb887a6a633b4197911f2f066e7b4137a3afdd5",
+    "create_offset_s": 2.012122631072998,
+    "create_to_start_s": 0.059615135192871094,
+    "start_to_destroy_s": 7.767316579818726,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.03351187705993652
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.047899723052978516
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/1",
+        "duration_s": 3.9063727855682373
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/2",
+        "duration_s": 2.08844256401062
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/3",
+        "duration_s": 1.2752313613891602
+      }
+    ]
+  },
+  {
+    "run": "typescript-optimized-3",
+    "container_id": "220d746ee236d715d2a8dcb0c4636ff3f25332e676f84de47afc370aa628cca5",
+    "create_offset_s": 2.174677848815918,
+    "create_to_start_s": 0.0639183521270752,
+    "start_to_destroy_s": 13.255801677703857,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.05435633659362793
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.021895170211791992
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/1",
+        "duration_s": 9.103719711303711
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/2",
+        "duration_s": 2.3688135147094727
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/3",
+        "duration_s": 1.3118329048156738
+      }
+    ]
+  },
+  {
+    "run": "multistep-current-1",
+    "container_id": "67fc5e048e0ca94f98159fbe6537fc73164895c80cc22eef7218bf144bd24d5c",
+    "create_offset_s": 1.7373552322387695,
+    "create_to_start_s": 0.06885814666748047,
+    "start_to_destroy_s": 1.5753960609436035,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.05921435356140137
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.03949546813964844
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 0.06017661094665527
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/1",
+        "duration_s": 0.0448000431060791
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/2",
+        "duration_s": 0.052254438400268555
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/3",
+        "duration_s": 0.04974961280822754
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/4",
+        "duration_s": 0.05639338493347168
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/5",
+        "duration_s": 0.049607038497924805
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/6",
+        "duration_s": 0.04973602294921875
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/7",
+        "duration_s": 0.04290771484375
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/8",
+        "duration_s": 0.050421953201293945
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/9",
+        "duration_s": 0.044826507568359375
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/10",
+        "duration_s": 0.04868435859680176
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/11",
+        "duration_s": 0.04227805137634277
+      }
+    ]
+  },
+  {
+    "run": "multistep-optimized-1",
+    "container_id": "8df39ad3fa7b2f1322788470af4e8e729ee87a10e2780b755fe361713784965f",
+    "create_offset_s": 1.5714385509490967,
+    "create_to_start_s": 0.07462668418884277,
+    "start_to_destroy_s": 1.6274211406707764,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.05111813545227051
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.03935980796813965
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 0.04987812042236328
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/1",
+        "duration_s": 0.04846358299255371
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/2",
+        "duration_s": 0.06000375747680664
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/3",
+        "duration_s": 0.04368782043457031
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/4",
+        "duration_s": 0.04636216163635254
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/5",
+        "duration_s": 0.05045914649963379
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/6",
+        "duration_s": 0.05352044105529785
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/7",
+        "duration_s": 0.05488467216491699
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/8",
+        "duration_s": 0.052774906158447266
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/9",
+        "duration_s": 0.05632352828979492
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/10",
+        "duration_s": 0.05352282524108887
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/11",
+        "duration_s": 0.05661201477050781
+      }
+    ]
+  },
+  {
+    "run": "multistep-optimized-2",
+    "container_id": "212f36a4de4794ecd8bf4c0b2aa7fc4f97b25bb655abe3933294ba5273969019",
+    "create_offset_s": 2.2281486988067627,
+    "create_to_start_s": 0.06237936019897461,
+    "start_to_destroy_s": 1.5406219959259033,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.0442814826965332
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.031362295150756836
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 0.06169915199279785
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/1",
+        "duration_s": 0.056461334228515625
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/2",
+        "duration_s": 0.054178714752197266
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/3",
+        "duration_s": 0.04171395301818848
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/4",
+        "duration_s": 0.04879641532897949
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/5",
+        "duration_s": 0.04613161087036133
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/6",
+        "duration_s": 0.05943942070007324
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/7",
+        "duration_s": 0.07093191146850586
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/8",
+        "duration_s": 0.05147218704223633
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/9",
+        "duration_s": 0.04885268211364746
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/10",
+        "duration_s": 0.05127453804016113
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/11",
+        "duration_s": 0.0467982292175293
+      }
+    ]
+  },
+  {
+    "run": "multistep-current-2",
+    "container_id": "9408f083cc5d94304497d3c0648f70e84207951adadb3b23e1918c81472d27ec",
+    "create_offset_s": 3.7963790893554688,
+    "create_to_start_s": 0.07019233703613281,
+    "start_to_destroy_s": 1.8176844120025635,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.05053973197937012
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.024349212646484375
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 0.047550201416015625
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/1",
+        "duration_s": 0.05809664726257324
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/2",
+        "duration_s": 0.057103872299194336
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/3",
+        "duration_s": 0.04709029197692871
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/4",
+        "duration_s": 0.046793222427368164
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/5",
+        "duration_s": 0.05506014823913574
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/6",
+        "duration_s": 0.06261563301086426
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/7",
+        "duration_s": 0.08538484573364258
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/8",
+        "duration_s": 0.06626272201538086
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/9",
+        "duration_s": 0.057919979095458984
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/10",
+        "duration_s": 0.06193375587463379
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/11",
+        "duration_s": 0.07076358795166016
+      }
+    ]
+  },
+  {
+    "run": "multistep-current-3",
+    "container_id": "b8df6d3b63148bbc3e7947e1197f6a52b6102f30adfee55de9f9c2c082e1f4cc",
+    "create_offset_s": 1.7444343566894531,
+    "create_to_start_s": 0.08101534843444824,
+    "start_to_destroy_s": 2.1703245639801025,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.057953596115112305
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.045973777770996094
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 0.05331730842590332
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/1",
+        "duration_s": 0.05359458923339844
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/2",
+        "duration_s": 0.07340359687805176
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/3",
+        "duration_s": 0.07617473602294922
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/4",
+        "duration_s": 0.06057381629943848
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/5",
+        "duration_s": 0.07312130928039551
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/6",
+        "duration_s": 0.06615948677062988
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/7",
+        "duration_s": 0.07476186752319336
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/8",
+        "duration_s": 0.06041407585144043
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/9",
+        "duration_s": 0.06289458274841309
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/10",
+        "duration_s": 0.0677635669708252
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/11",
+        "duration_s": 0.07080483436584473
+      }
+    ]
+  },
+  {
+    "run": "multistep-optimized-3",
+    "container_id": "ecf68895acb0bbfc8d89bd66f7aee4a4377f1d4d1dbbbc8fc5a295220b2b7724",
+    "create_offset_s": 2.321722984313965,
+    "create_to_start_s": 0.07178521156311035,
+    "start_to_destroy_s": 1.8256940841674805,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.053139448165893555
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.055959224700927734
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 0.06485986709594727
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/1",
+        "duration_s": 0.06340503692626953
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/2",
+        "duration_s": 0.06475114822387695
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/3",
+        "duration_s": 0.0638723373413086
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/4",
+        "duration_s": 0.052718400955200195
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/5",
+        "duration_s": 0.0643930435180664
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/6",
+        "duration_s": 0.06511974334716797
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/7",
+        "duration_s": 0.05839347839355469
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/8",
+        "duration_s": 0.058541297912597656
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/9",
+        "duration_s": 0.059526681900024414
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/10",
+        "duration_s": 0.05448627471923828
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/11",
+        "duration_s": 0.061453819274902344
+      }
+    ]
+  },
+  {
+    "run": "external-current-1",
+    "container_id": "5d4cb06c13e6cdc9962cfba7c541134ce90aa835c7492ce3b05da023768d371e",
+    "create_offset_s": 1.850919485092163,
+    "create_to_start_s": 0.061669111251831055,
+    "start_to_destroy_s": 67.61187839508057,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.04554176330566406
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.04437589645385742
+      },
+      {
+        "command": "node /var/run/act/actions/actions-setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020/dist/setup/index.js",
+        "duration_s": 1.201836109161377
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/1",
+        "duration_s": 0.09813976287841797
+      },
+      {
+        "command": "node /var/run/act/actions/actions-setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020/dist/cache-save/index.js",
+        "duration_s": 0.5638279914855957
+      }
+    ]
+  },
+  {
+    "run": "external-optimized-1",
+    "container_id": "441a9a6d53f06648c2fb4b51b0a56c2e379d2943dd9a567c2a03f4e3f8a18c61",
+    "create_offset_s": 2.3361546993255615,
+    "create_to_start_s": 0.07792496681213379,
+    "start_to_destroy_s": 46.175408363342285,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.055724143981933594
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.05599689483642578
+      },
+      {
+        "command": "node /var/run/act/actions/actions-setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020/dist/setup/index.js",
+        "duration_s": 1.3270447254180908
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/1",
+        "duration_s": 0.2075653076171875
+      },
+      {
+        "command": "node /var/run/act/actions/actions-setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020/dist/cache-save/index.js",
+        "duration_s": 0.7002506256103516
+      }
+    ]
+  },
+  {
+    "run": "external-optimized-2",
+    "container_id": "df81f89488a48145f66626beab023df88d2e65e27cdc32175bd246315a0dc42c",
+    "create_offset_s": 2.2290360927581787,
+    "create_to_start_s": 0.07916903495788574,
+    "start_to_destroy_s": 2.8774750232696533,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.04558682441711426
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.03125143051147461
+      },
+      {
+        "command": "node /var/run/act/actions/actions-setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020/dist/setup/index.js",
+        "duration_s": 1.244887351989746
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/1",
+        "duration_s": 0.09740877151489258
+      },
+      {
+        "command": "node /var/run/act/actions/actions-setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020/dist/cache-save/index.js",
+        "duration_s": 0.5957462787628174
+      }
+    ]
+  },
+  {
+    "run": "external-current-2",
+    "container_id": "3868d59a56ba6fbe98c6ee33d5244cd6e03003e0bb446118ec4bbee7ef1766eb",
+    "create_offset_s": 2.0996668338775635,
+    "create_to_start_s": 0.08566141128540039,
+    "start_to_destroy_s": 6.508094787597656,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.06337642669677734
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.10171890258789062
+      },
+      {
+        "command": "node /var/run/act/actions/actions-setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020/dist/setup/index.js",
+        "duration_s": 1.3649036884307861
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/1",
+        "duration_s": 0.11164402961730957
+      },
+      {
+        "command": "node /var/run/act/actions/actions-setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020/dist/cache-save/index.js",
+        "duration_s": 0.6959099769592285
+      }
+    ]
+  },
+  {
+    "run": "external-current-3",
+    "container_id": "5e4dffbdcc8439660bea7c71498f369eb4c404613f8255be57e457ef187eaf40",
+    "create_offset_s": 1.9562957286834717,
+    "create_to_start_s": 0.09721970558166504,
+    "start_to_destroy_s": 5.689245700836182,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.05823993682861328
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.03272700309753418
+      },
+      {
+        "command": "node /var/run/act/actions/actions-setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020/dist/setup/index.js",
+        "duration_s": 1.3018088340759277
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/1",
+        "duration_s": 0.11645889282226562
+      },
+      {
+        "command": "node /var/run/act/actions/actions-setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020/dist/cache-save/index.js",
+        "duration_s": 0.606156587600708
+      }
+    ]
+  },
+  {
+    "run": "external-optimized-3",
+    "container_id": "ea3786cfa7a5d8d50bf059910d9e80b6f4f5abed08e636b9daff36326f2d9150",
+    "create_offset_s": 3.495455265045166,
+    "create_to_start_s": 0.0925295352935791,
+    "start_to_destroy_s": 3.0514719486236572,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.05763745307922363
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.04479527473449707
+      },
+      {
+        "command": "node /var/run/act/actions/actions-setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020/dist/setup/index.js",
+        "duration_s": 1.2409336566925049
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/1",
+        "duration_s": 0.1014106273651123
+      },
+      {
+        "command": "node /var/run/act/actions/actions-setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020/dist/cache-save/index.js",
+        "duration_s": 0.6213080883026123
+      }
+    ]
+  },
+  {
+    "run": "parallel-current-1",
+    "container_id": "829c8ba754a0110c3d5573c358dc8957e58a1ea3f3edc4b8a3bd5dd8c84b9442",
+    "create_offset_s": 1.885572910308838,
+    "create_to_start_s": 0.1270129680633545,
+    "start_to_destroy_s": 2.536776065826416,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.054943084716796875
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.050879478454589844
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.1342203617095947
+      }
+    ]
+  },
+  {
+    "run": "parallel-current-1",
+    "container_id": "e4935897dc025b991b4d502988bde77f4bab5e4b4380c7d79cac00e1b3231d9e",
+    "create_offset_s": 1.9684700965881348,
+    "create_to_start_s": 0.10739827156066895,
+    "start_to_destroy_s": 2.6067256927490234,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.05795407295227051
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.07105159759521484
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.141258716583252
+      }
+    ]
+  },
+  {
+    "run": "parallel-current-1",
+    "container_id": "ab94b0ed92e3a532be722d764f06a18132de9d32ab4365d514faac53b61c96dc",
+    "create_offset_s": 2.3591067790985107,
+    "create_to_start_s": 0.13677191734313965,
+    "start_to_destroy_s": 2.53999400138855,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.09715127944946289
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.06573867797851562
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.103302478790283
+      }
+    ]
+  },
+  {
+    "run": "parallel-current-1",
+    "container_id": "57a1f7620208634d1d7a06860c1788a81eac69b2dff70c0d6d30476929647f12",
+    "create_offset_s": 2.9118244647979736,
+    "create_to_start_s": 0.08205580711364746,
+    "start_to_destroy_s": 2.466750144958496,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.13264989852905273
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.060947418212890625
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.084108829498291
+      }
+    ]
+  },
+  {
+    "run": "parallel-optimized-1",
+    "container_id": "0e437c461797e1ef6d4332aa5def263347245e9f58da971328fc2313fb23d80c",
+    "create_offset_s": 2.3534128665924072,
+    "create_to_start_s": 0.15535640716552734,
+    "start_to_destroy_s": 2.851417303085327,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.09870672225952148
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.06887459754943848
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.1488304138183594
+      }
+    ]
+  },
+  {
+    "run": "parallel-optimized-1",
+    "container_id": "04b67964dae06e799cfdcd965fe8fabd4af8d65c49548f9a7044a039084d098c",
+    "create_offset_s": 2.3569352626800537,
+    "create_to_start_s": 0.11295557022094727,
+    "start_to_destroy_s": 2.8333170413970947,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.0889582633972168
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.10488677024841309
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.133967638015747
+      }
+    ]
+  },
+  {
+    "run": "parallel-optimized-1",
+    "container_id": "3bd5de0fea4e186d483699b72032415f6c2f55684ee5642fe6838a9660dbe77b",
+    "create_offset_s": 2.411992311477661,
+    "create_to_start_s": 0.15562891960144043,
+    "start_to_destroy_s": 2.7862420082092285,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.09645938873291016
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.07508039474487305
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.1500346660614014
+      }
+    ]
+  },
+  {
+    "run": "parallel-optimized-1",
+    "container_id": "5066eeca97b45c19f1ee5646d79a434de687d684663d553a296c0bb3ce4a634d",
+    "create_offset_s": 2.416238307952881,
+    "create_to_start_s": 0.16565632820129395,
+    "start_to_destroy_s": 2.76608943939209,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.08445191383361816
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.09354472160339355
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.1318838596343994
+      }
+    ]
+  },
+  {
+    "run": "parallel-optimized-2",
+    "container_id": "ac90ca7eee6ee53f273dd2a47f3ad3b4ec0038742a822fe79aec418f295640de",
+    "create_offset_s": 2.0471837520599365,
+    "create_to_start_s": 0.13704419136047363,
+    "start_to_destroy_s": 2.8065505027770996,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.08417248725891113
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.07918906211853027
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.120753765106201
+      }
+    ]
+  },
+  {
+    "run": "parallel-optimized-2",
+    "container_id": "bb8821f8f5a48b23192bfd34c1903d72cceeef2da8f7fd0e4677978a74950dc3",
+    "create_offset_s": 2.0599043369293213,
+    "create_to_start_s": 0.11994481086730957,
+    "start_to_destroy_s": 2.784104108810425,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.10794806480407715
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.08666491508483887
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.1319916248321533
+      }
+    ]
+  },
+  {
+    "run": "parallel-optimized-2",
+    "container_id": "7a7e0958b71d9c6752ffb9f3663aeed41932055b60bdab61058276dfa31f2581",
+    "create_offset_s": 2.1184213161468506,
+    "create_to_start_s": 0.16835832595825195,
+    "start_to_destroy_s": 2.7090485095977783,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.07500195503234863
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.08585119247436523
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.134913921356201
+      }
+    ]
+  },
+  {
+    "run": "parallel-optimized-2",
+    "container_id": "0e3de02a49868b22f5522dc53ecd7a1cc3d2e3e7b9f78d5ba09c6a4c355b0813",
+    "create_offset_s": 2.5827558040618896,
+    "create_to_start_s": 0.1400599479675293,
+    "start_to_destroy_s": 2.444340467453003,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.06603860855102539
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.05753946304321289
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.0880582332611084
+      }
+    ]
+  },
+  {
+    "run": "parallel-current-2",
+    "container_id": "1e367fda0448bbf45580c6cf036f33add4a37f8a1e62bfa12c9cdd5ee437c2bc",
+    "create_offset_s": 2.9428317546844482,
+    "create_to_start_s": 0.18526053428649902,
+    "start_to_destroy_s": 2.6204323768615723,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.060498952865600586
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.07967686653137207
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.1095094680786133
+      }
+    ]
+  },
+  {
+    "run": "parallel-current-2",
+    "container_id": "43f79e8a3a8c009129e8dc5f04f4d4abf63b49a46faf449557ababa1dbfba9a3",
+    "create_offset_s": 3.3186051845550537,
+    "create_to_start_s": 0.14511847496032715,
+    "start_to_destroy_s": 2.604116678237915,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.08382391929626465
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.05090141296386719
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.0966572761535645
+      }
+    ]
+  },
+  {
+    "run": "parallel-current-2",
+    "container_id": "2f7fb31908322bd2a74da908fb2dcae4f0f6e2786155fdc47f64f3aeb911c0b6",
+    "create_offset_s": 3.3263635635375977,
+    "create_to_start_s": 0.13089251518249512,
+    "start_to_destroy_s": 2.595797061920166,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.09408974647521973
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.08051252365112305
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.086806535720825
+      }
+    ]
+  },
+  {
+    "run": "parallel-current-2",
+    "container_id": "121c28812d6e0945a7c9dd2d04ed875fdcb129fc0c1cf86afea2c502f17f5ed7",
+    "create_offset_s": 3.3269975185394287,
+    "create_to_start_s": 0.12833142280578613,
+    "start_to_destroy_s": 2.5801784992218018,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.09038424491882324
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.05540871620178223
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.092256546020508
+      }
+    ]
+  },
+  {
+    "run": "parallel-current-3",
+    "container_id": "2715f8333ecd29380d22ff2cc54f3df39d264bcf03f817c5c9783427e1ccac5c",
+    "create_offset_s": 1.9356257915496826,
+    "create_to_start_s": 0.08812212944030762,
+    "start_to_destroy_s": 2.444740056991577,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.04937148094177246
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.045897483825683594
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.1082184314727783
+      }
+    ]
+  },
+  {
+    "run": "parallel-current-3",
+    "container_id": "a847e248238ec2396d6ebb6f60e71512824d41530221e9ed8d77f3f6cace3152",
+    "create_offset_s": 2.3814103603363037,
+    "create_to_start_s": 0.0740044116973877,
+    "start_to_destroy_s": 2.4198429584503174,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.0784294605255127
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.05780529975891113
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.085327386856079
+      }
+    ]
+  },
+  {
+    "run": "parallel-current-3",
+    "container_id": "7fabfe7529aa23463147bcf10e1e2dbe48e0ea44adeaa38e6ef5989751fe3234",
+    "create_offset_s": 21.915141820907593,
+    "create_to_start_s": 0.1166696548461914,
+    "start_to_destroy_s": 2.6995363235473633,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.0944375991821289
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.09452080726623535
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.091365337371826
+      }
+    ]
+  },
+  {
+    "run": "parallel-current-3",
+    "container_id": "a0bad367736e94b04aea0444c70fe93732c68a45585d3f712b9a117dee33723a",
+    "create_offset_s": 22.383319854736328,
+    "create_to_start_s": 0.1527860164642334,
+    "start_to_destroy_s": 2.449232578277588,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.06479048728942871
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.03311920166015625
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.0714216232299805
+      }
+    ]
+  },
+  {
+    "run": "parallel-optimized-3",
+    "container_id": "7a7079edbbb9456804047c00e5927503f69b9c4ed1d4c7478acb015adeed63b0",
+    "create_offset_s": 2.416259527206421,
+    "create_to_start_s": 0.09073495864868164,
+    "start_to_destroy_s": 2.3900575637817383,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.05399489402770996
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.04825401306152344
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.066650867462158
+      }
+    ]
+  },
+  {
+    "run": "parallel-optimized-3",
+    "container_id": "259ddcc52da13e3546caa9feccf581600f75345858a543109ffe62f3c3f53b3f",
+    "create_offset_s": 3.1390581130981445,
+    "create_to_start_s": 0.12363719940185547,
+    "start_to_destroy_s": 2.6368002891540527,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.07259154319763184
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.06358838081359863
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.1062331199645996
+      }
+    ]
+  },
+  {
+    "run": "parallel-optimized-3",
+    "container_id": "dbac30537a4c6028eac6cbea3caac29c58d217be15823dfe423add0ecf832a22",
+    "create_offset_s": 3.1546471118927,
+    "create_to_start_s": 0.08207178115844727,
+    "start_to_destroy_s": 2.652629852294922,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.07212162017822266
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.07123565673828125
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.11488938331604
+      }
+    ]
+  },
+  {
+    "run": "parallel-optimized-3",
+    "container_id": "68535ea6c6339e98a5a2040e00d019093ef1d359c0146938e2423ab012397132",
+    "create_offset_s": 3.1548807621002197,
+    "create_to_start_s": 0.07907795906066895,
+    "start_to_destroy_s": 2.6460483074188232,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.09046220779418945
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.07059144973754883
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.1014492511749268
+      }
+    ]
+  },
+  {
+    "run": "dag-current-1",
+    "container_id": "5307aa0eb2dd34097283b842fc235ad0f2958664505546f4a71e2696c7564688",
+    "create_offset_s": 2.431865930557251,
+    "create_to_start_s": 0.08882975578308105,
+    "start_to_destroy_s": 4.505019187927246,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.05800318717956543
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.05386972427368164
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 4.114235162734985
+      }
+    ]
+  },
+  {
+    "run": "dag-current-1",
+    "container_id": "3ed71cf33e710650f40628c9416892b848f2aa994468813078e359b977aab932",
+    "create_offset_s": 2.7465639114379883,
+    "create_to_start_s": 0.10882163047790527,
+    "start_to_destroy_s": 1.3736927509307861,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.050238847732543945
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.032900333404541016
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 1.0772252082824707
+      }
+    ]
+  },
+  {
+    "run": "dag-current-1",
+    "container_id": "4680c4b80127a5be759a19ac76e472c677ae53889ac34e12e4413ae35a6a861e",
+    "create_offset_s": 8.708252429962158,
+    "create_to_start_s": 0.0727379322052002,
+    "start_to_destroy_s": 0.29917216300964355,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.043612003326416016
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.02184581756591797
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 0.06091594696044922
+      }
+    ]
+  },
+  {
+    "run": "dag-optimized-1",
+    "container_id": "a1ef606a73de46d61a4dfc4c88a97ad5c5717f57920c189c6b3970b0eedde92a",
+    "create_offset_s": 2.372142791748047,
+    "create_to_start_s": 0.0871284008026123,
+    "start_to_destroy_s": 1.3980820178985596,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.04207634925842285
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.041899919509887695
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 1.0838782787322998
+      }
+    ]
+  },
+  {
+    "run": "dag-optimized-1",
+    "container_id": "0ce487283e2ebed454d131316c145b04b627dc6a78d7f2635f29c8436a3843a8",
+    "create_offset_s": 2.374276638031006,
+    "create_to_start_s": 0.0915229320526123,
+    "start_to_destroy_s": 4.3820295333862305,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.046272993087768555
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.04533243179321289
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 4.083022356033325
+      }
+    ]
+  },
+  {
+    "run": "dag-optimized-1",
+    "container_id": "9e8b451c03dfe0af5c86426d6089039d696c8c9876fd149736025225d48612ee",
+    "create_offset_s": 9.073185443878174,
+    "create_to_start_s": 0.08762192726135254,
+    "start_to_destroy_s": 0.3527216911315918,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.0640714168548584
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.043013811111450195
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 0.07004547119140625
+      }
+    ]
+  },
+  {
+    "run": "dag-optimized-2",
+    "container_id": "ad515112fa20b09bc512ce9468a261b7d065f8d214633bb3828441f6bbb9889b",
+    "create_offset_s": 1.9448316097259521,
+    "create_to_start_s": 0.08726835250854492,
+    "start_to_destroy_s": 1.374199390411377,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.02423405647277832
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.04408860206604004
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 1.0698201656341553
+      }
+    ]
+  },
+  {
+    "run": "dag-optimized-2",
+    "container_id": "67e42bd7e8933096529383a803121b929f5f170221dc69a5b5e1a9e7fad72d5b",
+    "create_offset_s": 2.0062716007232666,
+    "create_to_start_s": 0.07131600379943848,
+    "start_to_destroy_s": 4.432749032974243,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.045213937759399414
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.0678565502166748
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 4.085395336151123
+      }
+    ]
+  },
+  {
+    "run": "dag-optimized-2",
+    "container_id": "7475d02bbfa3cd858cf728ee83ae4c59a09185299b89a6a7bdb5ae3a02c61e78",
+    "create_offset_s": 8.291159629821777,
+    "create_to_start_s": 0.07417798042297363,
+    "start_to_destroy_s": 0.4039192199707031,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.06497311592102051
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.06408309936523438
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 0.06270718574523926
+      }
+    ]
+  },
+  {
+    "run": "dag-current-2",
+    "container_id": "a66bbc9e36fcc02cc1c652dc1917c1c211f26bb51d14196935496f65d224acb3",
+    "create_offset_s": 1.973351240158081,
+    "create_to_start_s": 0.07198309898376465,
+    "start_to_destroy_s": 1.3922035694122314,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.0513153076171875
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.07535171508789062
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 1.062934160232544
+      }
+    ]
+  },
+  {
+    "run": "dag-current-2",
+    "container_id": "152cf6d6dafdc314443a9b14f32987dbbac70dff912ca9a4d01fb9f777bd365b",
+    "create_offset_s": 2.085989236831665,
+    "create_to_start_s": 0.07254648208618164,
+    "start_to_destroy_s": 4.359580755233765,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.036475181579589844
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.060419559478759766
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 4.070295333862305
+      }
+    ]
+  },
+  {
+    "run": "dag-current-2",
+    "container_id": "90d70641ef87333abc9978c01e4d5c6bd6eaff86a55fc55204da7a204b202ec0",
+    "create_offset_s": 9.024977445602417,
+    "create_to_start_s": 0.07596421241760254,
+    "start_to_destroy_s": 0.3134183883666992,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.05596184730529785
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.04288434982299805
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 0.05143857002258301
+      }
+    ]
+  },
+  {
+    "run": "dag-current-3",
+    "container_id": "07a86197672cbb96d23748dc4d0e8c21181fe61d76a5fb3b062a9f190f4898ae",
+    "create_offset_s": 2.338186740875244,
+    "create_to_start_s": 0.08905577659606934,
+    "start_to_destroy_s": 1.471742868423462,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.09172749519348145
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.06243109703063965
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 1.0670466423034668
+      }
+    ]
+  },
+  {
+    "run": "dag-current-3",
+    "container_id": "bcbf084198a8f29d26674a9960df820a562a17c63a9b188e3a2405374009b38b",
+    "create_offset_s": 2.6540799140930176,
+    "create_to_start_s": 0.07187747955322266,
+    "start_to_destroy_s": 4.362306833267212,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.05340123176574707
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.027091503143310547
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 4.079362869262695
+      }
+    ]
+  },
+  {
+    "run": "dag-current-3",
+    "container_id": "a11f1a99d20c7dfefa817c8a0277c537d8006c178862483311a4f8045482561d",
+    "create_offset_s": 9.324623107910156,
+    "create_to_start_s": 0.09258270263671875,
+    "start_to_destroy_s": 0.3250417709350586,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.048078298568725586
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.022674083709716797
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 0.05206656455993652
+      }
+    ]
+  },
+  {
+    "run": "dag-optimized-3",
+    "container_id": "88fcdfebca538d615ef79992eec854fba2a57cf7cc5083df845d729a2de41e62",
+    "create_offset_s": 2.5782079696655273,
+    "create_to_start_s": 0.0717623233795166,
+    "start_to_destroy_s": 4.453006982803345,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.06226778030395508
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.060399770736694336
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 4.058034181594849
+      }
+    ]
+  },
+  {
+    "run": "dag-optimized-3",
+    "container_id": "cb1281c23df77104ca72626e59f49c1821d98902b28f63ae29398511e8e42eee",
+    "create_offset_s": 2.73972749710083,
+    "create_to_start_s": 0.06259822845458984,
+    "start_to_destroy_s": 1.3860485553741455,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.05313229560852051
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.06781268119812012
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 1.0607225894927979
+      }
+    ]
+  },
+  {
+    "run": "dag-optimized-3",
+    "container_id": "3d31eba98b119f512785f1838042c83908e044133750548ef5cff0fe966981c6",
+    "create_offset_s": 8.993768453598022,
+    "create_to_start_s": 0.08507990837097168,
+    "start_to_destroy_s": 0.38161492347717285,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.054476022720336914
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.051537275314331055
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 0.06333017349243164
+      }
+    ]
+  },
+  {
+    "run": "parallel-serial-1",
+    "container_id": "4a2648aa6d0325af328d87e2f82e5bc17f16799cdfda0b14ca6f03a2649dabcb",
+    "create_offset_s": 6.907182216644287,
+    "create_to_start_s": 0.13423752784729004,
+    "start_to_destroy_s": 2.579667806625366,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.06983733177185059
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.08100581169128418
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.104156255722046
+      }
+    ]
+  },
+  {
+    "run": "parallel-serial-1",
+    "container_id": "47de41aec0eab369ad6f7730dd5d2db21474531e7f1121192aabea17917ff350",
+    "create_offset_s": 11.69467282295227,
+    "create_to_start_s": 0.16135048866271973,
+    "start_to_destroy_s": 2.643641471862793,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.07268357276916504
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.09241390228271484
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.103247880935669
+      }
+    ]
+  },
+  {
+    "run": "parallel-serial-1",
+    "container_id": "293a9ac6b6c5d840e2e4b91f4c3c6384c708651ef7ec1f0795acd66ae2e6f531",
+    "create_offset_s": 17.03708529472351,
+    "create_to_start_s": 0.15801739692687988,
+    "start_to_destroy_s": 2.6583850383758545,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.10526490211486816
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.07250308990478516
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.1221063137054443
+      }
+    ]
+  },
+  {
+    "run": "parallel-serial-1",
+    "container_id": "44558b08802aa3bea9db1ffe7f8e9da63fd598e5057e680ada41b6aed82f867a",
+    "create_offset_s": 22.074236631393433,
+    "create_to_start_s": 0.07074642181396484,
+    "start_to_destroy_s": 2.572200059890747,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.06859445571899414
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.05170869827270508
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.136180877685547
+      }
+    ]
+  },
+  {
+    "run": "parallel-serial-2",
+    "container_id": "a465675abd2b1ce36ea01d73ee35cebbe06c623983a18d8345d6fabadb37c3d6",
+    "create_offset_s": 3.780179262161255,
+    "create_to_start_s": 0.08134698867797852,
+    "start_to_destroy_s": 2.470975160598755,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.07048606872558594
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.05771327018737793
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.0963640213012695
+      }
+    ]
+  },
+  {
+    "run": "parallel-serial-2",
+    "container_id": "dce900e7db91088f1ccad4611186335ef0b80664caffc94f90b43dcb71c8b13a",
+    "create_offset_s": 8.374164819717407,
+    "create_to_start_s": 0.1826000213623047,
+    "start_to_destroy_s": 2.805851936340332,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.0936589241027832
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.07151651382446289
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.1805851459503174
+      }
+    ]
+  },
+  {
+    "run": "parallel-serial-2",
+    "container_id": "840e200a7b4a177f338d89f71c34ae2446349d0e0331f73393fd78a52bbee559",
+    "create_offset_s": 14.056899785995483,
+    "create_to_start_s": 0.10311627388000488,
+    "start_to_destroy_s": 2.4502878189086914,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.07524418830871582
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.05884838104248047
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.080504894256592
+      }
+    ]
+  },
+  {
+    "run": "parallel-serial-2",
+    "container_id": "b4ef32693f1ba962a7401aa0b448ef67699e74ea617096c26ecf03f6355bd1b8",
+    "create_offset_s": 19.01564073562622,
+    "create_to_start_s": 0.0974276065826416,
+    "start_to_destroy_s": 2.392509937286377,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.07027554512023926
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.02266240119934082
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.084153413772583
+      }
+    ]
+  },
+  {
+    "run": "parallel-serial-3",
+    "container_id": "a88bd0af970f44423925810454786dd306859121cd2c400dd5acc125a2a6166d",
+    "create_offset_s": 2.4750025272369385,
+    "create_to_start_s": 0.1182551383972168,
+    "start_to_destroy_s": 2.569674491882324,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.07655477523803711
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.05351400375366211
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.1186349391937256
+      }
+    ]
+  },
+  {
+    "run": "parallel-serial-3",
+    "container_id": "2b87024fec304c31b66c13089f6f10e3823f750d4a22a6bc3249b8d67f7510b2",
+    "create_offset_s": 7.730963230133057,
+    "create_to_start_s": 0.10198283195495605,
+    "start_to_destroy_s": 2.435335874557495,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.05353426933288574
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.045603036880493164
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.0904245376586914
+      }
+    ]
+  },
+  {
+    "run": "parallel-serial-3",
+    "container_id": "1f705145dba0d523d3d52424a6437466ce43eab73b5a2e66a4261760a4a2df46",
+    "create_offset_s": 12.531912088394165,
+    "create_to_start_s": 0.1054387092590332,
+    "start_to_destroy_s": 2.4366517066955566,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.06689190864562988
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.04357290267944336
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.0836188793182373
+      }
+    ]
+  },
+  {
+    "run": "parallel-serial-3",
+    "container_id": "60fa2535e904101e9fad7130d120db7348d636cfc195561aef863277c8dd0fbd",
+    "create_offset_s": 17.539117336273193,
+    "create_to_start_s": 0.3285508155822754,
+    "start_to_destroy_s": 2.6733767986297607,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.09984779357910156
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.07350635528564453
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.1150853633880615
+      }
+    ]
+  },
+  {
+    "run": "080928-minimal-current-1",
+    "container_id": "2238be611114fd78703d83c370ef3972a88b1700952e98a182c7a68567b0ad29",
+    "create_offset_s": 2.3469622135162354,
+    "create_to_start_s": 0.09289765357971191,
+    "start_to_destroy_s": 0.4191107749938965,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.07307672500610352
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.05391812324523926
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 0.05531668663024902
+      }
+    ]
+  },
+  {
+    "run": "080928-minimal-integration-1",
+    "container_id": "098fdaf855b22fba068d0a6b62a42fb8dd729b081cea9df082a00c7dec96d928",
+    "create_offset_s": 3.9752731323242188,
+    "create_to_start_s": 0.10003185272216797,
+    "start_to_destroy_s": 0.5069575309753418,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.06136178970336914
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.053626060485839844
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 0.06313371658325195
+      }
+    ]
+  },
+  {
+    "run": "080928-minimal-integration-2",
+    "container_id": "490bf40743a3c29d597ce660b61dda9790d9016a12dc603743f1c54d5141be90",
+    "create_offset_s": 3.0101258754730225,
+    "create_to_start_s": 0.1219797134399414,
+    "start_to_destroy_s": 0.48150157928466797,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.06695556640625
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.0598597526550293
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 0.10329627990722656
+      }
+    ]
+  },
+  {
+    "run": "080928-minimal-current-2",
+    "container_id": "0fd830c44baaaa9b9b514c9d25047d0bd5c5ea3a078e4593cba36c26a703ca5f",
+    "create_offset_s": 3.488929271697998,
+    "create_to_start_s": 0.10608935356140137,
+    "start_to_destroy_s": 0.5179145336151123,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.08057832717895508
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.06078147888183594
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 0.07436776161193848
+      }
+    ]
+  },
+  {
+    "run": "080928-minimal-current-3",
+    "container_id": "4594f5f830f163cd5c1216953b4f851c918de32347b7dd809ed578f9920a7160",
+    "create_offset_s": 3.1487274169921875,
+    "create_to_start_s": 0.13574624061584473,
+    "start_to_destroy_s": 0.4514155387878418,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.07032918930053711
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.050520896911621094
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 0.0699625015258789
+      }
+    ]
+  },
+  {
+    "run": "080928-minimal-integration-3",
+    "container_id": "439c7ecffdb5504c71980f8c2820f9521a5c94f58347a578249f0a9e3df03450",
+    "create_offset_s": 3.175165891647339,
+    "create_to_start_s": 0.10736083984375,
+    "start_to_destroy_s": 0.477764368057251,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.06407928466796875
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.06006503105163574
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 0.06221508979797363
+      }
+    ]
+  },
+  {
+    "run": "080928-logs-current-1",
+    "container_id": "555d52bd61f20f136e2ccda541e868c7d6b99aad3fec84ed95e500a485b20300",
+    "create_offset_s": 2.627901792526245,
+    "create_to_start_s": 0.08317279815673828,
+    "start_to_destroy_s": 0.5667924880981445,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.08214378356933594
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.0590360164642334
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 0.09715032577514648
+      }
+    ]
+  },
+  {
+    "run": "080928-logs-integration-1",
+    "container_id": "c04f281b77bb024773df5b4b2839d521a353d7d47abb07d0da681d357f2f7c76",
+    "create_offset_s": 3.4651200771331787,
+    "create_to_start_s": 0.08846306800842285,
+    "start_to_destroy_s": 1.1229593753814697,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.1156165599822998
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.060220956802368164
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 0.10568737983703613
+      }
+    ]
+  },
+  {
+    "run": "080928-logs-integration-2",
+    "container_id": "de39019e0c772bb292ea1b01eebab5db73f620e26545bf747759374d8ccb533b",
+    "create_offset_s": 3.189649820327759,
+    "create_to_start_s": 0.07673525810241699,
+    "start_to_destroy_s": 1.0737552642822266,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.07227134704589844
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.08517169952392578
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 0.10757946968078613
+      }
+    ]
+  },
+  {
+    "run": "080928-logs-current-2",
+    "container_id": "3cf8bdef1458fd1db7d2b9846430f9aa3ed380b9a929532cb0cac35a8d84ae39",
+    "create_offset_s": 2.627498149871826,
+    "create_to_start_s": 0.07469725608825684,
+    "start_to_destroy_s": 0.5123195648193359,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.06046867370605469
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.04915809631347656
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 0.07994389533996582
+      }
+    ]
+  },
+  {
+    "run": "080928-logs-current-3",
+    "container_id": "ff132dc2782bf0fe53ce99b46265e4f68ede9a4b9abae8247dc269ec782d1de8",
+    "create_offset_s": 2.720115900039673,
+    "create_to_start_s": 0.10530734062194824,
+    "start_to_destroy_s": 0.5962631702423096,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.08117103576660156
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.05379223823547363
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 0.1139822006225586
+      }
+    ]
+  },
+  {
+    "run": "080928-logs-integration-3",
+    "container_id": "80fdb8b0708ee7a3b3ecdf1dc7fd1a98035f8adc86e3ed810b77971ba1a4e72c",
+    "create_offset_s": 2.5478808879852295,
+    "create_to_start_s": 0.1109316349029541,
+    "start_to_destroy_s": 1.3605353832244873,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.0640869140625
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.05695939064025879
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 0.13214492797851562
+      }
+    ]
+  },
+  {
+    "run": "small-image-1",
+    "container_id": "3789cff63970159226a6d6986b35981c1b6ed28c14b362af50e5b5dae97c2a57",
+    "create_offset_s": 38.46807408332825,
+    "create_to_start_s": 0.0761713981628418,
+    "start_to_destroy_s": 0.6033945083618164,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.06239056587219238
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.04783344268798828
+      },
+      {
+        "command": "node --no-warnings -e console.log(process.execPath)",
+        "duration_s": 0.2695767879486084
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 0.04829907417297363
+      }
+    ]
+  },
+  {
+    "run": "small-image-2",
+    "container_id": "b00fc43b48d70417be9b78588230e61ba0416349d6677691d54e8a8427abe099",
+    "create_offset_s": 4.3927834033966064,
+    "create_to_start_s": 0.08638882637023926,
+    "start_to_destroy_s": 0.568396806716919,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.04439735412597656
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.042937278747558594
+      },
+      {
+        "command": "node --no-warnings -e console.log(process.execPath)",
+        "duration_s": 0.2586534023284912
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 0.05543875694274902
+      }
+    ]
+  },
+  {
+    "run": "small-image-3",
+    "container_id": "51d73ecaec0e96a5e8260c3e148eb320149a54c98a7574aeeeb80a8548e635eb",
+    "create_offset_s": 4.1648173332214355,
+    "create_to_start_s": 0.0814964771270752,
+    "start_to_destroy_s": 0.567267656326294,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.05449247360229492
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.02974247932434082
+      },
+      {
+        "command": "node --no-warnings -e console.log(process.execPath)",
+        "duration_s": 0.2658858299255371
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 0.062221527099609375
+      }
+    ]
+  },
+  {
+    "run": "small-image-4",
+    "container_id": "9299dcf02235dd285fe379b65180bf5f363854eb2323a7e5472a616727069b87",
+    "create_offset_s": 3.657867193222046,
+    "create_to_start_s": 0.11219453811645508,
+    "start_to_destroy_s": 0.6567068099975586,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.1036827564239502
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.0506434440612793
+      },
+      {
+        "command": "node --no-warnings -e console.log(process.execPath)",
+        "duration_s": 0.2636692523956299
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 0.06204414367675781
+      }
+    ]
+  },
+  {
+    "run": "npm-cache-1",
+    "container_id": "912c62aca8fe486dc5c7032efa14e0257c388983588ec5daad249802dc517b94",
+    "create_offset_s": 2.8788886070251465,
+    "create_to_start_s": 0.09900045394897461,
+    "start_to_destroy_s": 6.923279762268066,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.06447887420654297
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.047150611877441406
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/1",
+        "duration_s": 5.65580153465271
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/2",
+        "duration_s": 0.6479666233062744
+      }
+    ]
+  },
+  {
+    "run": "npm-cache-2",
+    "container_id": "72444e5da0a76c95f083f204456d06221ba15f96f4e76e49f9d982124b2888d4",
+    "create_offset_s": 2.3923940658569336,
+    "create_to_start_s": 0.09766268730163574,
+    "start_to_destroy_s": 2.9220733642578125,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.05224919319152832
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.054552316665649414
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/1",
+        "duration_s": 1.849177598953247
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/2",
+        "duration_s": 0.4875600337982178
+      }
+    ]
+  },
+  {
+    "run": "npm-cache-3",
+    "container_id": "410bff6f3b8be98b370d2928db5b6b5d66564fc7e4cffcf818bd7f2edfb93b45",
+    "create_offset_s": 2.0286788940429688,
+    "create_to_start_s": 0.11905837059020996,
+    "start_to_destroy_s": 3.1047558784484863,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.06348872184753418
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.04894089698791504
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/1",
+        "duration_s": 1.9916057586669922
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/2",
+        "duration_s": 0.5390288829803467
+      }
+    ]
+  },
+  {
+    "run": "external-newcache-1",
+    "container_id": "329743ba7d3d7262ef6d3046767047b4139bed7f6f50ea5d2607fcb5d61f4078",
+    "create_offset_s": 1.7975106239318848,
+    "create_to_start_s": 0.0921931266784668,
+    "start_to_destroy_s": 26.056036710739136,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.07372808456420898
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.04512596130371094
+      },
+      {
+        "command": "node /var/run/act/actions/actions-setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020/dist/setup/index.js",
+        "duration_s": 1.4321222305297852
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/1",
+        "duration_s": 0.11810874938964844
+      },
+      {
+        "command": "node /var/run/act/actions/actions-setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020/dist/cache-save/index.js",
+        "duration_s": 0.693476676940918
+      }
+    ]
+  },
+  {
+    "run": "external-newcache-2",
+    "container_id": "c907d518af3683de9f66015b25c58b56864f382296e932a011d9a085afa85bc8",
+    "create_offset_s": 2.192363739013672,
+    "create_to_start_s": 0.15256190299987793,
+    "start_to_destroy_s": 4.13541316986084,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.08703398704528809
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.05022764205932617
+      },
+      {
+        "command": "node /var/run/act/actions/actions-setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020/dist/setup/index.js",
+        "duration_s": 1.4638056755065918
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/1",
+        "duration_s": 0.18652057647705078
+      },
+      {
+        "command": "node /var/run/act/actions/actions-setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020/dist/cache-save/index.js",
+        "duration_s": 0.715874195098877
+      }
+    ]
+  },
+  {
+    "run": "external-newcache-3",
+    "container_id": "83544086e0db1f618eaa79180ebf4a0d8093bc8134a464f5446c91d3ceecf2c9",
+    "create_offset_s": 3.642554998397827,
+    "create_to_start_s": 0.18097448348999023,
+    "start_to_destroy_s": 4.730119466781616,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.09996438026428223
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.0712132453918457
+      },
+      {
+        "command": "node /var/run/act/actions/actions-setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020/dist/setup/index.js",
+        "duration_s": 1.750967264175415
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/1",
+        "duration_s": 0.11637020111083984
+      },
+      {
+        "command": "node /var/run/act/actions/actions-setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020/dist/cache-save/index.js",
+        "duration_s": 0.9057300090789795
+      }
+    ]
+  },
+  {
+    "run": "workspace-copy-1",
+    "container_id": "73088e2b2ff4f68953921cbd9b691e6870f0d25fc24f77e98287176a731871a6",
+    "create_offset_s": 1.8851091861724854,
+    "create_to_start_s": 0.1411120891571045,
+    "start_to_destroy_s": 1.4984443187713623,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.0603945255279541
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.05417346954345703
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/1",
+        "duration_s": 0.051435232162475586
+      }
+    ]
+  },
+  {
+    "run": "workspace-bind-1",
+    "container_id": "378ca447d46cbda4ce67cd05306efaf63477a159bfb8c85ee66be4497431c0bd",
+    "create_offset_s": 2.2571496963500977,
+    "create_to_start_s": 0.16991066932678223,
+    "start_to_destroy_s": 0.5068657398223877,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.0627748966217041
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.048363447189331055
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/1",
+        "duration_s": 0.053030967712402344
+      }
+    ]
+  },
+  {
+    "run": "workspace-bind-2",
+    "container_id": "5fb3e0c18de10cacd8331ea6917e5c9e843afd4607d0c9974e8ef2577595f107",
+    "create_offset_s": 2.0290510654449463,
+    "create_to_start_s": 0.07459521293640137,
+    "start_to_destroy_s": 0.5492398738861084,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.04954791069030762
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.04718160629272461
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/1",
+        "duration_s": 0.057869911193847656
+      }
+    ]
+  },
+  {
+    "run": "workspace-copy-2",
+    "container_id": "7fe38679ce6a6a63b405f8e0e53b8231f3afb7113f5abdcfa0fa5105b7bb2492",
+    "create_offset_s": 2.0060677528381348,
+    "create_to_start_s": 0.10516643524169922,
+    "start_to_destroy_s": 1.4715585708618164,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.062017202377319336
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.048825979232788086
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/1",
+        "duration_s": 0.1331644058227539
+      }
+    ]
+  },
+  {
+    "run": "workspace-copy-3",
+    "container_id": "216f20e3aa19b0a76ea8e0d767ef326becd58002b528891ff4a1d620ba35f0dc",
+    "create_offset_s": 2.7061502933502197,
+    "create_to_start_s": 0.06707501411437988,
+    "start_to_destroy_s": 1.2840704917907715,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.0485835075378418
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.03942370414733887
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/1",
+        "duration_s": 0.05039620399475098
+      }
+    ]
+  },
+  {
+    "run": "workspace-bind-3",
+    "container_id": "1f9aef02e88d79a22824155d52032532739b1b78c5f4e2e78a3218761f18ac29",
+    "create_offset_s": 5.165157079696655,
+    "create_to_start_s": 0.11682009696960449,
+    "start_to_destroy_s": 0.43840909004211426,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.07863855361938477
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.05247187614440918
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/1",
+        "duration_s": 0.05988955497741699
+      }
+    ]
+  },
+  {
+    "run": "native-minimal-native-current-1",
+    "container_id": "8ec0066a4e368ae1f579e01f772ed579ec7a1c0e025faf286883feb1e961b6dd",
+    "create_offset_s": 4.22998833656311,
+    "create_to_start_s": 0.10392117500305176,
+    "start_to_destroy_s": 0.4868016242980957,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.049035072326660156
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.036767005920410156
+      },
+      {
+        "command": "node --no-warnings -e console.log(process.execPath)",
+        "duration_s": 0.13317584991455078
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 0.04665517807006836
+      }
+    ]
+  },
+  {
+    "run": "native-minimal-native-optimized-1",
+    "container_id": "e45662a8b16743b33bee81e632f8f24530d3ff59f8ae91d5205b82bdddd604ca",
+    "create_offset_s": 0.19946599006652832,
+    "create_to_start_s": 0.09525513648986816,
+    "start_to_destroy_s": 0.23405718803405762,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.03522992134094238
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.009981870651245117
+      },
+      {
+        "command": "node --no-warnings -e console.log(process.execPath)",
+        "duration_s": 0.023065567016601562
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 0.02847599983215332
+      }
+    ]
+  },
+  {
+    "run": "native-minimal-native-optimized-2",
+    "container_id": "b093db15915ddc3144999d4519ccea16375cb2f9828edff3335167367d37ccc3",
+    "create_offset_s": 0.1491079330444336,
+    "create_to_start_s": 0.06039786338806152,
+    "start_to_destroy_s": 0.28012704849243164,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.03977012634277344
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.00970768928527832
+      },
+      {
+        "command": "node --no-warnings -e console.log(process.execPath)",
+        "duration_s": 0.0515592098236084
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 0.04442620277404785
+      }
+    ]
+  },
+  {
+    "run": "native-minimal-native-current-2",
+    "container_id": "ceee08421536e9781ac2ef1c077943f55fc94af3a127744e9d0472ca05886150",
+    "create_offset_s": 2.48984956741333,
+    "create_to_start_s": 0.08353590965270996,
+    "start_to_destroy_s": 0.30420875549316406,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.03389883041381836
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.04312396049499512
+      },
+      {
+        "command": "node --no-warnings -e console.log(process.execPath)",
+        "duration_s": 0.0564725399017334
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 0.03172588348388672
+      }
+    ]
+  },
+  {
+    "run": "native-minimal-native-current-3",
+    "container_id": "ab283c8482695247c96f3d5e37ab99d6d3316c4e3d85a79d45d8c37d7fb1ef64",
+    "create_offset_s": 1.980748176574707,
+    "create_to_start_s": 0.06461358070373535,
+    "start_to_destroy_s": 0.2810094356536865,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.03300762176513672
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.010109424591064453
+      },
+      {
+        "command": "node --no-warnings -e console.log(process.execPath)",
+        "duration_s": 0.0451047420501709
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 0.036760568618774414
+      }
+    ]
+  },
+  {
+    "run": "native-minimal-native-optimized-3",
+    "container_id": "fd97928f1e5075ab24068f4cbc52cef0d9dcdf6f0d30c111aaeafee8136c0a0f",
+    "create_offset_s": 0.19907236099243164,
+    "create_to_start_s": 0.06952238082885742,
+    "start_to_destroy_s": 0.3358330726623535,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.0448453426361084
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.014062881469726562
+      },
+      {
+        "command": "node --no-warnings -e console.log(process.execPath)",
+        "duration_s": 0.05416512489318848
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 0.029952049255371094
+      }
+    ]
+  },
+  {
+    "run": "native-typescript-native-current-1",
+    "container_id": "3ef30f473dc1f0bbadd0c4853b569913786e145489308e8c6818dadeb20c0d20",
+    "create_offset_s": 2.2211496829986572,
+    "create_to_start_s": 0.11237263679504395,
+    "start_to_destroy_s": 5.327325344085693,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.05285048484802246
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.044828176498413086
+      },
+      {
+        "command": "node --no-warnings -e console.log(process.execPath)",
+        "duration_s": 0.03744792938232422
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/1",
+        "duration_s": 3.7866604328155518
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/2",
+        "duration_s": 0.6909105777740479
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/3",
+        "duration_s": 0.15689969062805176
+      }
+    ]
+  },
+  {
+    "run": "native-typescript-native-optimized-1",
+    "container_id": "f55c82b7aeb1d3ed3dc3e0d0428e53d3c9bb08ddd56d149f31fd7f44a78c2f3c",
+    "create_offset_s": 0.18846392631530762,
+    "create_to_start_s": 0.07924675941467285,
+    "start_to_destroy_s": 8.775405883789062,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.04800915718078613
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.027292251586914062
+      },
+      {
+        "command": "node --no-warnings -e console.log(process.execPath)",
+        "duration_s": 0.06270265579223633
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/1",
+        "duration_s": 7.288207292556763
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/2",
+        "duration_s": 0.73435378074646
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/3",
+        "duration_s": 0.14451193809509277
+      }
+    ]
+  },
+  {
+    "run": "native-typescript-native-optimized-2",
+    "container_id": "be1486c43f9709b1d8bc4bf3adae9e7cb5685f15de2e3f9ab552ea54ca2eae49",
+    "create_offset_s": 0.20217514038085938,
+    "create_to_start_s": 0.08696651458740234,
+    "start_to_destroy_s": 7.807580471038818,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.038996219635009766
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.0348505973815918
+      },
+      {
+        "command": "node --no-warnings -e console.log(process.execPath)",
+        "duration_s": 0.06828761100769043
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/1",
+        "duration_s": 6.525536298751831
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/2",
+        "duration_s": 0.5694139003753662
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/3",
+        "duration_s": 0.12815260887145996
+      }
+    ]
+  },
+  {
+    "run": "native-typescript-native-current-2",
+    "container_id": "51c0489a5e2593c28eb17b503855f0f3a965ede4925461f6983bc0f81cc4e723",
+    "create_offset_s": 2.0081405639648438,
+    "create_to_start_s": 0.0974113941192627,
+    "start_to_destroy_s": 3.808117389678955,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.041020870208740234
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.021007299423217773
+      },
+      {
+        "command": "node --no-warnings -e console.log(process.execPath)",
+        "duration_s": 0.030744314193725586
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/1",
+        "duration_s": 2.4864094257354736
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/2",
+        "duration_s": 0.650597095489502
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/3",
+        "duration_s": 0.13975930213928223
+      }
+    ]
+  },
+  {
+    "run": "native-typescript-native-current-3",
+    "container_id": "f9e108861bb93cc0ffb3780c45dbbc7f20e4923f3419509784b6d9498e32c8d4",
+    "create_offset_s": 2.3323426246643066,
+    "create_to_start_s": 0.07769966125488281,
+    "start_to_destroy_s": 11.055968284606934,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.030210256576538086
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.03955435752868652
+      },
+      {
+        "command": "node --no-warnings -e console.log(process.execPath)",
+        "duration_s": 0.047539710998535156
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/1",
+        "duration_s": 9.72387170791626
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/2",
+        "duration_s": 0.6247954368591309
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/3",
+        "duration_s": 0.13858318328857422
+      }
+    ]
+  },
+  {
+    "run": "native-typescript-native-optimized-3",
+    "container_id": "37e6d7136dc99e00236b64682ea230ae924c0d3863fe4b63c9c827421cbd553a",
+    "create_offset_s": 0.1887960433959961,
+    "create_to_start_s": 0.08697724342346191,
+    "start_to_destroy_s": 10.0022451877594,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.03291177749633789
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.010343551635742188
+      },
+      {
+        "command": "node --no-warnings -e console.log(process.execPath)",
+        "duration_s": 0.04541921615600586
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/1",
+        "duration_s": 8.766136884689331
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/2",
+        "duration_s": 0.5981667041778564
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/3",
+        "duration_s": 0.13860821723937988
+      }
+    ]
+  },
+  {
+    "run": "digest-clean-minimal-current-1",
+    "container_id": "1775480d30b12305238d6ef9ad94b1d0bd0a62d678adb0675b9185a99d1ed87c",
+    "create_offset_s": 2.6335480213165283,
+    "create_to_start_s": 0.0802605152130127,
+    "start_to_destroy_s": 0.3405170440673828,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.05958366394042969
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.05652928352355957
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 0.05459737777709961
+      }
+    ]
+  },
+  {
+    "run": "digest-clean-minimal-pinned-1",
+    "container_id": "9a5980b4646da46e3f2999077875e4519a4a122faa7f545d0055f50d861989ff",
+    "create_offset_s": 0.15062284469604492,
+    "create_to_start_s": 0.06988954544067383,
+    "start_to_destroy_s": 0.6060104370117188,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.04524064064025879
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.03404378890991211
+      },
+      {
+        "command": "node --no-warnings -e console.log(process.execPath)",
+        "duration_s": 0.33357977867126465
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 0.05575847625732422
+      }
+    ]
+  },
+  {
+    "run": "digest-clean-minimal-pinned-2",
+    "container_id": "7f412f10c2cd9ae147e6ea1f28782da60ee25f2af959e90bdaa0430e1642b952",
+    "create_offset_s": 0.2320873737335205,
+    "create_to_start_s": 0.07566213607788086,
+    "start_to_destroy_s": 0.6160104274749756,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.05201840400695801
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.023411989212036133
+      },
+      {
+        "command": "node --no-warnings -e console.log(process.execPath)",
+        "duration_s": 0.3468635082244873
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 0.06592440605163574
+      }
+    ]
+  },
+  {
+    "run": "digest-clean-minimal-current-2",
+    "container_id": "d1f7cb96af134aee2a2487007ec1df4c44d2dcf711a9e0e5987e7397fd6b0448",
+    "create_offset_s": 1.741663932800293,
+    "create_to_start_s": 0.07744383811950684,
+    "start_to_destroy_s": 0.33380675315856934,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.0419611930847168
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.03332996368408203
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 0.06080818176269531
+      }
+    ]
+  },
+  {
+    "run": "digest-clean-minimal-current-3",
+    "container_id": "6f7161a5cadafac9c5b94390e1f041db127f3bf02d54163c532f0231638e5c04",
+    "create_offset_s": 1.5413777828216553,
+    "create_to_start_s": 0.09717845916748047,
+    "start_to_destroy_s": 0.4205818176269531,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.06336379051208496
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.04842519760131836
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 0.06429719924926758
+      }
+    ]
+  },
+  {
+    "run": "digest-clean-minimal-pinned-3",
+    "container_id": "87e1f1e6822e3439854c4cac195da3d47b411e4c5c35a1c19982020784718df9",
+    "create_offset_s": 0.18483853340148926,
+    "create_to_start_s": 0.09805059432983398,
+    "start_to_destroy_s": 0.5981688499450684,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.05739164352416992
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.047193288803100586
+      },
+      {
+        "command": "node --no-warnings -e console.log(process.execPath)",
+        "duration_s": 0.29999542236328125
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 0.05276370048522949
+      }
+    ]
+  },
+  {
+    "run": "digest-clean-typescript-current-1",
+    "container_id": "626d22cf01ef93e7496cda0c2f54c6b23fc6b6ea043c3ee2e4919087deb2040f",
+    "create_offset_s": 2.165264844894409,
+    "create_to_start_s": 0.06273674964904785,
+    "start_to_destroy_s": 10.015199184417725,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.05004000663757324
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.05438947677612305
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/1",
+        "duration_s": 5.733741521835327
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/2",
+        "duration_s": 2.371486186981201
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/3",
+        "duration_s": 1.391906499862671
+      }
+    ]
+  },
+  {
+    "run": "digest-clean-typescript-pinned-1",
+    "container_id": "bbe31553384de16a9ef489f733a1fb5a2bec9f945cd69cabff1d234cc4105f3e",
+    "create_offset_s": 0.16912102699279785,
+    "create_to_start_s": 0.06695294380187988,
+    "start_to_destroy_s": 12.10863709449768,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.0619204044342041
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.050778865814208984
+      },
+      {
+        "command": "node --no-warnings -e console.log(process.execPath)",
+        "duration_s": 0.29120802879333496
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/1",
+        "duration_s": 7.868448972702026
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/2",
+        "duration_s": 2.155946731567383
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/3",
+        "duration_s": 1.274569034576416
+      }
+    ]
+  },
+  {
+    "run": "digest-clean-typescript-pinned-2",
+    "container_id": "17fcddd40e6259d212ca78d35aebc8003ab78fdc93494fb10933a4f8851998e6",
+    "create_offset_s": 0.15200066566467285,
+    "create_to_start_s": 0.06616830825805664,
+    "start_to_destroy_s": 10.255899429321289,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.04564476013183594
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.049506187438964844
+      },
+      {
+        "command": "node --no-warnings -e console.log(process.execPath)",
+        "duration_s": 0.2970907688140869
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/1",
+        "duration_s": 5.884854793548584
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/2",
+        "duration_s": 2.1467173099517822
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/3",
+        "duration_s": 1.448678970336914
+      }
+    ]
+  },
+  {
+    "run": "digest-clean-typescript-current-2",
+    "container_id": "de45e459ec777ea900c5d07bdd5e69f9e1b30ccb0464672ab15cf660f3e4b2cf",
+    "create_offset_s": 3.4233455657958984,
+    "create_to_start_s": 0.06130647659301758,
+    "start_to_destroy_s": 13.658611536026001,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.05070638656616211
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.025757789611816406
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/1",
+        "duration_s": 9.724205017089844
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/2",
+        "duration_s": 2.0907540321350098
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/3",
+        "duration_s": 1.309234619140625
+      }
+    ]
+  },
+  {
+    "run": "digest-clean-typescript-current-3",
+    "container_id": "d13c75ca113da531bffd072bd5e83ebc9b5a9d2002b15e653f2fef1434b5cacd",
+    "create_offset_s": 1.6219244003295898,
+    "create_to_start_s": 0.074737548828125,
+    "start_to_destroy_s": 16.528815746307373,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.05305147171020508
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.0423588752746582
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/1",
+        "duration_s": 12.54340648651123
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/2",
+        "duration_s": 2.217586040496826
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/3",
+        "duration_s": 1.2694239616394043
+      }
+    ]
+  },
+  {
+    "run": "digest-clean-typescript-pinned-3",
+    "container_id": "ecd5ef15544b5d130b39ba0257a1c9a66dad783bffb0e292bc312554aed3acc6",
+    "create_offset_s": 0.14928913116455078,
+    "create_to_start_s": 0.07081127166748047,
+    "start_to_destroy_s": 11.176688432693481,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.04018735885620117
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.040035247802734375
+      },
+      {
+        "command": "node --no-warnings -e console.log(process.execPath)",
+        "duration_s": 0.2936379909515381
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/1",
+        "duration_s": 7.006832122802734
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/2",
+        "duration_s": 2.111483573913574
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/3",
+        "duration_s": 1.3080930709838867
+      }
+    ]
+  },
+  {
+    "run": "digest-clean-parallel-current-1",
+    "container_id": "0d0207564368ab6a2e12cd67dfa7f53bf91b457ee92f79ae84113e9a87c068cc",
+    "create_offset_s": 4.018453598022461,
+    "create_to_start_s": 0.06647157669067383,
+    "start_to_destroy_s": 2.3767292499542236,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.04742312431335449
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.03484153747558594
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.0876920223236084
+      }
+    ]
+  },
+  {
+    "run": "digest-clean-parallel-current-1",
+    "container_id": "5d74200640bb9ead5db0c3a1831627a88b67d4e467d3b3c638a0d8a59686839f",
+    "create_offset_s": 4.747208595275879,
+    "create_to_start_s": 0.06256604194641113,
+    "start_to_destroy_s": 2.365349292755127,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.053690433502197266
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.04144740104675293
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.0702438354492188
+      }
+    ]
+  },
+  {
+    "run": "digest-clean-parallel-current-1",
+    "container_id": "6ab70df93e115686c055bde9e69e58a4c706bc3e408edc971f4d3f2e25516c5c",
+    "create_offset_s": 6.182502031326294,
+    "create_to_start_s": 0.08473420143127441,
+    "start_to_destroy_s": 2.462095022201538,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.04653167724609375
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.08523726463317871
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.090682029724121
+      }
+    ]
+  },
+  {
+    "run": "digest-clean-parallel-current-1",
+    "container_id": "01fe40413efa528e76a1393618f28b93a404dcc9a4fb30261738e98bd4f95320",
+    "create_offset_s": 6.360687494277954,
+    "create_to_start_s": 0.09424805641174316,
+    "start_to_destroy_s": 2.359156847000122,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.05606865882873535
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.036728620529174805
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.065847635269165
+      }
+    ]
+  },
+  {
+    "run": "digest-clean-parallel-pinned-1",
+    "container_id": "2f52e31540978e4af91c58c0875f290209a690fd108efe0984241157882785d4",
+    "create_offset_s": 0.2547011375427246,
+    "create_to_start_s": 0.10042619705200195,
+    "start_to_destroy_s": 2.8304810523986816,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.05391073226928711
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.057825326919555664
+      },
+      {
+        "command": "node --no-warnings -e console.log(process.execPath)",
+        "duration_s": 0.4072275161743164
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.0794951915740967
+      }
+    ]
+  },
+  {
+    "run": "digest-clean-parallel-pinned-1",
+    "container_id": "16c6a40d9a79a17de61f6dc5e59238b14d28075509ac54e0576ec408e4bde509",
+    "create_offset_s": 0.2579922676086426,
+    "create_to_start_s": 0.09710335731506348,
+    "start_to_destroy_s": 2.830498456954956,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.05675244331359863
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.06239056587219238
+      },
+      {
+        "command": "node --no-warnings -e console.log(process.execPath)",
+        "duration_s": 0.373415470123291
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.1129844188690186
+      }
+    ]
+  },
+  {
+    "run": "digest-clean-parallel-pinned-1",
+    "container_id": "28e323117c77a6d962dbc27ebc6e6e7771ad440bf0dd7d6e50cd28e74361bd29",
+    "create_offset_s": 0.26039695739746094,
+    "create_to_start_s": 0.08357524871826172,
+    "start_to_destroy_s": 2.8312313556671143,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.06678366661071777
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.06066250801086426
+      },
+      {
+        "command": "node --no-warnings -e console.log(process.execPath)",
+        "duration_s": 0.4006073474884033
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.09446120262146
+      }
+    ]
+  },
+  {
+    "run": "digest-clean-parallel-pinned-1",
+    "container_id": "680af6cf76d8b551760f1deb7be86fb196c4433de86baaf82ca2cc45cdc35ffd",
+    "create_offset_s": 0.2659943103790283,
+    "create_to_start_s": 0.0909876823425293,
+    "start_to_destroy_s": 2.875431776046753,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.05254101753234863
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.05001044273376465
+      },
+      {
+        "command": "node --no-warnings -e console.log(process.execPath)",
+        "duration_s": 0.45423388481140137
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.0850517749786377
+      }
+    ]
+  },
+  {
+    "run": "digest-clean-parallel-pinned-2",
+    "container_id": "dc0a28e868e335a95c8c5c2073a5ad1e7775a337e883f30ddd1726732d094b3c",
+    "create_offset_s": 0.2874870300292969,
+    "create_to_start_s": 0.08617067337036133,
+    "start_to_destroy_s": 2.9588019847869873,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.08421587944030762
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.06648659706115723
+      },
+      {
+        "command": "node --no-warnings -e console.log(process.execPath)",
+        "duration_s": 0.463350772857666
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.0735585689544678
+      }
+    ]
+  },
+  {
+    "run": "digest-clean-parallel-pinned-2",
+    "container_id": "80f2420ae6f598325f77ca59937e0aa4d9c9b87ad53bf1dbf381ee1a48efe1bf",
+    "create_offset_s": 0.2956228256225586,
+    "create_to_start_s": 0.08581757545471191,
+    "start_to_destroy_s": 2.9226911067962646,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.04564261436462402
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.06366515159606934
+      },
+      {
+        "command": "node --no-warnings -e console.log(process.execPath)",
+        "duration_s": 0.4026978015899658
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.1090288162231445
+      }
+    ]
+  },
+  {
+    "run": "digest-clean-parallel-pinned-2",
+    "container_id": "23b796f83aa02cc3a8a68795300072c80d0169c54419ac957bc0d4b9c46fdc4f",
+    "create_offset_s": 0.2974822521209717,
+    "create_to_start_s": 0.08614659309387207,
+    "start_to_destroy_s": 2.9446263313293457,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.04553103446960449
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.058205366134643555
+      },
+      {
+        "command": "node --no-warnings -e console.log(process.execPath)",
+        "duration_s": 0.4496290683746338
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.090715169906616
+      }
+    ]
+  },
+  {
+    "run": "digest-clean-parallel-pinned-2",
+    "container_id": "0bd81ef5bb770386346c90db6bbcafe04c5232ee353186342b80b6acc9878385",
+    "create_offset_s": 0.29865193367004395,
+    "create_to_start_s": 0.10932755470275879,
+    "start_to_destroy_s": 2.934173583984375,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.034897804260253906
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.06137228012084961
+      },
+      {
+        "command": "node --no-warnings -e console.log(process.execPath)",
+        "duration_s": 0.3994288444519043
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.1112289428710938
+      }
+    ]
+  },
+  {
+    "run": "digest-clean-parallel-current-2",
+    "container_id": "2b05238a06fea38d2d2fa21bff0e2d38aefda1c32ee5e41f84dd79b5b31e261b",
+    "create_offset_s": 2.3888063430786133,
+    "create_to_start_s": 0.08826184272766113,
+    "start_to_destroy_s": 2.4908487796783447,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.045029401779174805
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.041942596435546875
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.1222357749938965
+      }
+    ]
+  },
+  {
+    "run": "digest-clean-parallel-current-2",
+    "container_id": "e7027cc58d49f088de8ed0a186d84ee537b6a1e39f75e7dd2f8d362c3bf7fc3e",
+    "create_offset_s": 2.3927130699157715,
+    "create_to_start_s": 0.08119392395019531,
+    "start_to_destroy_s": 2.5037219524383545,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.052788734436035156
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.035372257232666016
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.12003755569458
+      }
+    ]
+  },
+  {
+    "run": "digest-clean-parallel-current-2",
+    "container_id": "556d1a3b36e2df86f61a95b128fb6d29bc167035f20e46bc153526117c24a972",
+    "create_offset_s": 2.8038461208343506,
+    "create_to_start_s": 0.08713054656982422,
+    "start_to_destroy_s": 2.408315896987915,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.07356142997741699
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.04695725440979004
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.0725626945495605
+      }
+    ]
+  },
+  {
+    "run": "digest-clean-parallel-current-2",
+    "container_id": "0ea61c4402ac1458f9b2f36e2755a61a921fa66c2d753e1106d58a0c4d5d09f5",
+    "create_offset_s": 3.059953212738037,
+    "create_to_start_s": 0.06546640396118164,
+    "start_to_destroy_s": 2.353163242340088,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.06161165237426758
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.03057718276977539
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.072770833969116
+      }
+    ]
+  },
+  {
+    "run": "digest-clean-parallel-current-3",
+    "container_id": "e0e116230356717436e3874de6feac0a4ba46d7f66d6435a5a26af2957f08ac3",
+    "create_offset_s": 2.333392858505249,
+    "create_to_start_s": 0.06723356246948242,
+    "start_to_destroy_s": 2.434643507003784,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.05381631851196289
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.07711172103881836
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.0732154846191406
+      }
+    ]
+  },
+  {
+    "run": "digest-clean-parallel-current-3",
+    "container_id": "79ed9c4a844b2d25e5904781c9097a0671322733803c5a3dc00f4f7b4e252527",
+    "create_offset_s": 2.945171356201172,
+    "create_to_start_s": 0.07419657707214355,
+    "start_to_destroy_s": 2.349159002304077,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.039755821228027344
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.043981313705444336
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.0798866748809814
+      }
+    ]
+  },
+  {
+    "run": "digest-clean-parallel-current-3",
+    "container_id": "6543813737a810193cf2e5705f53ba8a10f291b9a5047acbd61867a5650d85f5",
+    "create_offset_s": 3.4447805881500244,
+    "create_to_start_s": 0.08103561401367188,
+    "start_to_destroy_s": 2.431875705718994,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.05557584762573242
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.058901071548461914
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.05547833442688
+      }
+    ]
+  },
+  {
+    "run": "digest-clean-parallel-current-3",
+    "container_id": "034e6a1b1e834d2991d25ac3cb3545e2d127b8fd3bd83b1381c8f56b628d3a8b",
+    "create_offset_s": 3.6483776569366455,
+    "create_to_start_s": 0.10049915313720703,
+    "start_to_destroy_s": 2.375916004180908,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.036847591400146484
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.05954551696777344
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.0823440551757812
+      }
+    ]
+  },
+  {
+    "run": "digest-clean-parallel-pinned-3",
+    "container_id": "5b60ab1285554097356169f354635ec15c745ac72e7a5b194bc09795b718009d",
+    "create_offset_s": 0.25473594665527344,
+    "create_to_start_s": 0.09601593017578125,
+    "start_to_destroy_s": 2.864882469177246,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.06726288795471191
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.08664965629577637
+      },
+      {
+        "command": "node --no-warnings -e console.log(process.execPath)",
+        "duration_s": 0.38583922386169434
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.1034464836120605
+      }
+    ]
+  },
+  {
+    "run": "digest-clean-parallel-pinned-3",
+    "container_id": "dab76a9fb78048d34d1fc16f0e7e7d15d05d19bfe7ca381454b93d9096316a6e",
+    "create_offset_s": 0.26332545280456543,
+    "create_to_start_s": 0.09238338470458984,
+    "start_to_destroy_s": 2.87373423576355,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.0642404556274414
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.07139301300048828
+      },
+      {
+        "command": "node --no-warnings -e console.log(process.execPath)",
+        "duration_s": 0.4186117649078369
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.0937304496765137
+      }
+    ]
+  },
+  {
+    "run": "digest-clean-parallel-pinned-3",
+    "container_id": "b7648f8e398155325f859230a6c56e751b9e9ff2092e92afa57e1bd5952b7e0d",
+    "create_offset_s": 0.2692272663116455,
+    "create_to_start_s": 0.08067679405212402,
+    "start_to_destroy_s": 2.8849411010742188,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.06264805793762207
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.06701421737670898
+      },
+      {
+        "command": "node --no-warnings -e console.log(process.execPath)",
+        "duration_s": 0.4397902488708496
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.0616583824157715
+      }
+    ]
+  },
+  {
+    "run": "digest-clean-parallel-pinned-3",
+    "container_id": "ad0366b31c5bf48de1d932e4e8b565c881480a99027b1479c9337a57a2c35e61",
+    "create_offset_s": 0.26976752281188965,
+    "create_to_start_s": 0.08862996101379395,
+    "start_to_destroy_s": 2.8982269763946533,
+    "execs": [
+      {
+        "command": "id -u",
+        "duration_s": 0.05367851257324219
+      },
+      {
+        "command": "id -g",
+        "duration_s": 0.08938884735107422
+      },
+      {
+        "command": "node --no-warnings -e console.log(process.execPath)",
+        "duration_s": 0.4484231472015381
+      },
+      {
+        "command": "bash -e /var/run/act/workflow/0",
+        "duration_s": 2.0698161125183105
+      }
+    ]
+  }
+]

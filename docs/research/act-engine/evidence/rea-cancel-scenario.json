@@ -1,0 +1,48 @@
+{
+  "executable": "/Users/doughnut/Documents/github/sideprojects/act-dock/.cache/engine-research/bin/act",
+  "arguments": [
+    "workflow_dispatch",
+    "-W",
+    "/Users/doughnut/Documents/github/sideprojects/act-dock/.cache/engine-research/bench/project/.github/workflows/cancel.yml",
+    "--json",
+    "--rm",
+    "--insecure-secrets=false",
+    "--container-architecture",
+    "linux/amd64",
+    "--container-daemon-socket=-",
+    "--action-cache-path",
+    "/Users/doughnut/Documents/github/sideprojects/act-dock/.cache/engine-research/bench/actions-rea",
+    "--cache-server-path",
+    "/Users/doughnut/Documents/github/sideprojects/act-dock/.cache/engine-research/bench/workflow-cache",
+    "-P",
+    "ubuntu-latest=catthehacker/ubuntu:act-latest",
+    "-P",
+    "ubuntu-20.04=catthehacker/ubuntu:act-latest",
+    "-P",
+    "ubuntu-22.04=catthehacker/ubuntu:act-latest",
+    "-P",
+    "ubuntu-24.04=catthehacker/ubuntu:act-latest",
+    "--pull=false",
+    "--action-offline-mode"
+  ],
+  "working_directory": "/Users/doughnut/Documents/github/sideprojects/act-dock/.cache/engine-research/bench/project",
+  "environment": {
+    "PATH": "/Users/doughnut/.local/share/fnm/node-versions/v24.19.0/installation/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/codex-path:/Users/doughnut/.nvm/versions/node/v24.18.0/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/Apple/usr/bin:/usr/local/go/bin:/opt/homebrew/bin:/Users/doughnut/.synara/codex-home-overlay/tmp/arg0-macos/codex-arg0SzumZY:/Users/doughnut/.local/share/fnm/node-versions/v24.19.0/installation/lib/node_modules/@openai/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/codex-path:/Users/doughnut/.hutch/bin:/Users/doughnut/.opencode/bin:/Users/doughnut/.local/bin:/Users/doughnut/.local/state/fnm_multishells/5495_1793081738705/bin:/Users/doughnut/.nvm/versions/node/v24.18.0/bin:/Users/doughnut/.cargo/bin:/Users/doughnut/.local/state/fnm_multishells/5202_1793081738492/bin:/Users/doughnut/.lmstudio/bin:/Users/doughnut/.lmstudio/bin",
+    "HOME": "/Users/doughnut/Documents/github/sideprojects/act-dock/.cache/engine-research/bench/home",
+    "TERM": "dumb",
+    "DOCKER_HOST": "unix:///Users/doughnut/.docker/run/docker.sock",
+    "DOCKER_CONFIG": "/Users/doughnut/.docker",
+    "XDG_CONFIG_HOME": "/Users/doughnut/Documents/github/sideprojects/act-dock/.cache/engine-research/bench/home/config",
+    "XDG_CACHE_HOME": "/Users/doughnut/Documents/github/sideprojects/act-dock/.cache/engine-research/bench/home/cache"
+  },
+  "timeout_ms": 20000,
+  "idle_timeout_ms": 18000,
+  "settle_ms": 200,
+  "events": [
+    {
+      "type": "signal",
+      "at_ms": 4000,
+      "signal": "SIGINT"
+    }
+  ]
+}

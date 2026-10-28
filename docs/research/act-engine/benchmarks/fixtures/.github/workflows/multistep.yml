@@ -1,0 +1,59 @@
+{
+  "name": "research-multistep",
+  "on": "workflow_dispatch",
+  "jobs": {
+    "bench": {
+      "runs-on": "ubuntu-latest",
+      "steps": [
+        {
+          "name": "step-0",
+          "run": "echo BENCH_FIRST"
+        },
+        {
+          "name": "step-1",
+          "run": "echo step-1"
+        },
+        {
+          "name": "step-2",
+          "run": "echo step-2"
+        },
+        {
+          "name": "step-3",
+          "run": "echo step-3"
+        },
+        {
+          "name": "step-4",
+          "run": "echo step-4"
+        },
+        {
+          "name": "step-5",
+          "run": "echo step-5"
+        },
+        {
+          "name": "step-6",
+          "run": "echo step-6"
+        },
+        {
+          "name": "step-7",
+          "run": "echo step-7"
+        },
+        {
+          "name": "step-8",
+          "run": "echo step-8"
+        },
+        {
+          "name": "step-9",
+          "run": "echo step-9"
+        },
+        {
+          "name": "step-10",
+          "run": "echo step-10"
+        },
+        {
+          "name": "step-11",
+          "run": "echo step-11"
+        }
+      ]
+    }
+  }
+}

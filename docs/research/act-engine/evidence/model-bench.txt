@@ -1,0 +1,12 @@
+goos: darwin
+goarch: arm64
+pkg: github.com/nektos/act/pkg/model
+cpu: Apple M5
+BenchmarkResearchReadWorkflow-10    	    1182	    511964 ns/op	  377233 B/op	    3675 allocs/op
+BenchmarkResearchReadWorkflow-10    	    1201	    507309 ns/op	  377230 B/op	    3675 allocs/op
+BenchmarkResearchReadWorkflow-10    	    1188	    510173 ns/op	  377235 B/op	    3675 allocs/op
+BenchmarkResearchPlan-10            	  777289	       762.5 ns/op	    1200 B/op	      32 allocs/op
+BenchmarkResearchPlan-10            	  779726	       757.3 ns/op	    1200 B/op	      32 allocs/op
+BenchmarkResearchPlan-10            	  802053	       772.7 ns/op	    1200 B/op	      32 allocs/op
+PASS
+ok  	github.com/nektos/act/pkg/model	5.414s

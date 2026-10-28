@@ -1,0 +1,704 @@
+[
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "cmd/root.go",
+    "symbol": "func args()",
+    "line": 155,
+    "file_sha256": "879fe381091b4646188b4da9f8dcb47807aa56462488d2f26be9339ba096cd89",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/cmd/root.go#L155"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "cmd/root.go",
+    "symbol": "func newRunCommand(",
+    "line": 391,
+    "file_sha256": "879fe381091b4646188b4da9f8dcb47807aa56462488d2f26be9339ba096cd89",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/cmd/root.go#L391"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "cmd/root.go",
+    "symbol": "input.forcePull",
+    "line": 85,
+    "file_sha256": "879fe381091b4646188b4da9f8dcb47807aa56462488d2f26be9339ba096cd89",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/cmd/root.go#L85"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "cmd/root.go",
+    "symbol": "cacheHandler",
+    "line": 682,
+    "file_sha256": "879fe381091b4646188b4da9f8dcb47807aa56462488d2f26be9339ba096cd89",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/cmd/root.go#L682"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "cmd/platforms.go",
+    "symbol": "func (i *Input) newPlatforms(",
+    "line": 7,
+    "file_sha256": "c0938412c72f92fee1a7b396a32cf63ccd9e0b92b7314c316880fdbb5998354f",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/cmd/platforms.go#L7"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "pkg/model/workflow.go",
+    "symbol": "func ReadWorkflow(",
+    "line": 714,
+    "file_sha256": "e6a7da49b78c0472c5a71a7712a49ff2262c534d4a00497a9605ed8c9b31263e",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/pkg/model/workflow.go#L714"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "pkg/model/workflow.go",
+    "symbol": "func (w *Workflow) UnmarshalYAML(",
+    "line": 71,
+    "file_sha256": "e6a7da49b78c0472c5a71a7712a49ff2262c534d4a00497a9605ed8c9b31263e",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/pkg/model/workflow.go#L71"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "pkg/model/workflow.go",
+    "symbol": "func (j *Job) GetMatrixes(",
+    "line": 401,
+    "file_sha256": "e6a7da49b78c0472c5a71a7712a49ff2262c534d4a00497a9605ed8c9b31263e",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/pkg/model/workflow.go#L401"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "pkg/model/planner.go",
+    "symbol": "func NewWorkflowPlanner(",
+    "line": 59,
+    "file_sha256": "c5469bc123edcd47112f58beaa3ccdb5965223100e327328af6378bc97828ed5",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/pkg/model/planner.go#L59"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "pkg/model/planner.go",
+    "symbol": "func createStages(",
+    "line": 343,
+    "file_sha256": "c5469bc123edcd47112f58beaa3ccdb5965223100e327328af6378bc97828ed5",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/pkg/model/planner.go#L343"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "pkg/runner/runner.go",
+    "symbol": "func (config *Config) GetConcurrentJobs(",
+    "line": 67,
+    "file_sha256": "03198fc2ed5aa8aeae3c39e146b458531eda172a20844faf0ca36f89a0553962",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/pkg/runner/runner.go#L67"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "pkg/runner/runner.go",
+    "symbol": "func (runner *runnerImpl) NewPlanExecutor(",
+    "line": 122,
+    "file_sha256": "03198fc2ed5aa8aeae3c39e146b458531eda172a20844faf0ca36f89a0553962",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/pkg/runner/runner.go#L122"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "pkg/common/executor.go",
+    "symbol": "func NewParallelExecutor(",
+    "line": 95,
+    "file_sha256": "c16e092361178f7af26b4833b0b44eaa21c6a3e54ae4f1b8370658ef76988371",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/pkg/common/executor.go#L95"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "pkg/common/executor.go",
+    "symbol": "func (e Executor) Finally(",
+    "line": 225,
+    "file_sha256": "c16e092361178f7af26b4833b0b44eaa21c6a3e54ae4f1b8370658ef76988371",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/pkg/common/executor.go#L225"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "pkg/runner/run_context.go",
+    "symbol": "func (rc *RunContext) GetBindsAndMounts(",
+    "line": 127,
+    "file_sha256": "01fb255cb1fedbbb56639e918b50b78f5e320bf87ec62cae0d4c68a62ef33b8d",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/pkg/runner/run_context.go#L127"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "pkg/runner/run_context.go",
+    "symbol": "func (rc *RunContext) startJobContainer(",
+    "line": 255,
+    "file_sha256": "01fb255cb1fedbbb56639e918b50b78f5e320bf87ec62cae0d4c68a62ef33b8d",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/pkg/runner/run_context.go#L255"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "pkg/runner/run_context.go",
+    "symbol": "func (rc *RunContext) GetNodeToolFullPath(",
+    "line": 454,
+    "file_sha256": "01fb255cb1fedbbb56639e918b50b78f5e320bf87ec62cae0d4c68a62ef33b8d",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/pkg/runner/run_context.go#L454"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "pkg/runner/run_context.go",
+    "symbol": "func (rc *RunContext) platformImage(",
+    "line": 775,
+    "file_sha256": "01fb255cb1fedbbb56639e918b50b78f5e320bf87ec62cae0d4c68a62ef33b8d",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/pkg/runner/run_context.go#L775"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "pkg/runner/job_executor.go",
+    "symbol": "func newJobExecutor(",
+    "line": 23,
+    "file_sha256": "68336e0d05df1ab15e972726f64f6f0e35d535bd7f8ad7fe870523b6de40b375",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/pkg/runner/job_executor.go#L23"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "pkg/runner/job_executor.go",
+    "symbol": "func useStepLogger(",
+    "line": 200,
+    "file_sha256": "68336e0d05df1ab15e972726f64f6f0e35d535bd7f8ad7fe870523b6de40b375",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/pkg/runner/job_executor.go#L200"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "pkg/runner/step.go",
+    "symbol": "func runStepExecutor(",
+    "line": 94,
+    "file_sha256": "43694c61aeaea14cd6141d900b9f362ca77818c491f0d39f034f0eb485ba635e",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/pkg/runner/step.go#L94"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "pkg/runner/step.go",
+    "symbol": "func monitorJobCancellation(",
+    "line": 217,
+    "file_sha256": "43694c61aeaea14cd6141d900b9f362ca77818c491f0d39f034f0eb485ba635e",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/pkg/runner/step.go#L217"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "pkg/runner/step.go",
+    "symbol": "func evaluateStepTimeout(",
+    "line": 235,
+    "file_sha256": "43694c61aeaea14cd6141d900b9f362ca77818c491f0d39f034f0eb485ba635e",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/pkg/runner/step.go#L235"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "pkg/runner/step_run.go",
+    "symbol": "func (sr *stepRun) main(",
+    "line": 32,
+    "file_sha256": "c4231e3a5f7dd3b7f6545fad4dd09e91e15ad9341326e563355c5a388f7f68da",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/pkg/runner/step_run.go#L32"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "pkg/runner/step_run.go",
+    "symbol": "func (sr *stepRun) setupShellCommandExecutor(",
+    "line": 72,
+    "file_sha256": "c4231e3a5f7dd3b7f6545fad4dd09e91e15ad9341326e563355c5a388f7f68da",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/pkg/runner/step_run.go#L72"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "pkg/runner/step_factory.go",
+    "symbol": "func (sf *stepFactoryImpl) newStep(",
+    "line": 15,
+    "file_sha256": "b99330b1a0cecdb91a378368d31f47e901162885567746250b6f0a4ff2cc550f",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/pkg/runner/step_factory.go#L15"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "pkg/runner/action.go",
+    "symbol": "func runActionImpl(",
+    "line": 153,
+    "file_sha256": "ae9e3f0b2fe06ecf86f4357a8534dd3b41d4b99c7215f59dc8d2d85cad4252cd",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/pkg/runner/action.go#L153"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "pkg/runner/action.go",
+    "symbol": "func execAsDocker(",
+    "line": 248,
+    "file_sha256": "ae9e3f0b2fe06ecf86f4357a8534dd3b41d4b99c7215f59dc8d2d85cad4252cd",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/pkg/runner/action.go#L248"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "pkg/runner/action.go",
+    "symbol": "func maybeCopyToActionDir(",
+    "line": 119,
+    "file_sha256": "ae9e3f0b2fe06ecf86f4357a8534dd3b41d4b99c7215f59dc8d2d85cad4252cd",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/pkg/runner/action.go#L119"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "pkg/runner/step_action_remote.go",
+    "symbol": "func (sar *stepActionRemote) prepareActionExecutor(",
+    "line": 40,
+    "file_sha256": "2f6e49668c211fac7c4ac549d624631cf62c770628a198c846b0018777cf2287",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/pkg/runner/step_action_remote.go#L40"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "pkg/runner/step_action_remote.go",
+    "symbol": "func (sar *stepActionRemote) main(",
+    "line": 155,
+    "file_sha256": "2f6e49668c211fac7c4ac549d624631cf62c770628a198c846b0018777cf2287",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/pkg/runner/step_action_remote.go#L155"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "pkg/runner/reusable_workflow.go",
+    "symbol": "func newLocalReusableWorkflowExecutor(",
+    "line": 19,
+    "file_sha256": "1c72473c259f75be7b582b9437b2f179926b596df46f5d54f795e3e40e4123dd",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/pkg/runner/reusable_workflow.go#L19"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "pkg/runner/reusable_workflow.go",
+    "symbol": "func newRemoteReusableWorkflowExecutor(",
+    "line": 23,
+    "file_sha256": "1c72473c259f75be7b582b9437b2f179926b596df46f5d54f795e3e40e4123dd",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/pkg/runner/reusable_workflow.go#L23"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "pkg/runner/reusable_workflow.go",
+    "symbol": "func newReusableWorkflowExecutor(",
+    "line": 116,
+    "file_sha256": "1c72473c259f75be7b582b9437b2f179926b596df46f5d54f795e3e40e4123dd",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/pkg/runner/reusable_workflow.go#L116"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "pkg/runner/expression.go",
+    "symbol": "func (rc *RunContext) NewExpressionEvaluator(",
+    "line": 30,
+    "file_sha256": "9c6dc1a44612b291e5c1a22208bd500c06567b6fadfdf36733d953160c2a47fb",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/pkg/runner/expression.go#L30"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "pkg/exprparser/interpreter.go",
+    "symbol": "func (impl *interperterImpl) Evaluate(",
+    "line": 81,
+    "file_sha256": "7eca8547c64701384ccee89b75563c10e3848caae75dc0362c9de2908913f93c",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/pkg/exprparser/interpreter.go#L81"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "pkg/exprparser/interpreter.go",
+    "symbol": "func (impl *interperterImpl) evaluateNode(",
+    "line": 120,
+    "file_sha256": "7eca8547c64701384ccee89b75563c10e3848caae75dc0362c9de2908913f93c",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/pkg/exprparser/interpreter.go#L120"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "pkg/exprparser/functions.go",
+    "symbol": "func (impl *interperterImpl) hashFiles(",
+    "line": 183,
+    "file_sha256": "23cb773cf6185eac407127ef2f24614ce33927899b4a810291b276e8329ce1b5",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/pkg/exprparser/functions.go#L183"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "pkg/common/git/git.go",
+    "symbol": "func NewGitCloneExecutor(",
+    "line": 300,
+    "file_sha256": "d6455923939b316fb67016531bc6f1ea215e2f99d7a1f6a26720cb051930e379",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/pkg/common/git/git.go#L300"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "pkg/common/git/git.go",
+    "symbol": "func CloneIfRequired(",
+    "line": 232,
+    "file_sha256": "d6455923939b316fb67016531bc6f1ea215e2f99d7a1f6a26720cb051930e379",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/pkg/common/git/git.go#L232"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "pkg/runner/action_cache.go",
+    "symbol": "func (c GoGitActionCache) Fetch(",
+    "line": 34,
+    "file_sha256": "fb45ff9fb75921333c9f2c97d77c0d77ccdc39b4c6b5658e5fa85d1bfad7b0bb",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/pkg/runner/action_cache.go#L34"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "pkg/runner/action_cache.go",
+    "symbol": "func (c GoGitActionCache) GetTarArchive(",
+    "line": 130,
+    "file_sha256": "fb45ff9fb75921333c9f2c97d77c0d77ccdc39b4c6b5658e5fa85d1bfad7b0bb",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/pkg/runner/action_cache.go#L130"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "pkg/container/docker_run.go",
+    "symbol": "func GetDockerClient(",
+    "line": 218,
+    "file_sha256": "8e7b08c3180f28f362767c1b283d38e6c3ab160f58214f3cd8b4694fe5a4038d",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/pkg/container/docker_run.go#L218"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "pkg/container/docker_run.go",
+    "symbol": "func (cr *containerReference) exec(",
+    "line": 550,
+    "file_sha256": "8e7b08c3180f28f362767c1b283d38e6c3ab160f58214f3cd8b4694fe5a4038d",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/pkg/container/docker_run.go#L550"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "pkg/container/docker_run.go",
+    "symbol": "func (cr *containerReference) copyDir(",
+    "line": 738,
+    "file_sha256": "8e7b08c3180f28f362767c1b283d38e6c3ab160f58214f3cd8b4694fe5a4038d",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/pkg/container/docker_run.go#L738"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "pkg/container/docker_pull.go",
+    "symbol": "func NewDockerPullExecutor(",
+    "line": 21,
+    "file_sha256": "b6364dd7b07877430e1f1d9f7a6c0d22e35df7ef898f31a20cd9dd4e9a581394",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/pkg/container/docker_pull.go#L21"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "pkg/container/docker_pull.go",
+    "symbol": "func getImagePullOptions(",
+    "line": 78,
+    "file_sha256": "b6364dd7b07877430e1f1d9f7a6c0d22e35df7ef898f31a20cd9dd4e9a581394",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/pkg/container/docker_pull.go#L78"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "pkg/container/docker_auth.go",
+    "symbol": "func LoadDockerAuthConfig(",
+    "line": 15,
+    "file_sha256": "3cc5d78579a5bae56d9c111fdcbfa4a53ab383946af84a47f0d0ec72e98627f6",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/pkg/container/docker_auth.go#L15"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "pkg/runner/logger.go",
+    "symbol": "func withStepLogger(",
+    "line": 135,
+    "file_sha256": "e2f75e8b487930f1711a9915986394cb5dd1ce708cf8c12603d8b9ac56d7eaae",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/pkg/runner/logger.go#L135"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "pkg/runner/logger.go",
+    "symbol": "func valueMasker(",
+    "line": 146,
+    "file_sha256": "e2f75e8b487930f1711a9915986394cb5dd1ce708cf8c12603d8b9ac56d7eaae",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/pkg/runner/logger.go#L146"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "pkg/runner/command.go",
+    "symbol": "func (rc *RunContext) commandHandler(",
+    "line": 36,
+    "file_sha256": "5abaeb2bb3189118e54488b4ad7944c86e7bb0659b469478603893a4264afce3",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/pkg/runner/command.go#L36"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "pkg/artifactcache/handler.go",
+    "symbol": "func StartHandler(",
+    "line": 48,
+    "file_sha256": "4952e58cb4052d1854ab1dfab0eda49315689f6bcda5cc61cbf680bcad2b7f69",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/pkg/artifactcache/handler.go#L48"
+  },
+  {
+    "group": "act",
+    "commit": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+    "path": "LICENSE",
+    "symbol": "MIT License",
+    "line": 1,
+    "file_sha256": "da3ece2d2daf5c812c8606d2922094f51818258d4ce0e041b4ee8409ba3b381f",
+    "url": "https://github.com/nektos/act/blob/4f411281417e88660bea1c1a1749aa71ae0bd60f/LICENSE#L1"
+  },
+  {
+    "group": "app",
+    "commit": "b71aad89437f89becee13aa8f2ed714eb418e1b9",
+    "path": "apps/desktop/src/runner/process.ts",
+    "symbol": "export async function health(",
+    "line": 32,
+    "file_sha256": "f65a872bb48c50db08dd3ed9c47376df869bd9d9a80c520f785c64234d339225",
+    "url": "https://github.com/MohammedIbrahim8887/act-dock/blob/b71aad89437f89becee13aa8f2ed714eb418e1b9/apps/desktop/src/runner/process.ts#L32"
+  },
+  {
+    "group": "app",
+    "commit": "b71aad89437f89becee13aa8f2ed714eb418e1b9",
+    "path": "apps/desktop/src/runner/process.ts",
+    "symbol": "  log(",
+    "line": 126,
+    "file_sha256": "f65a872bb48c50db08dd3ed9c47376df869bd9d9a80c520f785c64234d339225",
+    "url": "https://github.com/MohammedIbrahim8887/act-dock/blob/b71aad89437f89becee13aa8f2ed714eb418e1b9/apps/desktop/src/runner/process.ts#L126"
+  },
+  {
+    "group": "app",
+    "commit": "b71aad89437f89becee13aa8f2ed714eb418e1b9",
+    "path": "apps/desktop/src/runner/process.ts",
+    "symbol": "  async pump(",
+    "line": 283,
+    "file_sha256": "f65a872bb48c50db08dd3ed9c47376df869bd9d9a80c520f785c64234d339225",
+    "url": "https://github.com/MohammedIbrahim8887/act-dock/blob/b71aad89437f89becee13aa8f2ed714eb418e1b9/apps/desktop/src/runner/process.ts#L283"
+  },
+  {
+    "group": "app",
+    "commit": "b71aad89437f89becee13aa8f2ed714eb418e1b9",
+    "path": "apps/desktop/src/runner/process.ts",
+    "symbol": "  async execute(",
+    "line": 300,
+    "file_sha256": "f65a872bb48c50db08dd3ed9c47376df869bd9d9a80c520f785c64234d339225",
+    "url": "https://github.com/MohammedIbrahim8887/act-dock/blob/b71aad89437f89becee13aa8f2ed714eb418e1b9/apps/desktop/src/runner/process.ts#L300"
+  },
+  {
+    "group": "app",
+    "commit": "b71aad89437f89becee13aa8f2ed714eb418e1b9",
+    "path": "apps/desktop/src/runner/process.ts",
+    "symbol": "  cancel(",
+    "line": 230,
+    "file_sha256": "f65a872bb48c50db08dd3ed9c47376df869bd9d9a80c520f785c64234d339225",
+    "url": "https://github.com/MohammedIbrahim8887/act-dock/blob/b71aad89437f89becee13aa8f2ed714eb418e1b9/apps/desktop/src/runner/process.ts#L230"
+  },
+  {
+    "group": "app",
+    "commit": "b71aad89437f89becee13aa8f2ed714eb418e1b9",
+    "path": "apps/desktop/src/runner/process.ts",
+    "symbol": "  async cleanup(",
+    "line": 260,
+    "file_sha256": "f65a872bb48c50db08dd3ed9c47376df869bd9d9a80c520f785c64234d339225",
+    "url": "https://github.com/MohammedIbrahim8887/act-dock/blob/b71aad89437f89becee13aa8f2ed714eb418e1b9/apps/desktop/src/runner/process.ts#L260"
+  },
+  {
+    "group": "app",
+    "commit": "b71aad89437f89becee13aa8f2ed714eb418e1b9",
+    "path": "apps/desktop/src/runner/workflows.ts",
+    "symbol": "export async function discover(",
+    "line": 21,
+    "file_sha256": "66fea97d34a7a98715af7d30f94aea444972e0fc38e684c9591067b63be92992",
+    "url": "https://github.com/MohammedIbrahim8887/act-dock/blob/b71aad89437f89becee13aa8f2ed714eb418e1b9/apps/desktop/src/runner/workflows.ts#L21"
+  },
+  {
+    "group": "app",
+    "commit": "b71aad89437f89becee13aa8f2ed714eb418e1b9",
+    "path": "apps/desktop/src/runner/workflows.ts",
+    "symbol": "export async function validateRun(",
+    "line": 117,
+    "file_sha256": "66fea97d34a7a98715af7d30f94aea444972e0fc38e684c9591067b63be92992",
+    "url": "https://github.com/MohammedIbrahim8887/act-dock/blob/b71aad89437f89becee13aa8f2ed714eb418e1b9/apps/desktop/src/runner/workflows.ts#L117"
+  },
+  {
+    "group": "app",
+    "commit": "b71aad89437f89becee13aa8f2ed714eb418e1b9",
+    "path": "apps/desktop/src/runner/workflows.ts",
+    "symbol": "export const RUNNER_IMAGE",
+    "line": 189,
+    "file_sha256": "66fea97d34a7a98715af7d30f94aea444972e0fc38e684c9591067b63be92992",
+    "url": "https://github.com/MohammedIbrahim8887/act-dock/blob/b71aad89437f89becee13aa8f2ed714eb418e1b9/apps/desktop/src/runner/workflows.ts#L189"
+  },
+  {
+    "group": "app",
+    "commit": "b71aad89437f89becee13aa8f2ed714eb418e1b9",
+    "path": "apps/desktop/src/runner/workflows.ts",
+    "symbol": "export function commandArgs(",
+    "line": 190,
+    "file_sha256": "66fea97d34a7a98715af7d30f94aea444972e0fc38e684c9591067b63be92992",
+    "url": "https://github.com/MohammedIbrahim8887/act-dock/blob/b71aad89437f89becee13aa8f2ed714eb418e1b9/apps/desktop/src/runner/workflows.ts#L190"
+  },
+  {
+    "group": "app",
+    "commit": "b71aad89437f89becee13aa8f2ed714eb418e1b9",
+    "path": "apps/desktop/src/runner/store.ts",
+    "symbol": "  constructor(",
+    "line": 17,
+    "file_sha256": "7bf6d6c102869b4bef66d4dc71fbe7420a473594b8439d13d05d072118f4955f",
+    "url": "https://github.com/MohammedIbrahim8887/act-dock/blob/b71aad89437f89becee13aa8f2ed714eb418e1b9/apps/desktop/src/runner/store.ts#L17"
+  },
+  {
+    "group": "app",
+    "commit": "b71aad89437f89becee13aa8f2ed714eb418e1b9",
+    "path": "apps/desktop/src/runner/store.ts",
+    "symbol": "  prune(",
+    "line": 214,
+    "file_sha256": "7bf6d6c102869b4bef66d4dc71fbe7420a473594b8439d13d05d072118f4955f",
+    "url": "https://github.com/MohammedIbrahim8887/act-dock/blob/b71aad89437f89becee13aa8f2ed714eb418e1b9/apps/desktop/src/runner/store.ts#L214"
+  },
+  {
+    "group": "app",
+    "commit": "b71aad89437f89becee13aa8f2ed714eb418e1b9",
+    "path": "apps/desktop/src/runner/transport.ts",
+    "symbol": "export function localRequest(",
+    "line": 6,
+    "file_sha256": "2dd9a673dfb843e8ee3d74672aff700e75d5dc4056dde8c3979893a5a71557f6",
+    "url": "https://github.com/MohammedIbrahim8887/act-dock/blob/b71aad89437f89becee13aa8f2ed714eb418e1b9/apps/desktop/src/runner/transport.ts#L6"
+  },
+  {
+    "group": "app",
+    "commit": "b71aad89437f89becee13aa8f2ed714eb418e1b9",
+    "path": "apps/desktop/src/runner/transport.ts",
+    "symbol": "export async function listenLocal(",
+    "line": 26,
+    "file_sha256": "2dd9a673dfb843e8ee3d74672aff700e75d5dc4056dde8c3979893a5a71557f6",
+    "url": "https://github.com/MohammedIbrahim8887/act-dock/blob/b71aad89437f89becee13aa8f2ed714eb418e1b9/apps/desktop/src/runner/transport.ts#L26"
+  },
+  {
+    "group": "app",
+    "commit": "b71aad89437f89becee13aa8f2ed714eb418e1b9",
+    "path": "apps/desktop/src/mainview/components/run-detail.tsx",
+    "symbol": "    async function poll()",
+    "line": 57,
+    "file_sha256": "9b9adaae04a03c6083c1a854961ad0b3ed37ee142d1c915d4448021bb5b046ad",
+    "url": "https://github.com/MohammedIbrahim8887/act-dock/blob/b71aad89437f89becee13aa8f2ed714eb418e1b9/apps/desktop/src/mainview/components/run-detail.tsx#L57"
+  },
+  {
+    "group": "app",
+    "commit": "b71aad89437f89becee13aa8f2ed714eb418e1b9",
+    "path": "apps/desktop/src/mainview/App.tsx",
+    "symbol": "    const id = setInterval(() => void refresh()",
+    "line": 207,
+    "file_sha256": "fa03961aa87bba8c91d2877fc8fc7bc745c88db083b85f9e09c90ef570176507",
+    "url": "https://github.com/MohammedIbrahim8887/act-dock/blob/b71aad89437f89becee13aa8f2ed714eb418e1b9/apps/desktop/src/mainview/App.tsx#L207"
+  },
+  {
+    "group": "app",
+    "commit": "b71aad89437f89becee13aa8f2ed714eb418e1b9",
+    "path": "apps/desktop/src/shared/contracts.ts",
+    "symbol": "export const runRequestSchema",
+    "line": 2,
+    "file_sha256": "ee1857dde70d51817716b532f95fa52a771d74507a35db10a887ca2e55817e2f",
+    "url": "https://github.com/MohammedIbrahim8887/act-dock/blob/b71aad89437f89becee13aa8f2ed714eb418e1b9/apps/desktop/src/shared/contracts.ts#L2"
+  },
+  {
+    "group": "app",
+    "commit": "b71aad89437f89becee13aa8f2ed714eb418e1b9",
+    "path": "apps/desktop/src/shared/run-progress.ts",
+    "symbol": "export function advanceProgress(",
+    "line": 30,
+    "file_sha256": "803a258e7167856c985a7ed0a0c153833c8222dc7206614871d0476eec9e8302",
+    "url": "https://github.com/MohammedIbrahim8887/act-dock/blob/b71aad89437f89becee13aa8f2ed714eb418e1b9/apps/desktop/src/shared/run-progress.ts#L30"
+  },
+  {
+    "group": "app",
+    "commit": "b71aad89437f89becee13aa8f2ed714eb418e1b9",
+    "path": "scripts/act.ts",
+    "symbol": "export const ACT_VERSION",
+    "line": 6,
+    "file_sha256": "7ff3b212aa3a3a7aae084800849bdc848eb19e309308b8422789543933c5ef9f",
+    "url": "https://github.com/MohammedIbrahim8887/act-dock/blob/b71aad89437f89becee13aa8f2ed714eb418e1b9/scripts/act.ts#L6"
+  },
+  {
+    "group": "runner",
+    "commit": "4197182ef8f39c719f66038c1bc9b34cd9e9ac9a",
+    "path": "src/Runner.Worker/JobRunner.cs",
+    "symbol": "public async Task<TaskResult> RunAsync(",
+    "line": 36,
+    "file_sha256": "006421e85af890f4ac2192d494992582ca155bfa8996ff94b87d3e152638d6e3",
+    "url": "https://github.com/actions/runner/blob/4197182ef8f39c719f66038c1bc9b34cd9e9ac9a/src/Runner.Worker/JobRunner.cs#L36"
+  },
+  {
+    "group": "runner",
+    "commit": "4197182ef8f39c719f66038c1bc9b34cd9e9ac9a",
+    "path": "src/Runner.Worker/StepsRunner.cs",
+    "symbol": "public sealed class StepsRunner",
+    "line": 36,
+    "file_sha256": "7f89529ca548e704db0e6dc97df1a2d291c0db85ad18701d17db59330861ca6c",
+    "url": "https://github.com/actions/runner/blob/4197182ef8f39c719f66038c1bc9b34cd9e9ac9a/src/Runner.Worker/StepsRunner.cs#L36"
+  },
+  {
+    "group": "runner",
+    "commit": "4197182ef8f39c719f66038c1bc9b34cd9e9ac9a",
+    "path": "src/Runner.Worker/ActionManager.cs",
+    "symbol": "public sealed class ActionManager",
+    "line": 50,
+    "file_sha256": "084a98970ed891514c6dc9a6a28c5d12d987ef54e60695f5c11edd5d96a546fd",
+    "url": "https://github.com/actions/runner/blob/4197182ef8f39c719f66038c1bc9b34cd9e9ac9a/src/Runner.Worker/ActionManager.cs#L50"
+  },
+  {
+    "group": "runner",
+    "commit": "4197182ef8f39c719f66038c1bc9b34cd9e9ac9a",
+    "path": "src/Runner.Worker/ContainerOperationProvider.cs",
+    "symbol": "public class ContainerOperationProvider",
+    "line": 28,
+    "file_sha256": "3425d105557cc894e2a408bf3b6727335c4ef46ac9ff17a054b2b4943034345e",
+    "url": "https://github.com/actions/runner/blob/4197182ef8f39c719f66038c1bc9b34cd9e9ac9a/src/Runner.Worker/ContainerOperationProvider.cs#L28"
+  },
+  {
+    "group": "runner",
+    "commit": "4197182ef8f39c719f66038c1bc9b34cd9e9ac9a",
+    "path": "src/Runner.Worker/Container/DockerCommandManager.cs",
+    "symbol": "public class DockerCommandManager",
+    "line": 40,
+    "file_sha256": "9311f464a52124e07b0a521678169b418b7354ff30188784ccad75157fdcb87f",
+    "url": "https://github.com/actions/runner/blob/4197182ef8f39c719f66038c1bc9b34cd9e9ac9a/src/Runner.Worker/Container/DockerCommandManager.cs#L40"
+  },
+  {
+    "group": "runner",
+    "commit": "4197182ef8f39c719f66038c1bc9b34cd9e9ac9a",
+    "path": "LICENSE",
+    "symbol": "The MIT License",
+    "line": 1,
+    "file_sha256": "621a1e0b6163b9d63fe780b9d6f5a7f775a5781065024a1ebf8010726c44cec1",
+    "url": "https://github.com/actions/runner/blob/4197182ef8f39c719f66038c1bc9b34cd9e9ac9a/LICENSE#L1"
+  }
+]

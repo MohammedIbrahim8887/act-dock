@@ -1,0 +1,150 @@
+File: model.test
+Type: cpu
+Time: 2026-10-28 11:28:46 EAT
+Duration: 4.43s, Total samples = 4.70s (106.13%)
+Showing nodes accounting for 4.23s, 90.00% of 4.70s total
+Dropped 116 nodes (cum <= 0.02s)
+      flat  flat%   sum%        cum   cum%
+     1.38s 29.36% 29.36%      1.38s 29.36%  runtime.kevent
+     0.44s  9.36% 38.72%      0.44s  9.36%  runtime.madvise
+     0.32s  6.81% 45.53%      0.32s  6.81%  runtime.pthread_cond_wait
+     0.21s  4.47% 50.00%      0.21s  4.47%  runtime.pthread_cond_signal
+     0.20s  4.26% 54.26%      0.20s  4.26%  encoding/json.stateInString
+     0.19s  4.04% 58.30%      0.19s  4.04%  runtime.usleep
+     0.18s  3.83% 62.13%      0.18s  3.83%  runtime.pthread_kill
+     0.15s  3.19% 65.32%      0.18s  3.83%  encoding/json.(*decodeState).rescanLiteral
+     0.11s  2.34% 67.66%      0.40s  8.51%  encoding/json.checkValid
+     0.11s  2.34% 70.00%      0.19s  4.04%  runtime.mallocgcSmallScanNoHeader
+     0.08s  1.70% 71.70%      0.10s  2.13%  encoding/json.stateEndValue
+     0.07s  1.49% 73.19%      0.07s  1.49%  internal/runtime/maps.(*Iter).Next
+     0.06s  1.28% 74.47%      0.29s  6.17%  runtime.mallocgc
+     0.05s  1.06% 75.53%      0.07s  1.49%  encoding/json.(*decodeState).skip
+     0.05s  1.06% 76.60%      0.05s  1.06%  encoding/json.isSpace (inline)
+     0.05s  1.06% 77.66%      0.05s  1.06%  runtime.tryDeferToSpanScan
+     0.04s  0.85% 78.51%      0.10s  2.13%  encoding/json.(*decodeState).scanWhile
+     0.04s  0.85% 79.36%      0.05s  1.06%  encoding/json.stateBeginString
+     0.04s  0.85% 80.21%      0.04s  0.85%  runtime.nanotime1
+     0.04s  0.85% 81.06%      0.09s  1.91%  runtime.scanObject
+     0.03s  0.64% 81.70%      0.97s 20.64%  encoding/json.(*decodeState).object
+     0.03s  0.64% 82.34%      0.05s  1.06%  encoding/json.unquoteBytes
+     0.03s  0.64% 82.98%      0.03s  0.64%  internal/runtime/atomic.(*UnsafePointer).Load (inline)
+     0.03s  0.64% 83.62%      0.03s  0.64%  runtime.(*mspan).writeHeapBitsSmall
+     0.03s  0.64% 84.26%      0.03s  0.64%  runtime.memclrNoHeapPointers
+     0.03s  0.64% 84.89%      0.03s  0.64%  runtime.memmove
+     0.03s  0.64% 85.53%      0.04s  0.85%  runtime.scanObjectsSmall
+     0.03s  0.64% 86.17%      0.03s  0.64%  runtime.typePointers.next
+     0.02s  0.43% 86.60%      0.08s  1.70%  encoding/json.indirect
+     0.02s  0.43% 87.02%      0.03s  0.64%  encoding/json.stateBeginValue
+     0.02s  0.43% 87.45%      0.07s  1.49%  runtime.growslice
+     0.02s  0.43% 87.87%      0.07s  1.49%  runtime.mapassign_faststr
+     0.02s  0.43% 88.30%      0.07s  1.49%  runtime.stealWork
+     0.01s  0.21% 88.51%      0.16s  3.40%  encoding/json.(*decodeState).literalStore
+     0.01s  0.21% 88.72%      0.97s 20.64%  encoding/json.(*decodeState).value
+     0.01s  0.21% 88.94%      0.03s  0.64%  github.com/nektos/act/pkg/model.(*Workflow).GetJobIDs (inline)
+     0.01s  0.21% 89.15%      0.09s  1.91%  github.com/nektos/act/pkg/model.decodeNode
+     0.01s  0.21% 89.36%      0.03s  0.64%  internal/runtime/maps.rand
+     0.01s  0.21% 89.57%      0.03s  0.64%  reflect.(*rtype).Name
+     0.01s  0.21% 89.79%      0.03s  0.64%  runtime.mapaccess1_faststr
+     0.01s  0.21% 90.00%      0.13s  2.77%  runtime.newobject
+         0     0% 90.00%      0.15s  3.19%  encoding/json.(*decodeState).array
+         0     0% 90.00%      0.97s 20.64%  encoding/json.(*decodeState).unmarshal
+         0     0% 90.00%      1.28s 27.23%  encoding/json.Unmarshal
+         0     0% 90.00%      0.10s  2.13%  github.com/nektos/act/pkg/model.(*Job).Needs
+         0     0% 90.00%      0.03s  0.64%  github.com/nektos/act/pkg/model.(*Plan).mergeStages
+         0     0% 90.00%      0.05s  1.06%  github.com/nektos/act/pkg/model.(*Workflow).GetJob (inline)
+         0     0% 90.00%      0.04s  0.85%  github.com/nektos/act/pkg/model.(*Workflow).On
+         0     0% 90.00%      1.30s 27.66%  github.com/nektos/act/pkg/model.(*Workflow).UnmarshalYAML
+         0     0% 90.00%      0.38s  8.09%  github.com/nektos/act/pkg/model.(*workflowPlanner).PlanEvent
+         0     0% 90.00%      0.38s  8.09%  github.com/nektos/act/pkg/model.BenchmarkResearchPlan
+         0     0% 90.00%      1.31s 27.87%  github.com/nektos/act/pkg/model.BenchmarkResearchReadWorkflow
+         0     0% 90.00%      1.31s 27.87%  github.com/nektos/act/pkg/model.ReadWorkflow
+         0     0% 90.00%      0.28s  5.96%  github.com/nektos/act/pkg/model.createStages
+         0     0% 90.00%      0.20s  4.26%  github.com/nektos/act/pkg/schema.(*MappingProperty).UnmarshalJSON
+         0     0% 90.00%      1.29s 27.45%  github.com/nektos/act/pkg/schema.GetWorkflowSchema (inline)
+         0     0% 90.00%      1.30s 27.66%  gopkg.in/yaml%2ev3.(*Decoder).Decode
+         0     0% 90.00%      0.08s  1.70%  gopkg.in/yaml%2ev3.(*Node).Decode
+         0     0% 90.00%      1.30s 27.66%  gopkg.in/yaml%2ev3.(*decoder).callUnmarshaler
+         0     0% 90.00%      1.30s 27.66%  gopkg.in/yaml%2ev3.(*decoder).document (inline)
+         0     0% 90.00%      1.30s 27.66%  gopkg.in/yaml%2ev3.(*decoder).prepare
+         0     0% 90.00%      0.04s  0.85%  gopkg.in/yaml%2ev3.(*decoder).scalar
+         0     0% 90.00%      1.34s 28.51%  gopkg.in/yaml%2ev3.(*decoder).unmarshal
+         0     0% 90.00%      0.04s  0.85%  gopkg.in/yaml%2ev3.newDecoder (inline)
+         0     0% 90.00%      0.04s  0.85%  internal/runtime/maps.(*Iter).Init
+         0     0% 90.00%      0.03s  0.64%  internal/runtime/maps.(*table).grow
+         0     0% 90.00%      0.03s  0.64%  internal/runtime/maps.(*table).rehash
+         0     0% 90.00%      0.04s  0.85%  reflect.New
+         0     0% 90.00%      0.03s  0.64%  reflect.Value.Grow
+         0     0% 90.00%      0.07s  1.49%  reflect.Value.SetMapIndex
+         0     0% 90.00%      0.03s  0.64%  reflect.Value.grow
+         0     0% 90.00%      0.03s  0.64%  reflect.growslice
+         0     0% 90.00%      0.07s  1.49%  reflect.mapassign_faststr
+         0     0% 90.00%      0.07s  1.49%  reflect.mapassign_faststr0
+         0     0% 90.00%      0.03s  0.64%  reflect.unsafe_New
+         0     0% 90.00%      0.18s  3.83%  runtime.(*gcControllerState).enlistWorker
+         0     0% 90.00%      0.41s  8.72%  runtime.(*mheap).alloc.func1
+         0     0% 90.00%      0.41s  8.72%  runtime.(*mheap).allocSpan
+         0     0% 90.00%      0.03s  0.64%  runtime.(*pageAlloc).scavenge.func1
+         0     0% 90.00%      0.03s  0.64%  runtime.(*pageAlloc).scavengeOne
+         0     0% 90.00%      0.03s  0.64%  runtime.(*wbBuf).get2 (inline)
+         0     0% 90.00%      0.03s  0.64%  runtime.bulkBarrierPreWrite
+         0     0% 90.00%      0.50s 10.64%  runtime.findRunnable
+         0     0% 90.00%      0.07s  1.49%  runtime.forEachPInternal
+         0     0% 90.00%      0.20s  4.26%  runtime.gcBgMarkWorker
+         0     0% 90.00%      0.38s  8.09%  runtime.gcBgMarkWorker.func2
+         0     0% 90.00%      0.38s  8.09%  runtime.gcDrain
+         0     0% 90.00%      0.33s  7.02%  runtime.gcDrainMarkWorkerDedicated (inline)
+         0     0% 90.00%      0.05s  1.06%  runtime.gcDrainMarkWorkerIdle (inline)
+         0     0% 90.00%      0.06s  1.28%  runtime.gcMarkDone.forEachP.func5
+         0     0% 90.00%      1.39s 29.57%  runtime.gcStart.func4
+         0     0% 90.00%      0.17s  3.62%  runtime.gopreempt_m (inline)
+         0     0% 90.00%      0.17s  3.62%  runtime.goschedImpl
+         0     0% 90.00%      0.03s  0.64%  runtime.heapSetTypeNoHeader (inline)
+         0     0% 90.00%      0.16s  3.40%  runtime.lock (inline)
+         0     0% 90.00%      0.16s  3.40%  runtime.lock2
+         0     0% 90.00%      0.16s  3.40%  runtime.lockWithRank (inline)
+         0     0% 90.00%      0.32s  6.81%  runtime.mPark (inline)
+         0     0% 90.00%      0.03s  0.64%  runtime.mProf_Malloc
+         0     0% 90.00%      0.03s  0.64%  runtime.makeslice
+         0     0% 90.00%      0.03s  0.64%  runtime.mapIterNext
+         0     0% 90.00%      0.08s  1.70%  runtime.mapIterStart
+         0     0% 90.00%      0.05s  1.06%  runtime.markroot
+         0     0% 90.00%      0.04s  0.85%  runtime.markroot.func1
+         0     0% 90.00%      0.46s  9.79%  runtime.mcall
+         0     0% 90.00%      0.19s  4.04%  runtime.morestack
+         0     0% 90.00%      0.04s  0.85%  runtime.nanotime (inline)
+         0     0% 90.00%      1.38s 29.36%  runtime.netpoll
+         0     0% 90.00%      0.20s  4.26%  runtime.newstack
+         0     0% 90.00%      0.32s  6.81%  runtime.notesleep
+         0     0% 90.00%      0.20s  4.26%  runtime.notewakeup
+         0     0% 90.00%      0.15s  3.19%  runtime.osyield (inline)
+         0     0% 90.00%      0.46s  9.79%  runtime.park_m
+         0     0% 90.00%      0.18s  3.83%  runtime.preemptM
+         0     0% 90.00%      0.06s  1.28%  runtime.preemptall
+         0     0% 90.00%      0.15s  3.19%  runtime.preemptone
+         0     0% 90.00%      0.03s  0.64%  runtime.profilealloc
+         0     0% 90.00%      0.04s  0.85%  runtime.runSafePointFn
+         0     0% 90.00%      0.04s  0.85%  runtime.runqgrab
+         0     0% 90.00%      0.04s  0.85%  runtime.runqsteal
+         0     0% 90.00%      0.05s  1.06%  runtime.scanSpan
+         0     0% 90.00%      0.52s 11.06%  runtime.schedule
+         0     0% 90.00%      0.33s  7.02%  runtime.semasleep
+         0     0% 90.00%      0.21s  4.47%  runtime.semawakeup
+         0     0% 90.00%      0.18s  3.83%  runtime.signalM (inline)
+         0     0% 90.00%      0.05s  1.06%  runtime.slicebytetostring
+         0     0% 90.00%      1.41s 30.00%  runtime.startTheWorldWithSema
+         0     0% 90.00%      0.16s  3.40%  runtime.startm
+         0     0% 90.00%      0.03s  0.64%  runtime.stkbucket
+         0     0% 90.00%      0.33s  7.02%  runtime.stopm
+         0     0% 90.00%      0.03s  0.64%  runtime.suspendG
+         0     0% 90.00%      0.03s  0.64%  runtime.sysUnused (inline)
+         0     0% 90.00%      0.03s  0.64%  runtime.sysUnusedOS (inline)
+         0     0% 90.00%      0.41s  8.72%  runtime.sysUsed (inline)
+         0     0% 90.00%      0.41s  8.72%  runtime.sysUsedOS (inline)
+         0     0% 90.00%      2.36s 50.21%  runtime.systemstack
+         0     0% 90.00%      0.17s  3.62%  runtime.wakep
+         0     0% 90.00%      0.05s  1.06%  runtime.wbBufFlush
+         0     0% 90.00%      0.05s  1.06%  runtime.wbBufFlush.func1
+         0     0% 90.00%      0.05s  1.06%  runtime.wbBufFlush1
+         0     0% 90.00%      0.03s  0.64%  runtime.wbMove
+         0     0% 90.00%      1.69s 35.96%  testing.(*B).launch
+         0     0% 90.00%      1.69s 35.96%  testing.(*B).runN

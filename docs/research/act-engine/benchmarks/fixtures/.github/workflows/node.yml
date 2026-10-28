@@ -1,0 +1,21 @@
+{
+  "name": "research-node",
+  "on": "workflow_dispatch",
+  "jobs": {
+    "bench": {
+      "runs-on": "ubuntu-latest",
+      "steps": [
+        {
+          "uses": "actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683"
+        },
+        {
+          "name": "install",
+          "run": "echo BENCH_FIRST; npm ci --ignore-scripts --no-audit --no-fund --cache /tmp/bench-npm-cache"
+        },
+        {
+          "run": "node -e \"if(require('lodash').sum([1,2,3])!==6)process.exit(1)\""
+        }
+      ]
+    }
+  }
+}

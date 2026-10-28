@@ -1,0 +1,24 @@
+{
+  "name": "research-typescript",
+  "on": "workflow_dispatch",
+  "jobs": {
+    "bench": {
+      "runs-on": "ubuntu-latest",
+      "steps": [
+        {
+          "uses": "actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683"
+        },
+        {
+          "name": "install",
+          "run": "echo BENCH_FIRST; npm ci --ignore-scripts --no-audit --no-fund --cache /tmp/bench-npm-cache"
+        },
+        {
+          "run": "npm run build"
+        },
+        {
+          "run": "npm test"
+        }
+      ]
+    }
+  }
+}
