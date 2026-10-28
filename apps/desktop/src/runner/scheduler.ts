@@ -642,7 +642,9 @@ export class Scheduler {
           raw.GITHUB_TOKEN || "",
           images,
         );
-        extra = cache.args;
+        // Freeze Auto to the same daemon platform used for image preparation.
+        // The final CLI flag also prevents inherited Act flags from selecting a different variant.
+        extra = [...cache.args, "--container-architecture", platform];
         mounts = cache.mounts;
       }
       if (this.store.run(run.id).state === "cancelling")
