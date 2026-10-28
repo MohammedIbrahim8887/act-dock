@@ -23,6 +23,7 @@ export async function bundleHelper(target: ActTarget, destination: string) {
       "go",
       "build",
       "-mod=readonly",
+      "-buildvcs=false",
       "-trimpath",
       "-ldflags=-s -w",
       "-o",
