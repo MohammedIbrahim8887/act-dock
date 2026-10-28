@@ -1,5 +1,7 @@
 import { randomBytes, createHmac } from "node:crypto";
 import { mkdir, readFile, rm, open } from "node:fs/promises";
+import { parseDocument } from "yaml";
+import { actrcPaths, managedActrc } from "./execution-config";
 import { join, resolve } from "node:path";
 import {
   AppError,
@@ -21,7 +23,17 @@ export function parseDotenv(content: string): Record<string, string> {
   const values: Record<string, string> = Object.create(null);
   const pattern =
     /(?:^|\n)\s*(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(?:"((?:\\.|[^"\\])*)"|'([^']*)'|([^\r\n]*))/g;
+  const spans: { start: number; length: number }[] = [];
+  const expand = (value: string) =>
+    value
+      .replace(
+        /(\\)?\$(?:\{([A-Za-z_][A-Za-z0-9_]*)\}|([A-Za-z_][A-Za-z0-9_]*))/g,
+        (match, escaped, a, b) =>
+          escaped ? match.slice(1) : values[a || b] || "",
+      )
+      .replaceAll("\\$", "$");
   for (const match of content.matchAll(pattern)) {
+    spans.push({ start: match.index!, length: match[0].length });
     const value =
       match[2] !== undefined
         ? match[2].replace(/\\([\s\S])/g, (_match, char) =>
@@ -31,13 +43,30 @@ export function parseDotenv(content: string): Record<string, string> {
                 ? "\r"
                 : char === "t"
                   ? "\t"
-                  : char,
+                  : char === "$"
+                    ? "\\$"
+                    : char,
           )
         : match[3] !== undefined
           ? match[3]
           : match[4].replace(/\s+#.*$/, "").trim();
-    values[match[1]] = value;
+    values[match[1]] = match[3] !== undefined ? value : expand(value);
   }
+  let remaining = content;
+  for (const span of spans.reverse())
+    remaining =
+      remaining.slice(0, span.start) +
+      "\n" +
+      remaining.slice(span.start + span.length);
+  if (
+    remaining
+      .split(/\r?\n/)
+      .some((line) => line.trim() && !line.trim().startsWith("#"))
+  )
+    throw new AppError(
+      "INVALID_DOTENV",
+      "The dotenv file contains an invalid assignment. Correct its syntax, then preview it again.",
+    );
   return values;
 }
 const encoded = (value: string) => JSON.stringify(value).replaceAll("$", "\\$");
@@ -50,6 +79,7 @@ export function dotenvText(values: Record<string, string>) {
 }
 export class Secrets {
   ephemeral = new Map<string, Record<string, string>>();
+  private keyPromise?: Promise<Buffer>;
   constructor(readonly store: Store) {}
   list(projectId: string): SecretMetadata[] {
     this.store.project(projectId);
@@ -63,10 +93,10 @@ export class Secrets {
   }
   async put(projectId: string, name: string, value: string, granted = true) {
     this.store.project(projectId);
-    const old = this.list(projectId).find((s) => s.name === name);
     const revision = crypto.randomUUID(),
       id = `${this.store.installationId()}/${projectId}/${revision}`;
     await nativeHelper({ op: "vault_put", id, value });
+    const old = this.list(projectId).find((s) => s.name === name);
     const metadata: SecretMetadata = {
       id,
       projectId,
@@ -110,6 +140,8 @@ export class Secrets {
       this.store.db
         .query("DELETE FROM secret_metadata WHERE id=?")
         .run(item.id);
+      if (this.list(projectId).some((secret) => secret.name === name))
+        return null;
       const project = this.store.project(projectId);
       this.store.putProject({
         ...project,
@@ -146,24 +178,30 @@ export class Secrets {
     return values;
   }
   async fingerprint(values: Record<string, string> = {}) {
-    const path = join(this.store.directory, "run-fingerprint.key");
-    try {
-      await readFile(path);
-    } catch {
-      const key = randomBytes(32).toString("hex");
-      if (process.platform === "win32")
-        await nativeHelper({ op: "private_file", path, value: key });
-      else {
-        try {
-          const file = await open(path, "wx", 0o600);
-          await file.writeFile(key);
-          await file.close();
-        } catch (error) {
-          if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
+    this.keyPromise ||= (async () => {
+      const path = join(this.store.directory, "run-fingerprint.key");
+      try {
+        await readFile(path);
+      } catch {
+        const key = randomBytes(32).toString("hex");
+        if (process.platform === "win32")
+          await nativeHelper({ op: "private_file", path, value: key });
+        else {
+          try {
+            const file = await open(path, "wx", 0o600);
+            await file.writeFile(key);
+            await file.close();
+          } catch (error) {
+            if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
+          }
         }
       }
-    }
-    return createHmac("sha256", await readFile(path))
+      return readFile(path);
+    })().catch((error) => {
+      this.keyPromise = undefined;
+      throw error;
+    });
+    return createHmac("sha256", await this.keyPromise)
       .update(
         JSON.stringify(
           Object.entries(values).sort(([a], [b]) => a.localeCompare(b)),
@@ -178,14 +216,39 @@ export class Secrets {
     names: string[],
   ) {
     let base: Record<string, string> = {};
-    const source = resolve(project.path, request.secretFile || ".secrets");
+    let inheritedFile = "";
+    for (const path of actrcPaths(project.path))
+      inheritedFile = managedActrc(path).secretFile || inheritedFile;
+    const selectedFile =
+      request.secretFile || project.defaults.secretFile || inheritedFile;
+    const source = resolve(project.path, selectedFile || ".secrets");
     try {
-      base = parseDotenv(await readFile(source, "utf8"));
+      const content = await readFile(source, "utf8");
+      if (/\.ya?ml$/i.test(source)) {
+        const document = parseDocument(content, { uniqueKeys: true });
+        if (document.errors.length) throw new Error("Invalid YAML");
+        const parsed = document.toJS();
+        if (
+          !parsed ||
+          typeof parsed !== "object" ||
+          Array.isArray(parsed) ||
+          Object.values(parsed).some((v) => typeof v !== "string")
+        )
+          throw new Error("Invalid secrets map");
+        base = parsed;
+      } else
+        base = await nativeHelper<Record<string, string>>({
+          op: "parse_dotenv",
+          value: content,
+        });
+      base = Object.fromEntries(
+        Object.entries(base).map(([name, value]) => [
+          name.toUpperCase(),
+          value,
+        ]),
+      );
     } catch (error) {
-      if (
-        request.secretFile ||
-        (error as NodeJS.ErrnoException).code !== "ENOENT"
-      )
+      if (selectedFile || (error as NodeJS.ErrnoException).code !== "ENOENT")
         throw new AppError(
           "SECRETS_FILE",
           "The secrets file could not be read.",
@@ -218,8 +281,8 @@ export class Secrets {
     }
     return { path, values: Object.values(values).filter(Boolean) };
   }
-  async cleanup(runId: string) {
-    this.ephemeral.delete(runId);
+  async cleanup(runId: string, preserve = false) {
+    if (!preserve) this.ephemeral.delete(runId);
     await rm(join(this.store.directory, "private", runId), {
       recursive: true,
       force: true,
@@ -237,7 +300,10 @@ export class Secrets {
     target: "env" | "vars" | "secrets",
   ) {
     const project = this.store.project(projectId),
-      values = parseDotenv(await readFile(resolve(project.path, path), "utf8"));
+      values = await nativeHelper<Record<string, string>>({
+        op: "parse_dotenv",
+        value: await readFile(resolve(project.path, path), "utf8"),
+      });
     let existing: Record<string, string> = {};
     if (target !== "secrets")
       try {
@@ -248,6 +314,13 @@ export class Secrets {
           ),
         );
       } catch {}
+    if (target === "secrets") {
+      const uppercase = Object.fromEntries(
+        Object.entries(values).map(([k, v]) => [k.toUpperCase(), v]),
+      );
+      for (const key of Object.keys(values)) delete values[key];
+      Object.assign(values, uppercase);
+    }
     const previous =
       target === "secrets"
         ? this.list(projectId).map((s) => s.name)
@@ -265,7 +338,18 @@ export class Secrets {
     overwrite: boolean,
   ) {
     const project = this.store.project(projectId),
-      values = parseDotenv(await readFile(resolve(project.path, path), "utf8"));
+      values = await nativeHelper<Record<string, string>>({
+        op: "parse_dotenv",
+        value: await readFile(resolve(project.path, path), "utf8"),
+      });
+    if (target === "secrets") {
+      const uppercase = Object.fromEntries(
+        Object.entries(values).map(([k, v]) => [k.toUpperCase(), v]),
+      );
+      for (const key of Object.keys(values)) delete values[key];
+      Object.assign(values, uppercase);
+      names = names.map((n) => n.toUpperCase());
+    }
     const imported: string[] = [];
     if (target === "secrets") {
       const previous = new Set(this.list(projectId).map((s) => s.name));

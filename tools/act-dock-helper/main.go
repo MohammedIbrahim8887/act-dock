@@ -3,12 +3,14 @@ package main
 import (
 	"encoding/json"
 	"errors"
+	"github.com/joho/godotenv"
 	"io"
 	"os"
 	"path/filepath"
 )
 
 type Request struct {
+	PID    int    `json:"pid"`
 	Op     string `json:"op"`
 	ID     string `json:"id"`
 	Value  string `json:"value"`
@@ -51,6 +53,17 @@ func (e *failure) Error() string { return e.code }
 func fail(code string) error     { return &failure{code} }
 func handle(r Request) (any, error) {
 	switch r.Op {
+	case "process_identity":
+		if r.PID <= 0 {
+			return nil, fail("INVALID_PID")
+		}
+		return processIdentity(r.PID)
+	case "parse_dotenv":
+		values, err := godotenv.Unmarshal(r.Value)
+		if err != nil {
+			return nil, fail("INVALID_DOTENV")
+		}
+		return values, nil
 	case "action_fetch":
 		return fetchAction(r)
 	case "image_alias":

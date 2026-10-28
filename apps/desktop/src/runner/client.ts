@@ -27,9 +27,27 @@ export async function request<M extends Method>(
   params: unknown = {},
   source: Run["source"] = "cli",
 ): Promise<Results[M]> {
-  const feature=requiredFeature(method,params);
-  if(feature){let capabilities;try{capabilities=await request("get_capabilities",{},source);}catch{throw new AppError("RUNNER_UPGRADE_REQUIRED","The background service needs an upgrade. Finish active work and reopen Act Dock.");}requireFeature(feature,capabilities);}
-  const result = serviceReplySchema.parse(await localRequest({ method, params, source }));
+  const feature = requiredFeature(method, params);
+  if (feature) {
+    let capabilities;
+    try {
+      capabilities = await request("get_capabilities", {}, source);
+    } catch (error) {
+      if (
+        !(error instanceof AppError) ||
+        !["VALIDATION_ERROR", "UNKNOWN_METHOD"].includes(error.code)
+      )
+        throw error;
+      throw new AppError(
+        "RUNNER_UPGRADE_REQUIRED",
+        "The background service needs an upgrade. Finish active work and reopen Act Dock.",
+      );
+    }
+    requireFeature(feature, capabilities);
+  }
+  const result = serviceReplySchema.parse(
+    await localRequest({ method, params, source }),
+  );
   if (!result.ok) throw new AppError(result.error.code, result.error.message);
   return parseResponse(method, result.data);
 }
@@ -52,9 +70,12 @@ async function startRunner() {
   preparePaths();
   const installed = existsSync(executablePath);
   const command = installed ? executablePath : process.execPath;
-  const args = installed || import.meta.dir.includes("$bunfs") || import.meta.dir.includes("~BUN")
-    ? ["serve"]
-    : [resolve(import.meta.dir, "../cli/index.ts"), "serve"];
+  const args =
+    installed ||
+    import.meta.dir.includes("$bunfs") ||
+    import.meta.dir.includes("~BUN")
+      ? ["serve"]
+      : [resolve(import.meta.dir, "../cli/index.ts"), "serve"];
   const fd = openSync(join(dataDir, "runner.log"), "a", 0o600);
   const child = spawn(command, args, {
     detached: true,
@@ -93,13 +114,32 @@ export async function installRunner(source: string) {
   const pending = [
     [source, executablePath],
     [act, bundledActPath],
-    [join(dirname(source), process.platform === "win32" ? "act-dock-helper.exe" : "act-dock-helper"), join(dirname(executablePath), process.platform === "win32" ? "act-dock-helper.exe" : "act-dock-helper")],
-  ].filter(([from, to]) => existsSync(from) && (!existsSync(to) || hash(from) !== hash(to)));
+    [
+      join(
+        dirname(source),
+        process.platform === "win32"
+          ? "act-dock-helper.exe"
+          : "act-dock-helper",
+      ),
+      join(
+        dirname(executablePath),
+        process.platform === "win32"
+          ? "act-dock-helper.exe"
+          : "act-dock-helper",
+      ),
+    ],
+  ].filter(
+    ([from, to]) =>
+      existsSync(from) && (!existsSync(to) || hash(from) !== hash(to)),
+  );
   if (!pending.length) return;
   if (await isAlive()) {
-    const runs = await request("list_runs");
-    if (runs.some((r) => ["queued", "running", "cancelling"].includes(r.state)))
-      return; // Install on next app launch after active work drains.
+    const pages = await Promise.all(
+      (["queued", "running", "cancelling"] as const).map((state) =>
+        request("list_runs", { state, limit: 1 }),
+      ),
+    );
+    if (pages.some((page) => page.length > 0)) return; // Install on next app launch after active work drains.
     await request("stop");
     for (let i = 0; i < 100 && (await isAlive()); i++) await Bun.sleep(100);
     if (await isAlive())
@@ -114,7 +154,9 @@ export async function installRunner(source: string) {
     chmodSync(temp, 0o700);
     // The user already approved the app; its helper copies shouldn't trigger a second Gatekeeper prompt.
     if (process.platform === "darwin")
-      Bun.spawnSync(["xattr", "-d", "com.apple.quarantine", temp], { stderr: "ignore" });
+      Bun.spawnSync(["xattr", "-d", "com.apple.quarantine", temp], {
+        stderr: "ignore",
+      });
     renameSync(temp, to);
   }
 }

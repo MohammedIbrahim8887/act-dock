@@ -3,17 +3,23 @@
 package main
 
 /*
-#cgo LDFLAGS: -framework CoreFoundation -framework Security
+#cgo CFLAGS: -x objective-c
+#cgo LDFLAGS: -framework CoreFoundation -framework Security -framework Foundation -framework LocalAuthentication
 #include <CoreFoundation/CoreFoundation.h>
 #include <Security/Security.h>
 #include <stdlib.h>
+#import <Foundation/Foundation.h>
+#import <LocalAuthentication/LocalAuthentication.h>
 static CFMutableDictionaryRef query(const char *id) {
  CFMutableDictionaryRef q=CFDictionaryCreateMutable(NULL,0,&kCFTypeDictionaryKeyCallBacks,&kCFTypeDictionaryValueCallBacks);
  CFStringRef account=CFStringCreateWithCString(NULL,id,kCFStringEncodingUTF8);
  CFDictionarySetValue(q,kSecClass,kSecClassGenericPassword);
  CFDictionarySetValue(q,kSecAttrService,CFSTR("dev.actdock.secrets"));
  CFDictionarySetValue(q,kSecAttrAccount,account);CFRelease(account);
- CFDictionarySetValue(q,kSecUseAuthenticationUI,kSecUseAuthenticationUIFail);
+ LAContext *context=[[LAContext alloc] init];
+ context.interactionNotAllowed=YES;
+ CFDictionarySetValue(q,kSecUseAuthenticationContext,(CFTypeRef)context);
+ [context release];
  return q;
 }
 static OSStatus put(const char *id,const void *data,long len){

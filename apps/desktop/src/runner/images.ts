@@ -11,13 +11,20 @@ import {
   type ImageResolution,
 } from "../shared/contracts";
 import type { Store } from "./store";
-import { binary, exec, executionEnvironment } from "./executor/act";
+import {
+  binary,
+  exec,
+  executionEnvironment,
+  dockerInfo,
+  engineEnvironment,
+} from "./executor/act";
 
+export const IMAGE_CATALOG_VERSION = 1;
 export function imageCatalog() {
-  return ["20.04", "22.04", "24.04"].flatMap((version) =>
+  return ["latest", "20.04", "22.04", "24.04"].flatMap((version) =>
     (["medium", "full"] as const).map((tier) => ({
       label: `ubuntu-${version}`,
-      reference: `catthehacker/ubuntu:${tier === "medium" ? "act" : "full"}-${version}`,
+      reference: `catthehacker/ubuntu:${tier === "medium" ? "act" : "full"}-${version === "latest" ? "24.04" : version}`,
       tier,
       legacy: version === "20.04",
     })),
@@ -27,6 +34,7 @@ type ImageOperation = {
   id: string;
   reference: string;
   platform: string;
+  endpoint?: string;
   state: "pulling" | "complete" | "failed" | "cancelled";
   detail: string;
   fraction?: number;
@@ -34,22 +42,37 @@ type ImageOperation = {
   completion: Promise<void>;
 };
 export class Images {
-  operations = new Map<
+  operations = new Map<string, ImageOperation>();
+  resolvedEnvironment?: NodeJS.ProcessEnv;
+  resolving = new Map<string, Promise<ImageResolution>>();
+  manifests = new Map<
     string,
     {
-      id: string;
-      reference: string;
-      platform: string;
-      state: "pulling" | "complete" | "failed" | "cancelled";
-      detail: string;
-      fraction?: number;
-      child?: ReturnType<typeof spawn>;
-      completion: Promise<void>;
+      at: number;
+      pending: Promise<{ resolved: string; downloadBytes?: number }>;
     }
   >();
-  resolving = new Map<string, Promise<ImageResolution>>();
-  constructor(readonly store: Store) {}
+  constructor(
+    readonly store: Store,
+    readonly suppliedEnvironment?: NodeJS.ProcessEnv,
+    shared?: Images,
+    readonly fixedExecutable?: string,
+  ) {
+    if (shared) {
+      this.operations = shared.operations;
+      this.resolving = shared.resolving;
+      this.manifests = shared.manifests;
+    }
+  }
+  async environment() {
+    return (this.resolvedEnvironment =
+      this.suppliedEnvironment || (await engineEnvironment(this.store)));
+  }
+  scoped(environment: NodeJS.ProcessEnv) {
+    return new Images(this.store, environment, this, this.docker());
+  }
   docker() {
+    if (this.fixedExecutable) return this.fixedExecutable;
     const path = binary("docker", this.store.settings().dockerPath);
     if (!path)
       throw new AppError(
@@ -60,22 +83,27 @@ export class Images {
   }
   async command(args: string[], timeout = 15000, signal?: AbortSignal) {
     const path = this.docker();
+    const environment = await this.environment();
+    if (args.join(" ") === "info --format {{json .}}")
+      return { stdout: await dockerInfo(this.store, environment), stderr: "" };
     return exec(path, args, {
       timeout,
       maxBuffer: 8 * 1024 * 1024,
-      env: executionEnvironment(path),
+      env: environment,
       windowsHide: true,
       signal,
     });
   }
   async platform(architecture: string) {
+    await this.environment();
     if (architecture !== "auto") return architecture;
     try {
       const { stdout } = await this.command(
-        ["info", "--format", "{{.OSType}}/{{.Architecture}}"],
+        ["info", "--format", "{{json .}}"],
         5000,
       );
-      const value = stdout
+      const facts = JSON.parse(stdout);
+      const value = `${facts.OSType}/${facts.Architecture}`
         .trim()
         .replace("aarch64", "arm64")
         .replace("x86_64", "amd64");
@@ -91,7 +119,7 @@ export class Images {
   key(reference: string, platform: string) {
     return createHash("sha256")
       .update(
-        `${this.store.settings().dockerPath}\0${process.env.DOCKER_HOST || process.env.DOCKER_CONTEXT || "default"}\0${reference}\0${platform}`,
+        `${this.store.settings().dockerPath}\0${this.resolvedEnvironment?.DOCKER_HOST || this.suppliedEnvironment?.DOCKER_HOST || process.env.DOCKER_HOST || process.env.DOCKER_CONTEXT || "default"}\0${reference}\0${platform}`,
       )
       .digest("hex");
   }
@@ -145,7 +173,7 @@ export class Images {
         throw new Error();
     } catch {
       // Register an immutable variant without a registry fetch. docker tag --platform is available on newer engines.
-      const alias = `act-dock-local:${this.key(reference, platform).slice(0, 24)}`;
+      const alias = `act-dock-local:${this.key(`${reference}@${String(image.Id || descriptor?.digest || "unknown")}`, platform).slice(0, 24)}`;
       try {
         await this.command([
           "image",
@@ -201,12 +229,60 @@ export class Images {
       checkedAt: new Date().toISOString(),
     };
   }
+  remote(reference: string, platform: string) {
+    const key = this.key(reference, platform),
+      previous = this.manifests.get(key);
+    if (previous && Date.now() - previous.at < 30000) return previous.pending;
+    const pending = (async () => {
+      const value = JSON.parse(
+        (
+          await this.command(
+            ["manifest", "inspect", "--verbose", reference],
+            5000,
+          )
+        ).stdout,
+      );
+      const variants = Array.isArray(value) ? value : [value];
+      const selected = variants.find(
+        (v) =>
+          `${v.Descriptor?.platform?.os}/${v.Descriptor?.platform?.architecture}` ===
+          platform,
+      );
+      if (!selected) {
+        if (variants.some((v) => v.Descriptor?.platform))
+          throw new AppError(
+            "IMAGE_PLATFORM_UNAVAILABLE",
+            `This image does not provide ${platform}. Choose another image or architecture.`,
+          );
+        return { resolved: reference };
+      }
+      const digest = selected.Descriptor?.digest;
+      const layers =
+        selected.SchemaV2Manifest?.layers || selected.OCIManifest?.layers;
+      return {
+        resolved: digest
+          ? `${reference.split("@")[0].replace(/:[^/:]+$/, "")}@${digest}`
+          : reference,
+        downloadBytes: Array.isArray(layers)
+          ? layers.reduce(
+              (total: number, layer: { size?: number }) =>
+                total + (layer.size || 0),
+              0,
+            )
+          : undefined,
+      };
+    })();
+    this.manifests.set(key, { at: Date.now(), pending });
+    void pending.catch(() => this.manifests.delete(key));
+    return pending;
+  }
   async resolve(
     reference: string,
     platform: string,
     policy: "if-missing" | "always" | "never",
     allowPull = true,
   ) {
+    await this.environment();
     const key = this.key(reference, platform);
     const prior = this.store.db
       .query("SELECT data FROM image_resolutions WHERE key=?")
@@ -221,29 +297,24 @@ export class Images {
       this.save(key, local);
       return local;
     }
-    if (!allowPull || policy === "never") return local;
+    if (policy === "never") return local;
+    if (!allowPull) {
+      if (local.available) return local;
+      try {
+        return { ...local, ...(await this.remote(reference, platform)) };
+      } catch (error) {
+        if (error instanceof AppError) throw error;
+        return local;
+      }
+    }
     if (this.resolving.has(key)) return this.resolving.get(key)!;
     const promise = (async () => {
       // Inspect manifests through Docker's credential-aware tooling. Do not guess architecture from an index.
       let resolved = reference;
       try {
-        const manifest = JSON.parse(
-          (await this.command(["manifest", "inspect", reference], 30000))
-            .stdout,
-        );
-        const child = manifest.manifests?.find(
-          (m: { platform?: { os: string; architecture: string } }) =>
-            `${m.platform?.os}/${m.platform?.architecture}` === platform,
-        );
-        if (manifest.manifests && !child)
-          throw new AppError(
-            "IMAGE_PLATFORM_UNAVAILABLE",
-            `This image does not provide ${platform}. Choose another image or architecture.`,
-          );
-        if (child?.digest)
-          resolved = `${reference.split("@")[0].replace(/:[^/:]+$/, "")}@${child.digest}`;
-      } catch (e) {
-        if (e instanceof AppError) throw e;
+        resolved = (await this.remote(reference, platform)).resolved;
+      } catch (error) {
+        if (error instanceof AppError) throw error;
       }
       const operation = this.pull(resolved, platform);
       await this.operations.get(operation.operationId)!.completion;
@@ -273,13 +344,17 @@ export class Images {
       (o) =>
         o.reference === reference &&
         o.platform === platform &&
+        o.endpoint === this.key("endpoint", platform) &&
         o.state === "pulling",
     );
     if (existing) return { operationId: existing.id };
     const id = crypto.randomUUID(),
       docker = this.docker();
     const child = spawn(docker, ["pull", "--platform", platform, reference], {
-      env: executionEnvironment(docker),
+      env:
+        this.suppliedEnvironment ||
+        this.resolvedEnvironment ||
+        executionEnvironment(docker),
       windowsHide: true,
       stdio: ["ignore", "pipe", "pipe"],
     });
@@ -287,6 +362,7 @@ export class Images {
       id,
       reference,
       platform,
+      endpoint: this.key("endpoint", platform),
       state: "pulling",
       detail: "Starting download…",
       child,
@@ -366,7 +442,12 @@ export class Images {
   }
   list() {
     return [...this.operations.values()].map(
-      ({ child: _child, completion: _completion, ...op }) => op,
+      ({
+        child: _child,
+        completion: _completion,
+        endpoint: _endpoint,
+        ...op
+      }) => op,
     );
   }
 }

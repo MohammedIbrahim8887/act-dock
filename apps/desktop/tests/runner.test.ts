@@ -125,7 +125,7 @@ describe("workflows", () => {
       workflow.replace("ubuntu-latest", "macos-latest"),
     );
     await expect(validateRun(project, request())).rejects.toThrow(
-      "standard Ubuntu",
+      "Map a Linux runner label",
     );
   });
   test("uses argument arrays and explicit runner mapping without interpolating shell input", () => {
@@ -200,17 +200,31 @@ describe("persistence", () => {
   test("preserves step lifecycle metadata without persisting unmasked field contents", async () => {
     const run = scheduler.enqueue(request(), "cli");
     scheduler.cancel(run.id);
-    scheduler.log(run.id, JSON.stringify({
-      msg: "⭐ Run Main Test ***", jobID: "check", job: "Checks",
-      matrix: { node: 20, token: "private-matrix-value" },
-      step: "unmasked-step-value", stepID: ["2", "1"], stage: "Main",
-      raw_output: false,
-    }));
-    scheduler.log(run.id, JSON.stringify({
-      msg: "✅ Success - Main Test ***", jobID: "check", job: "Checks",
-      matrix: { token: "private-matrix-value", node: 20 },
-      stepID: ["2", "1"], stage: "Main", stepResult: "success",
-    }));
+    scheduler.log(
+      run.id,
+      JSON.stringify({
+        msg: "⭐ Run Main Test ***",
+        jobID: "check",
+        job: "Checks",
+        matrix: { node: 20, token: "private-matrix-value" },
+        step: "unmasked-step-value",
+        stepID: ["2", "1"],
+        stage: "Main",
+        raw_output: false,
+      }),
+    );
+    scheduler.log(
+      run.id,
+      JSON.stringify({
+        msg: "✅ Success - Main Test ***",
+        jobID: "check",
+        job: "Checks",
+        matrix: { token: "private-matrix-value", node: 20 },
+        stepID: ["2", "1"],
+        stage: "Main",
+        stepResult: "success",
+      }),
+    );
     const page = await scheduler.logs(run.id, 0, 100);
     const first = page.entries[0];
     expect(first.stepId).toEqual(["2", "1"]);
@@ -272,4 +286,26 @@ test("idempotency ignores input key ordering and log pagination stays bounded", 
   const second = await scheduler.logs(a.id, first.nextCursor, 2000);
   expect(second.entries[0].cursor).toBe(first.nextCursor + 1);
   scheduler.cancel(a.id);
+});
+
+test("idempotency compares workflow inputs named idempotencyKey", () => {
+  const original = scheduler.enqueue(
+    {
+      ...request(),
+      idempotencyKey: "request-key",
+      inputs: { idempotencyKey: "first" },
+    },
+    "cli",
+  );
+  expect(() =>
+    scheduler.enqueue(
+      {
+        ...request(),
+        idempotencyKey: "request-key",
+        inputs: { idempotencyKey: "second" },
+      },
+      "cli",
+    ),
+  ).toThrow("different request");
+  scheduler.cancel(original.id);
 });

@@ -1,5 +1,6 @@
 import { AppError, type Method } from "./contracts";
 const features: Partial<Record<Method, string>> = {
+  get_execution_config: "execution-config",
   patch_settings: "execution-config",
   preflight_run: "preflight",
   list_runner_images: "images",
@@ -25,8 +26,8 @@ export function requiredFeature(method: Method, params: unknown) {
     method === "run_pipeline" &&
     params &&
     typeof params === "object" &&
-    ("execution" in params ||
-      "secretOverrides" in params ||
+    ((params as { execution?: unknown }).execution !== undefined ||
+      (params as { secretOverrides?: unknown }).secretOverrides !== undefined ||
       (params as { architecture?: string }).architecture === "linux/arm64")
   )
     return "execution-config";

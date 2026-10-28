@@ -39,7 +39,19 @@ export function normalizeLog(
         .digest("hex")
         .slice(0, 24);
     }
-    if (typeof d.level === "string") entry.level = d.level.slice(0, 32);
+    if (
+      [
+        "trace",
+        "debug",
+        "info",
+        "warning",
+        "warn",
+        "error",
+        "fatal",
+        "panic",
+      ].includes(d.level)
+    )
+      entry.level = d.level;
     const ids = d.stepID ?? d.stepid;
     if (Array.isArray(ids))
       entry.stepId = ids
@@ -60,6 +72,7 @@ export function normalizeLog(
 export class LogWriter {
   pending: { entry: LogEntry; line: string; length: number }[] = [];
   bytes = 0;
+  writingBytes = 0;
   cursor: number;
   offset: number;
   timer?: ReturnType<typeof setTimeout>;
@@ -95,7 +108,7 @@ export class LogWriter {
       }, 50);
     if (this.pending.length >= 256 || this.bytes >= 65536)
       void this.flush().catch(() => {});
-    if (this.bytes >= 8 * 1024 * 1024) return this.flush();
+    if (this.bytes + this.writingBytes >= 8 * 1024 * 1024) return this.flush();
   }
   flush(): Promise<void> {
     if (this.failed) return Promise.reject(this.failed);
@@ -108,7 +121,8 @@ export class LogWriter {
     this.writing = (async () => {
       while (this.pending.length) {
         const batch = this.pending.splice(0, 256);
-        this.bytes -= batch.reduce((total, row) => total + row.length, 0);
+        this.writingBytes = batch.reduce((total, row) => total + row.length, 0);
+        this.bytes -= this.writingBytes;
         this.fd ||= await open(
           join(this.store.directory, "logs", this.runId + ".jsonl"),
           "a",
@@ -126,6 +140,19 @@ export class LogWriter {
             offset += length;
             if (
               !entry.rawOutput &&
+              /Job (?:succeeded|failed)|Run Set up job/.test(entry.message)
+            )
+              this.store.emit("job", this.runId, {
+                job: entry.job,
+                jobKey: entry.jobKey,
+                state: /Set up job/.test(entry.message)
+                  ? "running"
+                  : entry.message.includes("failed")
+                    ? "failed"
+                    : "succeeded",
+              });
+            if (
+              !entry.rawOutput &&
               (entry.stepResult ||
                 /⭐\s+Run|🏁|Job (?:succeeded|failed)/u.test(entry.message))
             )
@@ -136,6 +163,7 @@ export class LogWriter {
           });
         })();
         this.offset = offset;
+        this.writingBytes = 0;
       }
     })()
       .catch((error) => {
@@ -154,6 +182,9 @@ export class LogWriter {
     } finally {
       await this.fd?.close();
       this.fd = undefined;
+      this.pending = [];
+      this.bytes = 0;
+      this.writingBytes = 0;
       this.secrets = [];
     }
   }

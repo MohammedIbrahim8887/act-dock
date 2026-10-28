@@ -1,5 +1,6 @@
+import { createHash } from "node:crypto";
 import { homedir } from "node:os";
-import { join } from "node:path";
+import { join, isAbsolute } from "node:path";
 import { readFileSync } from "node:fs";
 import {
   defaultExecution,
@@ -15,11 +16,13 @@ import {
 export function actrcPaths(projectPath: string, env = process.env) {
   const home = env.HOME || env.USERPROFILE || homedir();
   const config =
-    process.platform === "darwin"
-      ? join(home, "Library/Application Support")
-      : process.platform === "win32"
-        ? env.LOCALAPPDATA || join(home, "AppData/Local")
-        : env.XDG_CONFIG_HOME || join(home, ".config");
+    env.XDG_CONFIG_HOME && isAbsolute(env.XDG_CONFIG_HOME)
+      ? env.XDG_CONFIG_HOME
+      : process.platform === "darwin"
+        ? join(home, "Library/Application Support")
+        : process.platform === "win32"
+          ? env.LOCALAPPDATA || join(home, "AppData/Local")
+          : env.XDG_CONFIG_HOME || join(home, ".config");
   return [
     join(config, "act/actrc"),
     join(home, ".actrc"),
@@ -29,7 +32,13 @@ export function actrcPaths(projectPath: string, env = process.env) {
 export function managedActrc(
   path: string,
   env = process.env,
-): { options: ExecutionOptions; containerOptions: string } {
+): {
+  options: ExecutionOptions;
+  containerOptions: string;
+  secretFile?: string;
+  githubInstance?: string;
+  noSkipCheckout?: boolean;
+} {
   let content = "";
   try {
     content = readFileSync(path, "utf8");
@@ -37,7 +46,10 @@ export function managedActrc(
     return { options: {}, containerOptions: "" };
   }
   const options: ExecutionOptions = {};
-  let containerOptions = "";
+  let containerOptions = "",
+    secretFile: string | undefined,
+    githubInstance: string | undefined,
+    noSkipCheckout: boolean | undefined;
   for (const line of content.split(/\r?\n/)) {
     const expanded = line
       .trim()
@@ -48,9 +60,17 @@ export function managedActrc(
     const match = expanded.match(/^(--[\w-]+|-[Pbrp])(?:=|\s+)?(.*)$/);
     if (!match) continue;
     const [, flag, value] = match;
-    if (["-P", "--platform"].includes(flag)) {
+    if (
+      flag === "--github-instance" &&
+      /^[A-Za-z0-9.-]+(?::[0-9]+)?$/.test(value)
+    )
+      githubInstance = value;
+    else if (flag === "--no-skip-checkout") noSkipCheckout = value !== "false";
+    else if (flag === "--secret-file")
+      secretFile = value.replace(/^['"]|['"]$/g, "");
+    else if (["-P", "--platform"].includes(flag)) {
       const index = value.indexOf("=");
-      const label = value.slice(0, index),
+      const label = value.slice(0, index).toLowerCase(),
         image = value.slice(index + 1);
       if (
         index > 0 &&
@@ -72,7 +92,13 @@ export function managedActrc(
       options.concurrentJobs = Number(value);
     else if (flag === "--container-options") containerOptions = value;
   }
-  return { options, containerOptions };
+  return {
+    options,
+    containerOptions,
+    secretFile,
+    githubInstance,
+    noSkipCheckout,
+  };
 }
 export function resolveExecution(
   project: Project,
@@ -107,6 +133,14 @@ export function resolveExecution(
   apply(request.execution, "Run override");
   return {
     options,
+    configurationHashes: Object.fromEntries(
+      paths.map((path) => [
+        path,
+        createHash("sha256")
+          .update(JSON.stringify(managedActrc(path).options))
+          .digest("hex"),
+      ]),
+    ),
     provenance,
     images: [],
     workflowHashes: {},

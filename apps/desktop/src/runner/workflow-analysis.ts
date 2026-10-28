@@ -2,7 +2,13 @@ import { readFile, realpath } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import { resolve, relative, isAbsolute } from "node:path";
 import { parseDocument } from "yaml";
-import { AppError, type Project, type RunRequest } from "../shared/contracts";
+import {
+  AppError,
+  imageReferenceSchema,
+  defaultMappings,
+  type Project,
+  type RunRequest,
+} from "../shared/contracts";
 
 export type DocumentData = {
   name?: string;
@@ -15,7 +21,9 @@ export type DocumentData = {
       uses?: string;
       strategy?: unknown;
       services?: Record<string, unknown>;
-      container?: string | { image?: string; options?: string };
+      container?:
+        | string
+        | { image?: string; options?: string; volumes?: string[] };
       steps?: { uses?: string; run?: string }[];
     }
   >;
@@ -39,7 +47,7 @@ export async function yamlData(path: string): Promise<DocumentData> {
 export function actContainerName(...parts: string[]) {
   const name = parts
     .join("-")
-    .replace(/[^a-zA-Z0-9]/g, "-")
+    .replace(/[^a-zA-Z0-9]/gu, "-")
     .replaceAll("--", "-");
   const trimmed = name
     .slice(name.length > 63 ? name.length - 63 : 0)
@@ -79,6 +87,8 @@ export async function analyzeWorkflow(project: Project, request: RunRequest) {
   let exclusive = false,
     toolcache = false,
     managedConflict = false;
+  let privateNames = false;
+  const services: { id: string; image: string }[] = [];
   const images = new Map<string, string>(),
     actions: string[] = [],
     secretNames = new Set<string>();
@@ -88,18 +98,85 @@ export async function analyzeWorkflow(project: Project, request: RunRequest) {
   for (const id of selected) {
     const job = jobs[id],
       name = String(job.name || id);
-    if (job.strategy || job.uses || /\$\{\{/.test(name + String(data.name)))
-      exclusive = true;
-    const base = actContainerName(
-      "act",
-      `${data.name || request.workflowPath.split("/").at(-1)}/${name}`,
-    );
-    namespace.add(`container:${base}`);
-    namespace.add(`volume:${base}`);
-    namespace.add(`volume:${base}-env`);
+    if (job.uses) {
+      actions.push(job.uses);
+      toolcache = true;
+    }
+    if (job.uses || /\$\{\{/.test(name + String(data.name)))
+      privateNames = true;
+    if (job.uses || /\$\{\{/.test(name + String(data.name))) exclusive = true;
+    const display = `${data.name || request.workflowPath.split("/").at(-1)}/${name}`;
+    const bases = [actContainerName("act", display)];
+    if (job.strategy) {
+      const matrix = (job.strategy as { matrix?: unknown }).matrix;
+      if (
+        matrix &&
+        typeof matrix === "object" &&
+        !Array.isArray(matrix) &&
+        !JSON.stringify(matrix).includes("${{")
+      ) {
+        const entries = Object.entries(matrix),
+          axes = entries.filter(
+            ([key]) => !["include", "exclude"].includes(key),
+          );
+        if (entries.every(([, value]) => Array.isArray(value))) {
+          const count =
+            axes.reduce(
+              (total, [, value]) => total * (value as unknown[]).length,
+              1,
+            ) + ((matrix as { include?: unknown[] }).include?.length || 0);
+          if (count <= 256)
+            for (let index = 1; index <= count; index++)
+              bases.push(actContainerName("act", display + "-" + index));
+          else exclusive = true;
+        } else exclusive = true;
+      } else if (matrix) exclusive = true;
+    }
+    for (const base of bases) {
+      namespace.add(`container:${base}`);
+      namespace.add(`volume:${base}`);
+      namespace.add(`volume:${base}-env`);
+    }
     if (job.services) {
-      exclusive = true;
-    } // Service/action child resources are not reliably run-labeled in stock Act.
+      for (const base of bases) namespace.add(`network:${base}-${id}-network`);
+      for (const [serviceId, raw] of Object.entries(job.services)) {
+        const spec = raw as {
+            image?: unknown;
+            options?: string;
+            volumes?: string[];
+            ports?: unknown[];
+          },
+          image = typeof raw === "string" ? raw : spec?.image;
+        if (imageReferenceSchema.safeParse(image).success)
+          services.push({ id: serviceId, image: image as string });
+        for (const base of bases)
+          namespace.add(`container:${actContainerName(base, serviceId)}`);
+        if (spec?.volumes?.length) exclusive = true;
+        if (spec?.options) {
+          const flags = [
+            ...spec.options.matchAll(/(?:^|\s)(--[a-z-]+|-[vp])(?=\s|=)/g),
+          ].map((match) => match[1]);
+          if (
+            flags.some(
+              (flag) =>
+                !/^--health-(cmd|interval|timeout|retries|start-period|start-interval)$/.test(
+                  flag,
+                ),
+            )
+          )
+            exclusive = true;
+        }
+        for (const port of spec?.ports || []) {
+          if (typeof port !== "string") continue;
+          if (port.includes("${{")) {
+            exclusive = true;
+            continue;
+          }
+          const parts = port.split(":");
+          if (parts.length > 1) namespace.add(`host-port:${parts.at(-2)}`);
+        }
+      }
+    }
     const container =
       typeof job.container === "string" ? job.container : job.container?.image;
     if (container) {
@@ -107,14 +184,29 @@ export async function analyzeWorkflow(project: Project, request: RunRequest) {
       if (typeof job.container === "object" && job.container.options) {
         managedConflict = true;
         exclusive = true;
+        privateNames = true;
       }
     }
+    if (typeof job.container === "object")
+      for (const mount of job.container.volumes || []) {
+        if (mount.includes("${{")) exclusive = true;
+        else namespace.add(`writable-volume:${mount.split(":")[0]}`);
+      }
     const labels = Array.isArray(job["runs-on"])
       ? job["runs-on"]
       : [job["runs-on"]];
-    if (!container)
-      for (const label of labels)
-        if (typeof label === "string") images.set(label, "");
+    if (!container) {
+      const mappings: Record<string, string> = {
+        ...defaultMappings,
+        ...request.execution?.runnerMappings,
+      };
+      const selectedLabel = labels.find(
+        (label) => typeof label === "string" && mappings[label.toLowerCase()],
+      );
+      const label =
+        selectedLabel ?? labels.find((label) => typeof label === "string");
+      if (typeof label === "string") images.set(label.toLowerCase(), "");
+    }
     for (const step of job.steps || [])
       if (step.run && /\b(?:docker|podman)\b/.test(step.run)) exclusive = true;
     for (const step of job.steps || [])
@@ -125,6 +217,8 @@ export async function analyzeWorkflow(project: Project, request: RunRequest) {
   }
   return {
     data,
+    services,
+    privateNames,
     selected,
     namespace: [...namespace],
     exclusive,

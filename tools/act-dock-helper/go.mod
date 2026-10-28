@@ -5,6 +5,7 @@ go 1.25.0
 require (
 	github.com/go-git/go-git/v5 v5.16.5
 	github.com/godbus/dbus/v5 v5.1.0
+	github.com/joho/godotenv v1.5.1
 	golang.org/x/sys v0.43.0
 )
 

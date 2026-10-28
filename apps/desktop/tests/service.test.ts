@@ -23,7 +23,10 @@ test("MCP and CLI share one on-demand service, runs survive client exit, and res
     const r = await fetch("http://localhost/rpc", {
       unix: join(dir, "runner.sock"),
       method: "POST",
-      headers: { Authorization: "Bearer " + (await Bun.file(join(dir, "runner.key")).text()).trim() },
+      headers: {
+        Authorization:
+          "Bearer " + (await Bun.file(join(dir, "runner.key")).text()).trim(),
+      },
       body: JSON.stringify({ method, params }),
     });
     const result = (await r.json()) as ServiceReply;
@@ -66,7 +69,8 @@ test("MCP and CLI share one on-demand service, runs survive client exit, and res
     expect((await stat(join(dir, "runner.sock"))).mode & 0o777).toBe(0o600);
     expect((await stat(join(dir, "runner.key"))).mode & 0o777).toBe(0o600);
     const anonymous = await fetch("http://localhost/rpc", {
-      unix: join(dir, "runner.sock"), method: "POST",
+      unix: join(dir, "runner.sock"),
+      method: "POST",
       body: JSON.stringify({ method: "get_settings" }),
     });
     expect(anonymous.status).toBe(403);
@@ -85,8 +89,16 @@ test("MCP and CLI share one on-demand service, runs survive client exit, and res
       }),
     );
     const list = await client.listTools();
-    expect(list.tools.map(t=>t.name)).toEqual(expect.arrayContaining(["get_capabilities","preflight_run","read_events","list_project_secrets","get_run_metrics"]));
-    expect(list.tools.map(t=>t.name)).not.toContain("get_secret_value");
+    expect(list.tools.map((t) => t.name)).toEqual(
+      expect.arrayContaining([
+        "get_capabilities",
+        "preflight_run",
+        "read_events",
+        "list_project_secrets",
+        "get_run_metrics",
+      ]),
+    );
+    expect(list.tools.map((t) => t.name)).not.toContain("get_secret_value");
     expect(list.tools.map((t) => t.name)).toContain("run_pipeline");
     const invoke = async <T>(
       name: string,
@@ -96,11 +108,29 @@ test("MCP and CLI share one on-demand service, runs survive client exit, and res
       expect(r.isError).not.toBe(true);
       return (r.structuredContent as { result: T }).result;
     };
-    const report = await invoke<{ overall: string; checks: { id: string; status: string }[] }>("check_health", {});
+    const report = await invoke<{
+      overall: string;
+      checks: { id: string; status: string }[];
+    }>("check_health", {});
     expect(["ready", "attention", "blocked"]).toContain(report.overall);
     expect(report.checks.find((c) => c.id === "act")?.status).toBe("ok");
     const p = await invoke<Project>("add_project", {
       path: join(dir, "project"),
+    });
+    await rpc("patch_settings", {
+      executionDefaults: { imagePullPolicy: "never" },
+    });
+    const config = (await rpc("get_execution_config", { projectId: p.id })) as {
+      inherited: { options: { imagePullPolicy: string } };
+      effective: { options: { imagePullPolicy: string } };
+    };
+    expect(config.inherited.options.imagePullPolicy).toBe("never");
+    expect(config.effective.options.imagePullPolicy).toBe("never");
+    expect(((await rpc("get_settings")) as { actPath: string }).actPath).toBe(
+      act,
+    );
+    await rpc("patch_settings", {
+      executionDefaults: { imagePullPolicy: "if-missing" },
     });
     expect(await invoke("list_workflows", { projectId: p.id })).toHaveLength(1);
     const r = await invoke<Run>("run_pipeline", {

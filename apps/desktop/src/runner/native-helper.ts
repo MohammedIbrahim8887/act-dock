@@ -1,6 +1,6 @@
 import { spawn } from "node:child_process";
 import { existsSync } from "node:fs";
-import { join, resolve } from "node:path";
+import { join, resolve, dirname } from "node:path";
 import { AppError } from "../shared/contracts";
 import { dataDir } from "./paths";
 
@@ -10,6 +10,9 @@ export function helperPath() {
   const candidates = [
     process.env.ACT_DOCK_HELPER_PATH,
     join(dataDir, "bin", name),
+    ...(import.meta.dir.includes("$bunfs") || import.meta.dir.includes("~BUN")
+      ? [join(dirname(process.execPath), name)]
+      : []),
     resolve(import.meta.dir, "../../dist-runner", name),
   ];
   if (!import.meta.dir.includes("$bunfs") && !import.meta.dir.includes("~BUN"))
@@ -52,8 +55,12 @@ export async function nativeHelper<T = unknown>(
       child.kill();
       finish(
         new AppError(
-          "HELPER_TIMEOUT",
-          "The native operation timed out. Check the system vault or network, then retry.",
+          String(request.op).startsWith("vault_")
+            ? "VAULT_UNAVAILABLE"
+            : "HELPER_TIMEOUT",
+          String(request.op).startsWith("vault_")
+            ? "The system vault did not respond without interaction. Open it and authorize the updated helper or replace the saved secret, then retry."
+            : "The native operation timed out. Check the system vault or network, then retry.",
         ),
       );
     }, timeout);

@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import {
   AppError,
+  defaultExecution,
   type PreflightReport,
   type RunRequest,
   type ExecutionSnapshot,
@@ -9,7 +10,11 @@ import {
 import { Store } from "./store";
 import { Images } from "./images";
 import { resolveExecution } from "./execution-config";
-import { health, binary, executionEnvironment } from "./executor/act";
+import {
+  health,
+  executionEnvironment,
+  engineSupportsManagedExecution,
+} from "./executor/act";
 import { analyzeWorkflow } from "./workflow-analysis";
 import { validateRun } from "./workflows";
 
@@ -33,8 +38,25 @@ export async function preflightRun(
   ) => issues.push({ code, severity, message, recoverable });
   try {
     await validateRun(project, { ...request, execution: snapshot.options });
-    const analysis = await analyzeWorkflow(project, request);
+    const analysis = await analyzeWorkflow(project, {
+      ...request,
+      execution: snapshot.options,
+    });
+    snapshot.resourceExpectations = {
+      services: analysis.services,
+      privateNames: analysis.privateNames,
+      networks: analysis.privateNames
+        ? []
+        : analysis.namespace
+            .filter((name) => name.startsWith("network:"))
+            .map((name) => name.slice(8)),
+    };
     snapshot.workflowHashes[request.workflowPath] = analysis.hash;
+    snapshot.configurationHashes = resolveExecution(
+      project,
+      request,
+      store.settings(),
+    ).configurationHashes;
     if (analysis.managedConflict && snapshot.options.packageCaches.length)
       add(
         "CONTAINER_OPTIONS_CONFLICT",
@@ -52,23 +74,46 @@ export async function preflightRun(
     if (!h.act.ok) add("ACT_UNAVAILABLE", "error", h.act.message, true);
     if (!h.docker.ok)
       add("DOCKER_UNAVAILABLE", "error", h.docker.message, true);
-    if (h.act.ok && !compatibleAct(h.act.message)) {
+    const adapterCompatible =
+      h.act.ok &&
+      compatibleAct(h.act.message) &&
+      (await engineSupportsManagedExecution(h.act.path!));
+    if (h.act.ok && !adapterCompatible) {
       add(
         "ENGINE_CAPABILITIES",
         "warning",
         "This Act version has not been verified with optimized execution. Basic runs remain available.",
       );
-      if (request.execution && Object.keys(request.execution).length)
+      if (
+        (request.execution && Object.keys(request.execution).length) ||
+        JSON.stringify(snapshot.options) !== JSON.stringify(defaultExecution)
+      )
         add(
           "ENGINE_UNSUPPORTED",
           "error",
           "Use the bundled Act v0.2.89 for managed images, caches and execution options.",
         );
     }
-    if (h.docker.ok && compatibleAct(h.act.message)) {
+    if (h.docker.ok && adapterCompatible) {
+      const environment = await images.environment();
+      if (environment.DOCKER_HOST)
+        snapshot.docker = {
+          host: environment.DOCKER_HOST,
+          executable: images.docker(),
+          certPath: environment.DOCKER_CERT_PATH,
+          tlsVerify: environment.DOCKER_TLS_VERIFY,
+        };
       const platform = await images.platform(request.architecture);
       for (const [label, container] of analysis.images) {
         const reference = container || snapshot.options.runnerMappings[label];
+        if (!reference && label.includes("${{")) {
+          add(
+            "DYNAMIC_RUNNER_IMAGE",
+            snapshot.options.imagePullPolicy === "never" ? "error" : "unknown",
+            "Act evaluates this runner label at execution time. Managed image readiness cannot be fully verified; use literal mapped labels for local-only execution.",
+          );
+          continue;
+        }
         if (!reference) {
           add(
             "UNMAPPED_RUNNER",
@@ -108,7 +153,7 @@ export async function preflightRun(
             "The workflow's container image takes precedence. Act owns its image pull behavior.",
           );
       }
-      const docker = binary("docker", store.settings().dockerPath);
+      const docker = images.docker();
       try {
         const config = JSON.parse(
           await readFile(

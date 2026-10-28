@@ -1,7 +1,31 @@
 import { z } from "zod";
-import { architectureSchema, executionOptionsSchema, executionSnapshotSchema, runPhases, imageReferenceSchema, secretNameSchema, executionResponses, type ExecutionSnapshot, type ExecutionResults } from "./execution";
+import {
+  queueReasonSchema,
+  architectureSchema,
+  executionOptionsSchema,
+  executionSnapshotSchema,
+  runPhases,
+  imageReferenceSchema,
+  secretNameSchema,
+  executionResponses,
+  type ExecutionSnapshot,
+  type ExecutionResults,
+} from "./execution";
 export * from "./execution";
-const secretOverridesSchema = z.record(secretNameSchema, z.string().refine(v => new TextEncoder().encode(v).length <= 49152, "Secrets must be at most 48 KiB.")).refine(v => new TextEncoder().encode(JSON.stringify(v)).length <= 524288, "Overrides must be at most 512 KiB.");
+const secretOverridesSchema = z
+  .record(
+    secretNameSchema,
+    z
+      .string()
+      .refine(
+        (v) => new TextEncoder().encode(v).length <= 49152,
+        "Secrets must be at most 48 KiB.",
+      ),
+  )
+  .refine(
+    (v) => new TextEncoder().encode(JSON.stringify(v)).length <= 524288,
+    "Overrides must be at most 512 KiB.",
+  );
 export const runRequestSchema = z.object({
   projectId: z.string().min(1),
   workflowPath: z.string().min(1),
@@ -22,8 +46,19 @@ export const settingsSchema = z.object({
   startAtLogin: z.boolean().default(false),
   actPath: z.string().default(""),
   dockerPath: z.string().default(""),
+  cacheBudgets: z
+    .object({
+      projectGiB: z.number().positive().max(1024),
+      totalGiB: z.number().positive().max(4096),
+    })
+    .optional(),
   executionDefaults: executionOptionsSchema.optional(),
-  concurrency: z.object({ enabled: z.boolean(), maxWorkflows: z.number().int().min(1).max(8) }).optional(),
+  concurrency: z
+    .object({
+      enabled: z.boolean(),
+      maxWorkflows: z.number().int().min(1).max(8),
+    })
+    .optional(),
 });
 export type Settings = z.infer<typeof settingsSchema>;
 export const runStates = [
@@ -57,6 +92,7 @@ export type Job = {
   needs: string[];
   runners: string[];
   uses?: string;
+  container?: boolean;
 };
 export type Workflow = {
   projectId: string;
@@ -129,8 +165,19 @@ export const folderListingSchema = z.object({
   hasWorkflows: z.boolean(),
 });
 export type FolderListing = z.infer<typeof folderListingSchema>;
-export const checkStatuses = ["ok", "warning", "error", "pending", "info", "skipped"] as const;
-export const healthActions = ["start_docker", "pull_image"] as const;
+export const checkStatuses = [
+  "ok",
+  "warning",
+  "error",
+  "pending",
+  "info",
+  "skipped",
+] as const;
+export const healthActions = [
+  "start_docker",
+  "pull_image",
+  "cleanup_resources",
+] as const;
 export const healthCheckSchema = z.object({
   id: z.string(),
   group: z.enum(["required", "recommended", "environment"]),
@@ -138,17 +185,42 @@ export const healthCheckSchema = z.object({
   status: z.enum(checkStatuses),
   summary: z.string(),
   detail: z.string().optional(),
-  facts: z.array(z.object({ label: z.string(), value: z.string(), mono: z.boolean().optional() })).default([]),
+  facts: z
+    .array(
+      z.object({
+        label: z.string(),
+        value: z.string(),
+        mono: z.boolean().optional(),
+      }),
+    )
+    .default([]),
   /** A fix the runner can perform, a place in the app, or documentation. */
   action: z
     .discriminatedUnion("kind", [
-      z.object({ kind: z.literal("runner"), id: z.enum(healthActions), label: z.string() }),
-      z.object({ kind: z.literal("view"), target: z.enum(["settings", "agents"]), label: z.string() }),
-      z.object({ kind: z.literal("link"), url: z.string().url(), label: z.string() }),
+      z.object({
+        kind: z.literal("runner"),
+        id: z.enum(healthActions),
+        label: z.string(),
+      }),
+      z.object({
+        kind: z.literal("view"),
+        target: z.enum(["settings", "agents"]),
+        label: z.string(),
+      }),
+      z.object({
+        kind: z.literal("link"),
+        url: z.string().url(),
+        label: z.string(),
+      }),
     ])
     .optional(),
   command: z.string().optional(),
-  progress: z.object({ label: z.string(), fraction: z.number().min(0).max(1).optional() }).optional(),
+  progress: z
+    .object({
+      label: z.string(),
+      fraction: z.number().min(0).max(1).optional(),
+    })
+    .optional(),
 });
 export type HealthCheck = z.infer<typeof healthCheckSchema>;
 export type HealthCheckInput = z.input<typeof healthCheckSchema>;
@@ -173,30 +245,90 @@ export const methods = {
   remove_project: z.object({ projectId: z.string() }),
   save_defaults: z.object({
     projectId: z.string(),
-    defaults: runRequestSchema.partial(),
+    defaults: runRequestSchema
+      .extend({
+        inputs: runRequestSchema.shape.inputs.removeDefault().optional(),
+        architecture: runRequestSchema.shape.architecture
+          .removeDefault()
+          .optional(),
+      })
+      .partial(),
   }),
   list_workflows: z.object({ projectId: z.string() }),
-  run_pipeline: runRequestSchema.extend({ secretOverrides: secretOverridesSchema.optional() }),
+  run_pipeline: runRequestSchema.extend({
+    secretOverrides: secretOverridesSchema.optional(),
+  }),
   get_capabilities: z.object({}),
+  get_execution_config: z.object({ projectId: z.string() }),
   get_runner_snapshot: z.object({}),
-  patch_settings: settingsSchema.partial(),
+  patch_settings: settingsSchema
+    .extend({
+      theme: settingsSchema.shape.theme.removeDefault().optional(),
+      startAtLogin: settingsSchema.shape.startAtLogin
+        .removeDefault()
+        .optional(),
+      actPath: settingsSchema.shape.actPath.removeDefault().optional(),
+      dockerPath: settingsSchema.shape.dockerPath.removeDefault().optional(),
+    })
+    .partial(),
   preflight_run: z.object({ request: runRequestSchema }),
   list_runner_images: z.object({ projectId: z.string().optional() }),
-  inspect_image: z.object({ reference: imageReferenceSchema, architecture: architectureSchema.default("auto") }),
-  pull_image: z.object({ reference: imageReferenceSchema, architecture: architectureSchema.default("auto") }),
+  inspect_image: z.object({
+    reference: imageReferenceSchema,
+    architecture: architectureSchema.default("auto"),
+  }),
+  pull_image: z.object({
+    reference: imageReferenceSchema,
+    architecture: architectureSchema.default("auto"),
+  }),
   cancel_image_pull: z.object({ operationId: z.string() }),
   list_image_operations: z.object({}),
   list_caches: z.object({ projectId: z.string().optional() }),
   clear_cache: z.object({ cacheId: z.string() }),
   refresh_project_cache: z.object({ projectId: z.string() }),
   list_project_secrets: z.object({ projectId: z.string() }),
-  put_project_secret: z.object({ projectId: z.string(), name: secretNameSchema, value: z.string().refine(v => new TextEncoder().encode(v).length <= 49152), granted: z.boolean().default(true) }),
-  delete_project_secret: z.object({ projectId: z.string(), name: secretNameSchema }),
-  preview_import: z.object({ projectId: z.string(), path: z.string(), target: z.enum(["env", "vars", "secrets"]) }),
-  import_project_configuration: z.object({ projectId: z.string(), path: z.string(), target: z.enum(["env", "vars", "secrets"]), names: z.array(secretNameSchema), overwrite: z.boolean().default(false) }),
+  put_project_secret: z.object({
+    projectId: z.string(),
+    name: secretNameSchema,
+    value: z
+      .string()
+      .refine((v) => new TextEncoder().encode(v).length <= 49152),
+    granted: z.boolean().default(true),
+  }),
+  delete_project_secret: z.object({
+    projectId: z.string(),
+    name: secretNameSchema,
+  }),
+  preview_import: z.object({
+    projectId: z.string(),
+    path: z.string(),
+    target: z.enum(["env", "vars", "secrets"]),
+  }),
+  import_project_configuration: z.object({
+    projectId: z.string(),
+    path: z.string(),
+    target: z.enum(["env", "vars", "secrets"]),
+    names: z
+      .array(
+        z
+          .string()
+          .regex(/^[A-Za-z_][A-Za-z0-9_]*$/)
+          .max(100),
+      )
+      .max(1000),
+    overwrite: z.boolean().default(false),
+  }),
   supply_run_secrets: id.extend({ values: secretOverridesSchema }),
-  read_events: z.object({ cursor: z.number().int().min(0).default(0), runIds: z.array(z.string()).max(100).optional(), limit: z.number().int().min(1).max(2000).default(500), waitMs: z.number().int().min(0).max(10000).default(0) }),
-  get_run_metrics: id.extend({ cursor: z.number().int().min(0).default(0), limit: z.number().int().min(1).max(1000).default(100) }),
+  read_events: z.object({
+    cursor: z.number().int().min(0).default(0),
+    runIds: z.array(z.string()).max(100).optional(),
+    limit: z.number().int().min(1).max(2000).default(500),
+    waitMs: z.number().int().min(0).max(10000).default(0),
+  }),
+  get_run_metrics: id.extend({
+    cursor: z.number().int().min(0).default(0),
+    limit: z.number().int().min(1).max(1000).default(100),
+  }),
   list_runs: runFiltersSchema.extend({
     cursor: z.number().int().min(0).default(0),
     limit: z.number().int().min(1).max(200).default(100),
@@ -216,6 +348,10 @@ export const methods = {
 } as const;
 export type Method = keyof typeof methods;
 export type Results = Omit<ExecutionResults, "patch_settings"> & {
+  get_execution_config: {
+    effective: ExecutionSnapshot;
+    inherited: ExecutionSnapshot;
+  };
   patch_settings: Settings;
   get_runner_snapshot: { runs: Run[]; cursor: number };
   list_projects: Project[];
@@ -270,6 +406,7 @@ const workflowSchema = z.object({
       needs: z.array(z.string()),
       runners: z.array(z.string()),
       uses: z.string().optional(),
+      container: z.boolean().optional(),
     }),
   ),
   inputs: z.array(
@@ -298,7 +435,7 @@ const runSchema = z.object({
   diagnostic: z.string().optional(),
   command: z.array(z.string()),
   phase: z.enum(runPhases).optional(),
-  queueReason: z.string().optional(),
+  queueReason: queueReasonSchema.optional(),
   ephemeralSecretNames: z.array(z.string()).optional(),
   snapshot: executionSnapshotSchema.optional(),
 });
@@ -333,8 +470,15 @@ const dependencySchema = z.object({
 });
 export const responses = {
   ...executionResponses,
+  get_execution_config: z.object({
+    effective: executionSnapshotSchema,
+    inherited: executionSnapshotSchema,
+  }),
   patch_settings: settingsSchema,
-  get_runner_snapshot: z.object({ runs: z.array(runSchema), cursor: z.number() }),
+  get_runner_snapshot: z.object({
+    runs: z.array(runSchema),
+    cursor: z.number(),
+  }),
   list_projects: z.array(projectSchema),
   browse_folders: folderListingSchema,
   get_run_history: historyPageSchema,

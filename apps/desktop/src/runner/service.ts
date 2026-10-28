@@ -11,6 +11,7 @@ import { z } from "zod";
 import {
   AppError,
   methods,
+  runRequestSchema,
   type Method,
   type Run,
 } from "../shared/contracts";
@@ -21,6 +22,7 @@ import { checkHealth, fixHealth } from "./doctor";
 import { canonicalProject, discover, validateRun } from "./workflows";
 import { invalidateHealth } from "./executor/act";
 import { imageCatalog } from "./images";
+import { analyzeWorkflow } from "./workflow-analysis";
 import { preflightRun } from "./preflight";
 import { resolveExecution } from "./execution-config";
 import { readEvents } from "./events";
@@ -86,54 +88,218 @@ export async function serve() {
     // Parsing is repeated per method to retain schema-inferred types.
     switch (method) {
       case "get_capabilities":
-        return { apiVersion: 2, engineVersion: (await health(store)).act.message, features: ["execution-config", "events", "images", "caches", "vault", "preflight", "concurrency", "metrics"] };
+        return {
+          apiVersion: 2,
+          engineVersion: (await health(store)).act.message,
+          features: [
+            "execution-config",
+            "events",
+            "images",
+            "caches",
+            "vault",
+            "preflight",
+            "concurrency",
+            "metrics",
+          ],
+        };
       case "get_runner_snapshot":
-        return store.db.transaction(() => ({ runs: store.listRuns({},0,200), cursor: store.eventCursor() }))();
+        return store.db.transaction(() => ({
+          runs: store.runs(),
+          cursor: store.eventCursor(),
+        }))();
+      case "get_execution_config": {
+        const { projectId } = methods.get_execution_config.parse(raw);
+        const project = store.project(projectId);
+        const request = runRequestSchema.parse({
+          projectId,
+          workflowPath: ".github/workflows/preview.yml",
+          event: "push",
+        });
+        return {
+          effective: resolveExecution(project, request, store.settings()),
+          inherited: resolveExecution(
+            { ...project, defaults: {} },
+            request,
+            store.settings(),
+          ),
+        };
+      }
       case "read_events":
         return readEvents(store, methods.read_events.parse(raw));
       case "patch_settings": {
         const patch = methods.patch_settings.parse(raw);
         const previous = store.settings();
-        const next = { ...previous, ...patch, executionDefaults: { ...previous.executionDefaults, ...patch.executionDefaults } };
-        if (next.startAtLogin !== previous.startAtLogin) await setLogin(next.startAtLogin);
-        return store.saveSettings(next);
+        const next = {
+          ...previous,
+          ...patch,
+          executionDefaults: {
+            ...previous.executionDefaults,
+            ...patch.executionDefaults,
+            runnerMappings: {
+              ...previous.executionDefaults?.runnerMappings,
+              ...patch.executionDefaults?.runnerMappings,
+            },
+          },
+        };
+        if (next.startAtLogin !== previous.startAtLogin)
+          await setLogin(next.startAtLogin);
+        const saved = store.saveSettings(next);
+        void scheduler.pump();
+        return saved;
       }
       case "preflight_run": {
-        const p=methods.preflight_run.parse(raw);
-        const report=await preflightRun(store,scheduler.images,p.request);
-        try { await scheduler.secrets.selected(p.request.projectId,report.snapshot.secretNames); }
-        catch(e){ report.issues.push({code:e instanceof AppError?e.code:"VAULT_UNAVAILABLE",message:e instanceof AppError?e.message:"The vault could not be checked.",severity:"error",recoverable:true});report.ready=false; }
+        const p = methods.preflight_run.parse(raw);
+        const report = await preflightRun(store, scheduler.images, p.request);
+        try {
+          const analysis = await analyzeWorkflow(
+            store.project(p.request.projectId),
+            p.request,
+          );
+          report.issues.push(
+            ...(await scheduler.caches.inspect(
+              store.project(p.request.projectId),
+              analysis.actions,
+              report.snapshot,
+            )),
+          );
+          report.ready = !report.issues.some((i) => i.severity === "error");
+        } catch {}
+        try {
+          await scheduler.secrets.selected(
+            p.request.projectId,
+            report.snapshot.secretNames,
+          );
+        } catch (e) {
+          report.issues.push({
+            code: e instanceof AppError ? e.code : "VAULT_UNAVAILABLE",
+            message:
+              e instanceof AppError
+                ? e.message
+                : "The vault could not be checked.",
+            severity: "error",
+            recoverable: true,
+          });
+          report.ready = false;
+        }
         return report;
       }
       case "list_runner_images": {
-        const p=methods.list_runner_images.parse(raw),catalog=imageCatalog();
-        if(p.projectId){const project=store.project(p.projectId);for(const [label,reference]of Object.entries(project.defaults.execution?.runnerMappings||{}))catalog.push({label,reference,tier:"custom" as "medium",legacy:false});}
+        const p = methods.list_runner_images.parse(raw),
+          catalog = imageCatalog();
+        if (p.projectId) {
+          const project = store.project(p.projectId);
+          for (const [label, reference] of Object.entries(
+            project.defaults.execution?.runnerMappings || {},
+          ))
+            catalog.push({
+              label,
+              reference,
+              tier: "custom" as "medium",
+              legacy: false,
+            });
+        }
         return catalog;
       }
-      case "inspect_image": {const p=methods.inspect_image.parse(raw);return scheduler.images.resolve(p.reference,await scheduler.images.platform(p.architecture),"if-missing",false);}
-      case "pull_image": {const p=methods.pull_image.parse(raw);return scheduler.images.pull(p.reference,await scheduler.images.platform(p.architecture));}
-      case "cancel_image_pull": return scheduler.images.cancel(methods.cancel_image_pull.parse(raw).operationId);
-      case "list_image_operations": return scheduler.images.list();
-      case "list_caches": return scheduler.caches.list(methods.list_caches.parse(raw).projectId);
-      case "clear_cache": return scheduler.caches.clear(methods.clear_cache.parse(raw).cacheId);
-      case "refresh_project_cache": return scheduler.caches.refresh(methods.refresh_project_cache.parse(raw).projectId);
-      case "list_project_secrets": return scheduler.secrets.list(methods.list_project_secrets.parse(raw).projectId);
-      case "put_project_secret": {const p=methods.put_project_secret.parse(raw);return scheduler.secrets.put(p.projectId,p.name,p.value,p.granted);}
-      case "delete_project_secret": {const p=methods.delete_project_secret.parse(raw);return scheduler.secrets.delete(p.projectId,p.name);}
-      case "preview_import": {const p=methods.preview_import.parse(raw);return scheduler.secrets.preview(p.projectId,p.path,p.target);}
-      case "import_project_configuration": {const p=methods.import_project_configuration.parse(raw);return scheduler.secrets.import(p.projectId,p.path,p.target,p.names,p.overwrite);}
+      case "inspect_image": {
+        const p = methods.inspect_image.parse(raw);
+        return scheduler.images.resolve(
+          p.reference,
+          await scheduler.images.platform(p.architecture),
+          "if-missing",
+          false,
+        );
+      }
+      case "pull_image": {
+        const p = methods.pull_image.parse(raw);
+        return scheduler.images.pull(
+          p.reference,
+          await scheduler.images.platform(p.architecture),
+        );
+      }
+      case "cancel_image_pull":
+        return scheduler.images.cancel(
+          methods.cancel_image_pull.parse(raw).operationId,
+        );
+      case "list_image_operations":
+        return scheduler.images.list();
+      case "list_caches":
+        return scheduler.caches.list(methods.list_caches.parse(raw).projectId);
+      case "clear_cache":
+        return scheduler.caches.clear(methods.clear_cache.parse(raw).cacheId);
+      case "refresh_project_cache":
+        return scheduler.caches.refresh(
+          methods.refresh_project_cache.parse(raw).projectId,
+        );
+      case "list_project_secrets":
+        return scheduler.secrets.list(
+          methods.list_project_secrets.parse(raw).projectId,
+        );
+      case "put_project_secret": {
+        const p = methods.put_project_secret.parse(raw);
+        return scheduler.secrets.put(p.projectId, p.name, p.value, p.granted);
+      }
+      case "delete_project_secret": {
+        const p = methods.delete_project_secret.parse(raw);
+        return scheduler.secrets.delete(p.projectId, p.name);
+      }
+      case "preview_import": {
+        const p = methods.preview_import.parse(raw);
+        return scheduler.secrets.preview(p.projectId, p.path, p.target);
+      }
+      case "import_project_configuration": {
+        const p = methods.import_project_configuration.parse(raw);
+        return scheduler.secrets.import(
+          p.projectId,
+          p.path,
+          p.target,
+          p.names,
+          p.overwrite,
+        );
+      }
       case "supply_run_secrets": {
-        const p=methods.supply_run_secrets.parse(raw),run=store.run(p.runId);
-        if(run.state!=="queued")throw new AppError("RUN_NOT_QUEUED","Only queued runs accept replacement secret input.");
-        if(JSON.stringify(Object.keys(p.values).sort())!==JSON.stringify([...(run.ephemeralSecretNames||[])].sort()))throw new AppError("SECRET_NAMES","Resupply exactly the secret names required by this run.");
-        scheduler.secrets.ephemeral.set(run.id,p.values);
-        store.putRun({...run,needsSecretInput:false,queueReason:undefined,overrideFingerprint:await scheduler.secrets.fingerprint(p.values)});
-        void scheduler.pump();return null;
+        const p = methods.supply_run_secrets.parse(raw),
+          run = store.run(p.runId);
+        if (run.state !== "queued")
+          throw new AppError(
+            "RUN_NOT_QUEUED",
+            "Only queued runs accept replacement secret input.",
+          );
+        if (
+          JSON.stringify(Object.keys(p.values).sort()) !==
+          JSON.stringify([...(run.ephemeralSecretNames || [])].sort())
+        )
+          throw new AppError(
+            "SECRET_NAMES",
+            "Resupply exactly the secret names required by this run.",
+          );
+        scheduler.secrets.ephemeral.set(run.id, p.values);
+        store.putRun({
+          ...run,
+          needsSecretInput: false,
+          queueReason: undefined,
+          overrideFingerprint: await scheduler.secrets.fingerprint(p.values),
+        });
+        void scheduler.pump();
+        return null;
       }
       case "get_run_metrics": {
-        const p=methods.get_run_metrics.parse(raw);store.run(p.runId);
-        const rows=store.db.query("SELECT cursor,data FROM metrics WHERE run_id=? AND cursor>? ORDER BY cursor LIMIT ?").all(p.runId,p.cursor,p.limit) as {cursor:number;data:string}[];
-        return {entries:rows.map(r=>({...JSON.parse(r.data),cursor:r.cursor})),nextCursor:rows.at(-1)?.cursor??p.cursor};
+        const p = methods.get_run_metrics.parse(raw);
+        store.run(p.runId);
+        const rows = store.db
+          .query(
+            "SELECT cursor,data FROM metrics WHERE run_id=? AND cursor>? ORDER BY cursor LIMIT ?",
+          )
+          .all(p.runId, p.cursor, p.limit) as {
+          cursor: number;
+          data: string;
+        }[];
+        return {
+          entries: rows.map((r) => ({
+            ...JSON.parse(r.data),
+            cursor: r.cursor,
+          })),
+          nextCursor: rows.at(-1)?.cursor ?? p.cursor,
+        };
       }
       case "list_projects":
         methods[method].parse(raw);
@@ -161,7 +327,13 @@ export async function serve() {
         const p = methods[method].parse(raw);
         return store.putProject({
           ...store.project(p.projectId),
-          defaults: p.defaults,
+          defaults: {
+            ...store.project(p.projectId).defaults,
+            ...p.defaults,
+            execution:
+              p.defaults.execution ??
+              store.project(p.projectId).defaults.execution,
+          },
         });
       }
       case "list_workflows": {
@@ -170,10 +342,15 @@ export async function serve() {
       }
       case "run_pipeline": {
         const { secretOverrides, ...p } = methods.run_pipeline.parse(raw);
-        const fingerprint=secretOverrides&&Object.keys(secretOverrides).length?await scheduler.secrets.fingerprint(secretOverrides):undefined;
-        if(p.idempotencyKey&&store.idempotent(p.idempotencyKey))return scheduler.enqueue(p,source,secretOverrides,fingerprint);
-        const project=store.project(p.projectId),snapshot=resolveExecution(project,p,store.settings());
-        await validateRun(project,{...p,execution:snapshot.options});
+        const fingerprint =
+          secretOverrides && Object.keys(secretOverrides).length
+            ? await scheduler.secrets.fingerprint(secretOverrides)
+            : undefined;
+        if (p.idempotencyKey && store.idempotent(p.idempotencyKey))
+          return scheduler.enqueue(p, source, secretOverrides, fingerprint);
+        const project = store.project(p.projectId),
+          snapshot = resolveExecution(project, p, store.settings());
+        await validateRun(project, { ...p, execution: snapshot.options });
         return scheduler.enqueue(p, source, secretOverrides, fingerprint);
       }
       case "browse_folders":
@@ -195,7 +372,10 @@ export async function serve() {
       case "get_settings":
         return store.settings();
       case "update_settings": {
-        const p = methods[method].parse({ ...store.settings(), ...(raw as object) });
+        const p = methods[method].parse({
+          ...store.settings(),
+          ...(raw as object),
+        });
         if (p.startAtLogin !== store.settings().startAtLogin)
           await setLogin(p.startAtLogin);
         return store.saveSettings(p);
@@ -203,15 +383,28 @@ export async function serve() {
       case "health":
         return health(store);
       case "check_health":
-        return checkHealth(store,{images:scheduler.images});
+        return checkHealth(store, { images: scheduler.images });
       case "fix_health": {
-        const {action}=methods.fix_health.parse(raw);invalidateHealth(store);
-        if(action==="pull_image"){
-          const reference=store.settings().executionDefaults?.runnerMappings?.["ubuntu-latest"]||"catthehacker/ubuntu:act-24.04";
-          scheduler.images.pull(reference,await scheduler.images.platform("auto"));
-          return {message:"Downloading "+reference};
+        const { action } = methods.fix_health.parse(raw);
+        invalidateHealth(store);
+        if (action === "cleanup_resources") {
+          void scheduler.pump();
+          return { message: "Retrying verified resource cleanup" };
         }
-        const result=await fixHealth(store,action);void scheduler.pump();return result;
+        if (action === "pull_image") {
+          const reference =
+            store.settings().executionDefaults?.runnerMappings?.[
+              "ubuntu-latest"
+            ] || "catthehacker/ubuntu:act-24.04";
+          scheduler.images.pull(
+            reference,
+            await scheduler.images.platform("auto"),
+          );
+          return { message: "Downloading " + reference };
+        }
+        const result = await fixHealth(store, action);
+        void scheduler.pump();
+        return result;
       }
       case "stop":
         setTimeout(() => void shutdown(), 50);
@@ -219,33 +412,36 @@ export async function serve() {
     }
   }
   server = await listenLocal(async (requestBody) => {
-      try {
-        const body = z
-          .object({
-            method: z.enum(Object.keys(methods) as [Method, ...Method[]]),
-            params: z.unknown().default({}),
-            source: z.enum(["desktop", "cli", "mcp"]).default("cli"),
-          })
-          .parse(requestBody);
-        const data = await dispatch(body.method, body.params, body.source);
-        return Response.json({ ok: true, data });
-      } catch (e) {
-        return Response.json(
-          {
-            ok: false,
-            error: {
-              code:
-                e instanceof AppError
-                  ? e.code
-                  : e instanceof z.ZodError
-                    ? "VALIDATION_ERROR"
-                    : (e as NodeJS.ErrnoException).code || "INTERNAL_ERROR",
-              message: e instanceof AppError ? e.message : "The runner could not complete the request. Check the selected configuration and System health.",
-            },
+    try {
+      const body = z
+        .object({
+          method: z.enum(Object.keys(methods) as [Method, ...Method[]]),
+          params: z.unknown().default({}),
+          source: z.enum(["desktop", "cli", "mcp"]).default("cli"),
+        })
+        .parse(requestBody);
+      const data = await dispatch(body.method, body.params, body.source);
+      return Response.json({ ok: true, data });
+    } catch (e) {
+      return Response.json(
+        {
+          ok: false,
+          error: {
+            code:
+              e instanceof AppError
+                ? e.code
+                : e instanceof z.ZodError
+                  ? "VALIDATION_ERROR"
+                  : (e as NodeJS.ErrnoException).code || "INTERNAL_ERROR",
+            message:
+              e instanceof AppError
+                ? e.message
+                : "The runner could not complete the request. Check the selected configuration and System health.",
           },
-          { status: 400 },
-        );
-      }
+        },
+        { status: 400 },
+      );
+    }
   });
   process.once("SIGTERM", () => void shutdown());
   process.once("SIGINT", () => void shutdown());

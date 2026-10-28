@@ -22,15 +22,13 @@ export async function readEvents(
       data: string;
     }[];
     return {
-      events: rows
-        .slice(0, query.limit)
-        .map((r) => ({
-          seq: r.seq,
-          runId: r.run_id,
-          kind: r.kind,
-          time: r.time,
-          data: JSON.parse(r.data),
-        })),
+      events: rows.slice(0, query.limit).map((r) => ({
+        seq: r.seq,
+        runId: r.run_id,
+        kind: r.kind,
+        time: r.time,
+        data: JSON.parse(r.data),
+      })),
       nextCursor: rows.slice(0, query.limit).at(-1)?.seq ?? query.cursor,
       hasMore: rows.length > query.limit,
     };

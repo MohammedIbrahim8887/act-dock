@@ -21,7 +21,10 @@ export const secretNameSchema = z
 export const executionOptionsSchema = z.object({
   runnerMappings: z
     .record(
-      z.string().regex(/^[a-zA-Z0-9][a-zA-Z0-9._-]*$/),
+      z
+        .string()
+        .regex(/^[a-zA-Z0-9][a-zA-Z0-9._-]*$/)
+        .transform((label) => label.toLowerCase()),
       imageReferenceSchema,
     )
     .optional(),
@@ -44,7 +47,10 @@ export const executionOptionsSchema = z.object({
     .optional(),
 });
 export type ExecutionOptions = z.infer<typeof executionOptionsSchema>;
-export type ResolvedExecution = Required<ExecutionOptions>;
+export type ResolvedExecution = Required<
+  Omit<ExecutionOptions, "concurrentJobs">
+> &
+  Pick<ExecutionOptions, "concurrentJobs">;
 export const defaultMappings = {
   "ubuntu-latest": "catthehacker/ubuntu:act-24.04",
   "ubuntu-20.04": "catthehacker/ubuntu:act-20.04",
@@ -57,11 +63,12 @@ export const defaultExecution: ResolvedExecution = {
   actionCachePolicy: "cache-first",
   packageCaches: [],
   workspaceMode: "copy",
-  concurrentJobs: 1,
   secretNames: [],
   reservation: { cpus: 2, memoryGiB: 2 },
 };
-export const resolvedExecutionSchema = executionOptionsSchema.required();
+export const resolvedExecutionSchema = executionOptionsSchema
+  .required()
+  .extend({ concurrentJobs: executionOptionsSchema.shape.concurrentJobs });
 export const imageResolutionSchema = z.object({
   reference: imageReferenceSchema,
   platform: z.string(),
@@ -69,6 +76,7 @@ export const imageResolutionSchema = z.object({
   available: z.boolean(),
   source: z.enum(["local", "registry"]),
   bytes: z.number().optional(),
+  downloadBytes: z.number().optional(),
   checkedAt: z.string(),
 });
 export type ImageResolution = z.infer<typeof imageResolutionSchema>;
@@ -77,6 +85,25 @@ export const executionSnapshotSchema = z.object({
   provenance: z.record(z.string(), z.string()),
   engine: z.object({ path: z.string(), version: z.string() }).optional(),
   images: z.array(imageResolutionSchema).default([]),
+  docker: z
+    .object({
+      host: z.string(),
+      executable: z.string().optional(),
+      certPath: z.string().optional(),
+      tlsVerify: z.string().optional(),
+    })
+    .optional(),
+  resourceExpectations: z
+    .object({
+      privateNames: z.boolean().optional(),
+      networks: z.array(z.string()).optional(),
+      services: z.array(
+        z.object({ id: z.string(), image: imageReferenceSchema }),
+      ),
+    })
+    .optional(),
+  queuedWorkflowHashes: z.record(z.string(), z.string()).optional(),
+  configurationHashes: z.record(z.string(), z.string()).optional(),
   workflowHashes: z.record(z.string(), z.string()).default({}),
   secretNames: z.array(z.string()).default([]),
 });
@@ -209,3 +236,7 @@ export type ExecutionResults = {
     (typeof executionResponses)[K]
   >;
 };
+
+export type RunnerImage = ExecutionResults["list_runner_images"][number];
+export const queueReasonSchema = z.string().min(1).max(128);
+export type QueueReason = z.infer<typeof queueReasonSchema>;

@@ -11,7 +11,9 @@ import {
 } from "../shared/contracts";
 import { Store } from "./store";
 import { nativeHelper } from "./native-helper";
+import { restoreDockerEnvironment } from "./executor/act";
 import { Images } from "./images";
+import { actrcPaths, managedActrc } from "./execution-config";
 import { yamlData, safeLocalAction } from "./workflow-analysis";
 
 async function directoryBytes(path: string): Promise<number> {
@@ -25,6 +27,8 @@ async function directoryBytes(path: string): Promise<number> {
 const q = (value: string) => `'${value.replaceAll("'", "'\\''")}'`;
 export class Caches {
   pending = new Map<string, Promise<CacheEntry>>();
+  projectIntents = new Map<string, string>();
+  maintenanceProjects = new Set<string>();
   root: string;
   runLeases = new Map<string, Set<string>>();
   constructor(
@@ -51,30 +55,78 @@ export class Caches {
   }
   lease(entry: CacheEntry, runId: string) {
     const ids = this.runLeases.get(runId) || new Set<string>();
-    if (!ids.has(entry.id)) {
-      ids.add(entry.id);
-      entry.leases++;
+    this.store.db.transaction(() => {
+      this.store.db
+        .query("INSERT OR IGNORE INTO cache_leases VALUES (?,?)")
+        .run(runId, entry.id);
+      entry.leases = (
+        this.store.db
+          .query("SELECT COUNT(*) AS n FROM cache_leases WHERE cache_id=?")
+          .get(entry.id) as { n: number }
+      ).n;
       entry.lastUsedAt = new Date().toISOString();
       this.save(entry);
-    }
+    })();
+    ids.add(entry.id);
     this.runLeases.set(runId, ids);
   }
   release(runId: string) {
-    for (const id of this.runLeases.get(runId) || []) {
-      const entry = this.list().find((c) => c.id === id);
-      if (entry) {
-        entry.leases = Math.max(0, entry.leases - 1);
-        this.save(entry);
+    this.projectIntents.delete(runId);
+    this.store.db.transaction(() => {
+      const ids = (
+        this.store.db
+          .query("SELECT cache_id FROM cache_leases WHERE run_id=?")
+          .all(runId) as { cache_id: string }[]
+      ).map((row) => row.cache_id);
+      this.store.db.query("DELETE FROM cache_leases WHERE run_id=?").run(runId);
+      for (const id of ids) {
+        const entry = this.list().find((c) => c.id === id);
+        if (entry) {
+          entry.leases = (
+            this.store.db
+              .query("SELECT COUNT(*) AS n FROM cache_leases WHERE cache_id=?")
+              .get(id) as { n: number }
+          ).n;
+          this.save(entry);
+        }
       }
-    }
+    })();
     this.runLeases.delete(runId);
   }
   recover() {
-    for (const entry of this.list())
-      if (entry.leases) {
-        entry.leases = 0;
-        this.save(entry);
+    const rows = this.store.db.query("SELECT * FROM cache_leases").all() as {
+      run_id: string;
+      cache_id: string;
+    }[];
+    for (const row of rows) {
+      const ids = this.runLeases.get(row.run_id) || new Set<string>();
+      ids.add(row.cache_id);
+      this.runLeases.set(row.run_id, ids);
+    }
+    for (const [runId] of this.runLeases) {
+      if (
+        !this.store.db
+          .query("SELECT id FROM resources WHERE run_id=? LIMIT 1")
+          .get(runId)
+      )
+        this.release(runId);
+      else {
+        try {
+          this.projectIntents.set(
+            runId,
+            this.store.run(runId).request.projectId,
+          );
+        } catch {}
       }
+    }
+    for (const entry of this.list()) {
+      entry.leases = (
+        this.store.db
+          .query("SELECT COUNT(*) AS n FROM cache_leases WHERE cache_id=?")
+          .get(entry.id) as { n: number }
+      ).n;
+      this.save(entry);
+    }
   }
   async action(
     project: Project,
@@ -90,6 +142,7 @@ export class Caches {
           c.kind === "action" &&
           c.metadata.url === url &&
           (c.metadata.ref === ref ||
+            c.metadata.commit === ref ||
             (Array.isArray(c.metadata.refs) && c.metadata.refs.includes(ref))),
       )
       .sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0];
@@ -99,7 +152,15 @@ export class Caches {
         (immutable ||
           Date.now() -
             Date.parse(
-              String(previous.metadata.refreshedAt || previous.createdAt),
+              String(
+                (
+                  previous.metadata.refTimes as
+                    | Record<string, string>
+                    | undefined
+                )?.[ref] ||
+                  previous.metadata.refreshedAt ||
+                  previous.createdAt,
+              ),
             ) <
             86400000);
     if (
@@ -131,10 +192,22 @@ export class Caches {
           .update(`${project.id}\0${url}\0${result.commit}`)
           .digest("hex");
         const destination = join(root, identity);
-        const current = this.list(project.id).find((c) => c.id === identity);
         if (existsSync(destination))
           await rm(path, { recursive: true, force: true });
-        else await rename(path, destination);
+        else
+          try {
+            await rename(path, destination);
+          } catch (error) {
+            if (
+              !["EEXIST", "ENOTEMPTY"].includes(
+                (error as NodeJS.ErrnoException).code || "",
+              )
+            )
+              throw error;
+            await rm(path, { recursive: true, force: true });
+          }
+        const bytes = await directoryBytes(destination);
+        const current = this.list(project.id).find((c) => c.id === identity);
         const refs = [
           ...new Set([
             ...(Array.isArray(current?.metadata.refs)
@@ -150,10 +223,20 @@ export class Caches {
           path: destination,
           createdAt: current?.createdAt || now,
           lastUsedAt: now,
-          bytes: await directoryBytes(destination),
+          bytes,
           leases: current?.leases || 0,
           generation: 1,
-          metadata: { url, ref, refs, refreshedAt: now, commit: result.commit },
+          metadata: {
+            url,
+            ref,
+            refs,
+            refTimes: {
+              ...(current?.metadata.refTimes as Record<string, string>),
+              [ref]: now,
+            },
+            refreshedAt: now,
+            commit: result.commit,
+          },
         };
         this.save(entry);
         this.store.emit("cache", runId, { id: entry.id, state: "ready" });
@@ -165,6 +248,116 @@ export class Caches {
     this.lease(this.list().find((c) => c.id === entry.id) || entry, runId);
     return entry;
   }
+  actionHost(project: Project) {
+    let server = "github.com",
+      noSkip = false;
+    for (const path of actrcPaths(project.path)) {
+      const config = managedActrc(path);
+      server = config.githubInstance || server;
+      noSkip = config.noSkipCheckout ?? noSkip;
+    }
+    return { server, noSkip };
+  }
+  async inspect(project: Project, uses: string[], snapshot: ExecutionSnapshot) {
+    const { server, noSkip } = this.actionHost(project);
+    const issues: {
+        code: string;
+        severity: "error" | "warning" | "unknown";
+        message: string;
+        recoverable: boolean;
+      }[] = [],
+      visited = new Set<string>();
+    const walk = async (reference: string, depth = 0): Promise<void> => {
+      if (visited.has(reference)) return;
+      visited.add(reference);
+      if (depth > 32 || visited.size > 500) {
+        issues.push({
+          code: "ACTION_GRAPH_LIMIT",
+          severity: "error",
+          message: "Action dependencies exceed inspection limits.",
+          recoverable: false,
+        });
+        return;
+      }
+      if (
+        reference.startsWith("docker://") ||
+        (!noSkip &&
+          /^actions\/checkout@/.test(reference) &&
+          existsSync(join(project.path, ".git")))
+      )
+        return;
+      let dir: string | undefined;
+      if (reference.startsWith("./")) {
+        try {
+          dir = await safeLocalAction(project.path, reference);
+        } catch {
+          issues.push({
+            code: "LOCAL_ACTION_UNKNOWN",
+            severity: "unknown",
+            message:
+              "A local action is not available until workspace preparation.",
+            recoverable: false,
+          });
+          return;
+        }
+      } else {
+        const match = reference.match(
+          /^([A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+)(\/[^@]*)?@(.+)$/,
+        );
+        const entry =
+          match &&
+          this.list(project.id).find(
+            (c) =>
+              c.kind === "action" &&
+              c.metadata.url === `https://${server}/${match[1]}` &&
+              (c.metadata.ref === match[3] ||
+                (Array.isArray(c.metadata.refs) &&
+                  c.metadata.refs.includes(match[3]))) &&
+              existsSync(c.path),
+          );
+        if (!entry) {
+          issues.push({
+            code: "ACTION_CACHE_MISS",
+            severity:
+              snapshot.options.actionCachePolicy === "cached-only"
+                ? "error"
+                : "warning",
+            message: `Action ${reference} requires acquisition.`,
+            recoverable: false,
+          });
+          return;
+        }
+        dir = match?.[2]
+          ? await safeLocalAction(entry.path, "." + match[2])
+          : entry.path;
+      }
+      const path = (await lstat(dir!)).isFile()
+        ? dir!
+        : [join(dir!, "action.yml"), join(dir!, "action.yaml")].find(
+            existsSync,
+          );
+      if (path) {
+        const data = await yamlData(path);
+        for (const job of Object.values(data.jobs || {})) {
+          if (job.uses) await walk(job.uses, depth + 1);
+          for (const step of job.steps || [])
+            if (step.uses) await walk(step.uses, depth + 1);
+        }
+        for (const step of data.runs?.steps || [])
+          if (step.uses) await walk(step.uses, depth + 1);
+      }
+    };
+    for (const reference of uses) await walk(reference);
+    if (snapshot.options.packageCaches.includes("pnpm"))
+      issues.push({
+        code: "PNPM_STORE_COMMAND",
+        severity: "warning",
+        message:
+          "Use pnpm install --store-dir /var/cache/act-dock/pnpm in the workflow to use the managed store.",
+        recoverable: false,
+      });
+    return issues;
+  }
   async prepare(
     project: Project,
     uses: string[],
@@ -172,7 +365,9 @@ export class Caches {
     platform: string,
     runId: string,
     token = "",
+    images = this.images,
   ) {
+    const { server, noSkip } = this.actionHost(project);
     const args: string[] = [],
       mounts: string[] = [],
       env: Record<string, string> = {};
@@ -194,9 +389,21 @@ export class Caches {
       if (reference.startsWith("docker://")) return;
       let dir: string;
       if (reference.startsWith("./")) {
-        dir = await safeLocalAction(root, reference);
+        try {
+          dir = await safeLocalAction(project.path, reference);
+        } catch (error) {
+          if (snapshot.options.actionCachePolicy === "cached-only")
+            throw new AppError(
+              "ACTION_UNRESOLVED",
+              "A local action is unavailable for cached-only preparation.",
+            );
+          // A preceding workflow step may generate the action. Act owns its execution semantics.
+          if (!existsSync(join(project.path, reference))) return;
+          throw error;
+        }
       } else {
         if (
+          !noSkip &&
           /^actions\/checkout@/.test(reference) &&
           existsSync(join(project.path, ".git"))
         )
@@ -216,24 +423,29 @@ export class Caches {
           ref = match[3];
         const entry = await this.action(
           project,
-          `https://github.com/${repo}`,
+          `https://${server}/${repo}`,
           ref,
           snapshot.options.actionCachePolicy,
           token,
           runId,
         );
-        localRepositories.set(`${repo}@${ref}`, entry.path);
+        localRepositories.set(`https://${server}/${repo}@${ref}`, entry.path);
         dir = match[2]
           ? await safeLocalAction(entry.path, "." + match[2])
           : entry.path;
       }
-      const path = [join(dir, "action.yml"), join(dir, "action.yaml")].find(
-        existsSync,
-      );
+      const path = (await lstat(dir)).isFile()
+        ? dir
+        : [join(dir, "action.yml"), join(dir, "action.yaml")].find(existsSync);
       if (!path) return;
       const data = await yamlData(path);
+      for (const job of Object.values(data.jobs || {})) {
+        if (job.uses) await walk(job.uses, project.path, depth + 1);
+        for (const step of job.steps || [])
+          if (step.uses) await walk(step.uses, project.path, depth + 1);
+      }
       for (const nested of data.runs?.steps || [])
-        if (nested.uses) await walk(nested.uses, dir, depth + 1);
+        if (nested.uses) await walk(nested.uses, project.path, depth + 1);
     };
     for (const reference of uses) await walk(reference, project.path);
     for (const [reference, path] of localRepositories)
@@ -243,9 +455,17 @@ export class Caches {
       args.push("--action-offline-mode");
     }
     for (const kind of snapshot.options.packageCaches) {
+      const generationKey = `cache-generation:${project.id}:${platform}:${kind}:${snapshot.docker?.host || "default"}`;
+      const generation = Number(
+        (
+          this.store.db
+            .query("SELECT value FROM installation WHERE key=?")
+            .get(generationKey) as { value: string } | null
+        )?.value || 1,
+      );
       const id = createHash("sha256")
         .update(
-          `${this.store.installationId()}:${project.id}:${platform}:${kind}`,
+          `${this.store.installationId()}:${project.id}:${platform}:${kind}:${generation}:${snapshot.docker?.host || "default"}`,
         )
         .digest("hex");
       let entry = this.list(project.id).find((c) => c.id === id);
@@ -260,12 +480,17 @@ export class Caches {
           lastUsedAt: now,
           bytes: null,
           leases: 0,
-          generation: 1,
-          metadata: { platform, installation: this.store.installationId() },
+          generation,
+          metadata: {
+            platform,
+            installation: this.store.installationId(),
+            docker: snapshot.docker,
+            generationKey,
+          },
         };
         this.save(entry);
       }
-      await this.images.command([
+      await images.command([
         "volume",
         "create",
         "--label",
@@ -288,44 +513,80 @@ export class Caches {
   async clear(id: string) {
     const entry = this.list().find((c) => c.id === id);
     if (!entry) return null;
+    if (
+      this.maintenanceProjects.has(entry.projectId) ||
+      [...this.projectIntents.values()].includes(entry.projectId)
+    )
+      throw new AppError(
+        "CACHE_BUSY",
+        "This project is preparing or running work. Wait before clearing caches.",
+      );
     if (entry.leases || this.pending.size)
       throw new AppError(
         "CACHE_BUSY",
         "This cache is in use. Wait for active runs and downloads to finish.",
       );
-    if (entry.kind === "action") {
-      const root = await realpath(this.root),
-        path = await realpath(entry.path).catch(() => null);
-      if (path) {
-        const rel = relative(root, path);
-        if (rel.startsWith("..") || isAbsolute(rel))
+    this.maintenanceProjects.add(entry.projectId);
+    try {
+      if (entry.kind === "action") {
+        const root = await realpath(this.root),
+          path = await realpath(entry.path).catch(() => null);
+        if (path) {
+          const rel = relative(root, path);
+          if (rel.startsWith("..") || isAbsolute(rel))
+            throw new AppError(
+              "CACHE_OWNERSHIP",
+              "This directory is not owned by Act Dock.",
+            );
+          await rm(path, { recursive: true, force: true });
+        }
+      } else {
+        const docker = entry.metadata.docker as ExecutionSnapshot["docker"];
+        const images = docker
+          ? new Images(
+              this.store,
+              restoreDockerEnvironment(
+                docker,
+                docker.executable || this.store.settings().dockerPath,
+              ),
+              this.images,
+              docker.executable,
+            )
+          : this.images;
+        const { stdout } = await images.command([
+          "volume",
+          "inspect",
+          entry.path,
+        ]);
+        const volume = JSON.parse(stdout)[0];
+        if (
+          volume.Labels?.["act-dock.installation"] !==
+            this.store.installationId() ||
+          volume.Labels?.["act-dock.cache"] !== entry.id
+        )
           throw new AppError(
             "CACHE_OWNERSHIP",
-            "This directory is not owned by Act Dock.",
+            "This Docker volume is not owned by Act Dock.",
           );
-        await rm(path, { recursive: true, force: true });
+        await images.command(["volume", "rm", entry.path]);
+        this.store.db
+          .query(
+            "INSERT INTO installation VALUES (?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value",
+          )
+          .run(
+            String(
+              entry.metadata.generationKey ||
+                `cache-generation:${entry.projectId}:${entry.metadata.platform}:${entry.kind}`,
+            ),
+            String(entry.generation + 1),
+          );
       }
-    } else {
-      const { stdout } = await this.images.command([
-        "volume",
-        "inspect",
-        entry.path,
-      ]);
-      const volume = JSON.parse(stdout)[0];
-      if (
-        volume.Labels?.["act-dock.installation"] !==
-          this.store.installationId() ||
-        volume.Labels?.["act-dock.cache"] !== entry.id
-      )
-        throw new AppError(
-          "CACHE_OWNERSHIP",
-          "This Docker volume is not owned by Act Dock.",
-        );
-      await this.images.command(["volume", "rm", entry.path]);
+      this.store.db.query("DELETE FROM cache_entries WHERE id=?").run(id);
+      this.store.emit("cache", null, { id, state: "removed" });
+      return null;
+    } finally {
+      this.maintenanceProjects.delete(entry.projectId);
     }
-    this.store.db.query("DELETE FROM cache_entries WHERE id=?").run(id);
-    this.store.emit("cache", null, { id, state: "removed" });
-    return null;
   }
   async refresh(projectId: string) {
     this.store.project(projectId);
@@ -365,7 +626,14 @@ export class Caches {
         project = entries
           .filter((c) => c.projectId === entry.projectId)
           .reduce((n, c) => n + (c.bytes || 0), 0);
-      if (total > 20 * 1024 ** 3 || project > 5 * 1024 ** 3) {
+      const budgets = this.store.settings().cacheBudgets || {
+        projectGiB: 5,
+        totalGiB: 20,
+      };
+      if (
+        total > budgets.totalGiB * 1024 ** 3 ||
+        project > budgets.projectGiB * 1024 ** 3
+      ) {
         await this.clear(entry.id);
         entries = entries.filter((c) => c.id !== entry.id);
       }

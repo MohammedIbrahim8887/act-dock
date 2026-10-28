@@ -55,6 +55,13 @@ func readCredential(id string) ([]byte, error) {
 	defer credFree.Call(uintptr(unsafe.Pointer(ptr)))
 	return append([]byte(nil), unsafe.Slice(ptr.Blob, ptr.BlobSize)...), nil
 }
+func deleteCredential(id string) error {
+	r, _, err := credDelete.Call(uintptr(unsafe.Pointer(key(id))), 1, 0)
+	if r == 0 && err != windows.ERROR_NOT_FOUND {
+		return fail("VAULT_UNAVAILABLE")
+	}
+	return nil
+}
 func vaultStatus() error {
 	_, err := readCredential("status-probe")
 	if err != nil && err.Error() == "SECRET_NOT_FOUND" {
@@ -71,11 +78,20 @@ func vaultPut(id, value string) error {
 			end = len(data)
 		}
 		if err := writeCredential(fmt.Sprintf("%s/chunk-%d", id, i), data[i*4000:end]); err != nil {
+			for previous := 0; previous < i; previous++ {
+				_ = deleteCredential(fmt.Sprintf("%s/chunk-%d", id, previous))
+			}
 			return err
 		}
 	}
 	meta, _ := json.Marshal(chunks)
-	return writeCredential(id, meta)
+	if err := writeCredential(id, meta); err != nil {
+		for i := 0; i < chunks; i++ {
+			_ = deleteCredential(fmt.Sprintf("%s/chunk-%d", id, i))
+		}
+		return err
+	}
+	return nil
 }
 func vaultGet(id string) (string, error) {
 	meta, err := readCredential(id)
@@ -105,15 +121,15 @@ func vaultDelete(id string) error {
 		return err
 	}
 	var n int
-	json.Unmarshal(meta, &n)
-	if n > 13 {
+	if json.Unmarshal(meta, &n) != nil || n < 0 || n > 13 {
 		return fail("VAULT_UNAVAILABLE")
 	}
 	for i := 0; i < n; i++ {
-		credDelete.Call(uintptr(unsafe.Pointer(key(fmt.Sprintf("%s/chunk-%d", id, i)))), 1, 0)
+		if err := deleteCredential(fmt.Sprintf("%s/chunk-%d", id, i)); err != nil {
+			return err
+		}
 	}
-	credDelete.Call(uintptr(unsafe.Pointer(key(id))), 1, 0)
-	return nil
+	return deleteCredential(id)
 }
 func privateFile(path string, data []byte) error {
 	token, err := windows.OpenCurrentProcessToken()
