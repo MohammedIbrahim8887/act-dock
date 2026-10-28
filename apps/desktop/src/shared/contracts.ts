@@ -4,6 +4,7 @@ import {
   architectureSchema,
   executionOptionsSchema,
   executionSnapshotSchema,
+  runnerMappingsSchema,
   runPhases,
   imageReferenceSchema,
   secretNameSchema,
@@ -41,6 +42,15 @@ export const runRequestSchema = z.object({
   idempotencyKey: z.string().min(1).max(200).optional(),
 });
 export type RunRequest = z.infer<typeof runRequestSchema>;
+/** Image choices saved for one workflow, keyed by its repository-relative path. */
+export const workflowImagesSchema = z.record(
+  z.string().min(1).max(512),
+  runnerMappingsSchema,
+);
+export const projectDefaultsSchema = runRequestSchema.partial().extend({
+  workflowImages: workflowImagesSchema.optional(),
+});
+export type ProjectDefaults = z.infer<typeof projectDefaultsSchema>;
 export const settingsSchema = z.object({
   theme: z.enum(["system", "light", "dark"]).default("system"),
   startAtLogin: z.boolean().default(false),
@@ -76,7 +86,7 @@ export type Project = {
   id: string;
   path: string;
   name: string;
-  defaults: Partial<RunRequest>;
+  defaults: ProjectDefaults;
 };
 export type WorkflowInput = {
   name: string;
@@ -251,6 +261,7 @@ export const methods = {
         architecture: runRequestSchema.shape.architecture
           .removeDefault()
           .optional(),
+        workflowImages: workflowImagesSchema,
       })
       .partial(),
   }),
@@ -392,7 +403,7 @@ const projectSchema = z.object({
   id: z.string(),
   path: z.string(),
   name: z.string(),
-  defaults: runRequestSchema.partial(),
+  defaults: projectDefaultsSchema,
 });
 const workflowSchema = z.object({
   projectId: z.string(),

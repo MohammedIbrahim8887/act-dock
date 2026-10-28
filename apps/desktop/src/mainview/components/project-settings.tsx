@@ -42,11 +42,12 @@ import {
   formatBytes,
   imageTier,
   invalidMappings,
+  projectRunnerUsage,
   relativeTime,
-  runnerUsage,
   sourceLabel,
   tierCopy,
   type Layers,
+  type WorkflowImages,
 } from "./execution-editor";
 import type {
   CacheEntry,
@@ -97,8 +98,12 @@ export function ProjectSettingsView({
   onBack: () => void;
 }) {
   const saved = editable(project.defaults.execution);
+  const savedWorkflows = project.defaults.workflowImages || {};
   const [inherited, setInherited] = useState<ExecutionSnapshot | null>(null),
     [draft, setDraft] = useState<ExecutionOptions>(saved),
+    [workflowDraft, setWorkflowDraft] = useState<WorkflowImages>(
+      savedWorkflows,
+    ),
     [secrets, setSecrets] = useState<SecretMetadata[] | null>(null),
     [caches, setCaches] = useState<CacheEntry[] | null>(null),
     [busy, setBusy] = useState(false),
@@ -140,8 +145,16 @@ export function ProjectSettingsView({
       setBusy(false);
     }
   }
-  const dirty = !same(draft, saved),
-    invalid = invalidMappings(draft);
+  const workflowsDirty = !same(workflowDraft, savedWorkflows);
+  const dirty = !same(draft, saved) || workflowsDirty,
+    invalid = [
+      ...invalidMappings(draft),
+      ...Object.entries(workflowDraft).flatMap(([path, runnerMappings]) =>
+        invalidMappings({ runnerMappings }).map(
+          (label) => `${label} in ${path.split("/").pop()}`,
+        ),
+      ),
+    ];
   async function save() {
     await perform(async () => {
       const secretNames = project.defaults.execution?.secretNames;
@@ -151,6 +164,7 @@ export function ProjectSettingsView({
           defaults: {
             ...project.defaults,
             execution: { ...draft, ...(secretNames ? { secretNames } : {}) },
+            workflowImages: workflowDraft,
           },
         }),
       );
@@ -165,7 +179,8 @@ export function ProjectSettingsView({
     onChange: setDraft,
   };
   const changedTabs = (t: ProjectSettingsTab) =>
-    tabFields[t].some((k) => !same(draft[k], saved[k]));
+    tabFields[t].some((k) => !same(draft[k], saved[k])) ||
+    (t === "images" && workflowsDirty);
   const tabs: [ProjectSettingsTab, string, typeof Boxes][] = [
     ["overview", "Overview", LayoutList],
     ["images", "Runner images", Boxes],
@@ -218,13 +233,19 @@ export function ProjectSettingsView({
                 layers={layers}
                 inherited={inherited!}
                 workflows={workflows}
+                workflowImages={workflowDraft}
                 secrets={secrets}
                 caches={caches}
                 onTab={onTab}
               />
             </TabsContent>
             <TabsContent value="images">
-              <RunnerImagesPanel layers={layers} workflows={workflows} />
+              <RunnerImagesPanel
+                layers={layers}
+                workflows={workflows}
+                workflowImages={workflowDraft}
+                onWorkflowImages={setWorkflowDraft}
+              />
             </TabsContent>
             <TabsContent value="behavior">
               <RunBehaviorPanel layers={layers} />
@@ -276,7 +297,10 @@ export function ProjectSettingsView({
               ? `Fix the image for ${invalid.join(", ")} to save.`
               : "You have unsaved changes for this project."}
           </span>
-          <Button variant="ghost" size="sm" onClick={() => setDraft(saved)}>
+          <Button variant="ghost" size="sm" onClick={() => {
+              setDraft(saved);
+              setWorkflowDraft(savedWorkflows);
+            }}>
             Discard
           </Button>
           <Button
@@ -298,6 +322,7 @@ function Overview({
   layers,
   inherited,
   workflows,
+  workflowImages,
   secrets,
   caches,
   onTab,
@@ -305,12 +330,25 @@ function Overview({
   layers: Layers;
   inherited: ExecutionSnapshot;
   workflows: Workflow[];
+  workflowImages: WorkflowImages;
   secrets: SecretMetadata[] | null;
   caches: CacheEntry[] | null;
   onTab: (t: ProjectSettingsTab) => void;
 }) {
   const effective = effectiveOf(layers);
-  const usage = runnerUsage(workflows, effective.runnerMappings);
+  const usage = projectRunnerUsage(
+    workflows,
+    effective.runnerMappings,
+    workflowImages,
+  );
+  const workflowRows = Object.entries(workflowImages).flatMap(([path, maps]) =>
+    Object.entries(maps).map(([label, ref]) => ({
+      path,
+      label,
+      ref,
+      name: workflows.find((w) => w.path === path)?.name || path.split("/").pop(),
+    })),
+  );
   const used = [...usage.byLabel.keys()].sort();
   const skipped = [...usage.unmapped.values()].flat().length;
   const source = (key: string, overridden: boolean) =>
@@ -456,6 +494,26 @@ function Overview({
               ? "No jobs in this project target a mapped runner label."
               : "No workflows found in this project yet."}
           </p>
+        )}
+        {workflowRows.length > 0 && (
+          <ul className="overview-images">
+            {workflowRows.map((row) => {
+              const tier = imageTier(row.ref);
+              return (
+                <li key={`${row.path}:${row.label}`}>
+                  <code className="overview-label">{row.label}</code>
+                  <ArrowRight className="size-3.5" aria-label="uses" />
+                  <code className="overview-ref" title={row.ref}>
+                    {row.ref}
+                  </code>
+                  <span className="image-tier" data-tier={tier}>
+                    {tierCopy[tier].title}
+                  </span>
+                  <span className="overview-jobs">{row.name} only</span>
+                </li>
+              );
+            })}
+          </ul>
         )}
         {usage.unmapped.size > 0 && (
           <p className="overview-warning">

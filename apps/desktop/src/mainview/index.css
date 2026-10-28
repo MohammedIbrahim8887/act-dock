@@ -3200,3 +3200,113 @@ summary:focus-visible {
     transition: none;
   }
 }
+
+/* Per-workflow runner images. */
+.workflow-images {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.workflow-images > li + li {
+  border-top: 1px solid var(--border);
+}
+.workflow-images-head {
+  display: grid;
+  grid-template-columns: minmax(130px, 200px) minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 12px 14px;
+  text-align: left;
+}
+.workflow-images-head:hover {
+  background: var(--accent);
+}
+.workflow-images > li:first-child > .workflow-images-head {
+  border-radius: 8px 8px 0 0;
+}
+.workflow-images > li:last-child:not([data-open]) > .workflow-images-head {
+  border-radius: 0 0 8px 8px;
+}
+.workflow-images > li[data-open] > .workflow-images-head {
+  background: var(--muted);
+}
+.workflow-images-name {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.workflow-images-name strong {
+  font-size: 13px;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.setting-block .workflow-images-name code {
+  background: none;
+  padding: 0;
+  color: var(--muted-foreground);
+}
+.workflow-images-labels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+}
+.workflow-image-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 3px 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+.workflow-image-chip[data-changed] {
+  border-color: var(--foreground);
+}
+.workflow-image-chip[data-changed]::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--foreground);
+}
+.workflow-image-chip .image-tier {
+  font-family: var(--font-sans, inherit);
+}
+.workflow-images-none,
+.workflow-images-state {
+  font-size: 11px;
+  color: var(--muted-foreground);
+  white-space: nowrap;
+}
+.workflow-images-body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 4px 14px 16px;
+  background: var(--muted);
+}
+.workflow-images-body > .image-list,
+.workflow-images-body > .image-warning {
+  align-self: stretch;
+  background: var(--background);
+}
+@media (max-width: 760px) {
+  .workflow-images-head {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .workflow-images-labels {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+  .workflow-images-state {
+    display: none;
+  }
+}

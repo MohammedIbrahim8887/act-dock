@@ -18,16 +18,15 @@ export const secretNameSchema = z
   .regex(/^[A-Za-z_][A-Za-z0-9_]*$/)
   .max(100)
   .transform((s) => s.toUpperCase());
+export const runnerMappingsSchema = z.record(
+  z
+    .string()
+    .regex(/^[a-zA-Z0-9][a-zA-Z0-9._-]*$/)
+    .transform((label) => label.toLowerCase()),
+  imageReferenceSchema,
+);
 export const executionOptionsSchema = z.object({
-  runnerMappings: z
-    .record(
-      z
-        .string()
-        .regex(/^[a-zA-Z0-9][a-zA-Z0-9._-]*$/)
-        .transform((label) => label.toLowerCase()),
-      imageReferenceSchema,
-    )
-    .optional(),
+  runnerMappings: runnerMappingsSchema.optional(),
   imagePullPolicy: z.enum(["if-missing", "always", "never"]).optional(),
   actionCachePolicy: z
     .enum(["cache-first", "refresh", "cached-only"])

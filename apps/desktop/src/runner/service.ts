@@ -333,6 +333,9 @@ export async function serve() {
             execution:
               p.defaults.execution ??
               store.project(p.projectId).defaults.execution,
+            workflowImages:
+              p.defaults.workflowImages ??
+              store.project(p.projectId).defaults.workflowImages,
           },
         });
       }

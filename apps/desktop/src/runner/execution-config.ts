@@ -130,6 +130,10 @@ export function resolveExecution(
   for (const path of paths)
     apply(managedActrc(path).options, `Config: ${path}`);
   apply(project.defaults.execution, "Project defaults");
+  apply(
+    { runnerMappings: project.defaults.workflowImages?.[request.workflowPath] },
+    `Workflow: ${request.workflowPath}`,
+  );
   apply(request.execution, "Run override");
   return {
     options,

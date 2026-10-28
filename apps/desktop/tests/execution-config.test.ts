@@ -48,6 +48,50 @@ test("execution layers merge label maps without exposing unrecognized secret fla
     rmSync(dir, { recursive: true, force: true });
   }
 });
+test("saved workflow images apply only to their workflow, between project defaults and run overrides", () => {
+  const project = {
+    id: "p",
+    name: "p",
+    path: "/nonexistent",
+    defaults: {
+      execution: {
+        runnerMappings: { "ubuntu-latest": "catthehacker/ubuntu:act-24.04" },
+      },
+      workflowImages: {
+        ".github/workflows/ci.yml": {
+          "ubuntu-latest": "catthehacker/ubuntu:full-24.04",
+          "macos-latest": "local/mac-substitute:1",
+        },
+      },
+    },
+  };
+  const resolve = (workflowPath: string, execution?: object) =>
+    resolveExecution(
+      project,
+      runRequestSchema.parse({ projectId: "p", workflowPath, event: "push", execution }),
+      settingsSchema.parse({}),
+      [],
+    );
+  const ci = resolve(".github/workflows/ci.yml");
+  expect(ci.options.runnerMappings["ubuntu-latest"]).toBe(
+    "catthehacker/ubuntu:full-24.04",
+  );
+  expect(ci.options.runnerMappings["macos-latest"]).toBe("local/mac-substitute:1");
+  expect(ci.provenance["runnerMappings.ubuntu-latest"]).toBe(
+    "Workflow: .github/workflows/ci.yml",
+  );
+  // Other workflows keep the project's choice.
+  const release = resolve(".github/workflows/release.yml");
+  expect(release.options.runnerMappings["ubuntu-latest"]).toBe(
+    "catthehacker/ubuntu:act-24.04",
+  );
+  expect(release.options.runnerMappings["macos-latest"]).toBeUndefined();
+  // A one-run override still wins over the saved workflow choice.
+  const override = resolve(".github/workflows/ci.yml", {
+    runnerMappings: { "ubuntu-latest": "local/one-off:tag" },
+  });
+  expect(override.options.runnerMappings["ubuntu-latest"]).toBe("local/one-off:tag");
+});
 test("v2 migration backs up a live database and retains metadata; events resume without a subscribe race", async () => {
   const dir = mkdtempSync(join(tmpdir(), "ad-migration-"));
   mkdirSync(join(dir, "logs"));

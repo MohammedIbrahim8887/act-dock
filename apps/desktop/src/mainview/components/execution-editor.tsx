@@ -38,8 +38,15 @@ export type Layers = {
   base: ResolvedExecution;
   overrides: ExecutionOptions;
   sourceOf: (key: string) => string;
-  scope: "project" | "global";
+  scope: "project" | "global" | "workflow";
+  /** Distinguishes several editors on one page, such as one per workflow. */
+  id?: string;
   onChange: (next: ExecutionOptions) => void;
+};
+const scopeText = {
+  global: { set: "Customized", added: "Added" },
+  project: { set: "Set for this project", added: "Added for this project" },
+  workflow: { set: "Set for this workflow", added: "Added for this workflow" },
 };
 type FieldKey = Exclude<
   keyof ExecutionOptions,
@@ -117,6 +124,8 @@ export function sourceLabel(source: string) {
   }
   if (source === "Global settings")
     return { text: "From global settings", title: source };
+  if (source === "Project images")
+    return { text: "From project", title: "This project's image for the label" };
   return { text: "Default", title: "Built-in Act Dock default" };
 }
 export function SourceTag({
@@ -134,7 +143,7 @@ export function SourceTag({
     return (
       <span className="source-tag" data-overridden="">
         <span className="source-dot" aria-hidden="true" />
-        {scope === "project" ? "Set for this project" : "Customized"}
+        {scopeText[scope].set}
         {onReset && (
           <button
             type="button"
@@ -322,6 +331,36 @@ export function runnerUsage(
       else add(usage.unmapped, labels[0], ref);
     }
   return usage;
+}
+
+export type WorkflowImages = Record<string, Record<string, string>>;
+/**
+ * Project-level usage: jobs whose label a workflow maps itself are left out,
+ * because they no longer run on the project's image.
+ */
+export function projectRunnerUsage(
+  workflows: Workflow[],
+  mappings: Record<string, string>,
+  workflowImages: WorkflowImages = {},
+): RunnerUsage {
+  const total: RunnerUsage = {
+    byLabel: new Map(),
+    unmapped: new Map(),
+    dynamic: [],
+    containerJobs: 0,
+  };
+  for (const w of workflows) {
+    const own = workflowImages[w.path] || {};
+    const usage = runnerUsage([w], { ...mappings, ...own });
+    for (const [label, jobs] of usage.byLabel)
+      if (!(label in own))
+        total.byLabel.set(label, [...(total.byLabel.get(label) || []), ...jobs]);
+    for (const [label, jobs] of usage.unmapped)
+      total.unmapped.set(label, [...(total.unmapped.get(label) || []), ...jobs]);
+    total.dynamic.push(...usage.dynamic);
+    total.containerJobs += usage.containerJobs;
+  }
+  return total;
 }
 
 type ImageOperation = ExecutionResults["list_image_operations"][number];
@@ -545,10 +584,12 @@ function ImageStatusLine({
 }
 
 function TierPicker({
+  name,
   label,
   tier,
   onPick,
 }: {
+  name: string;
   label: string;
   tier: ImageTier;
   onPick: (t: ImageTier) => void;
@@ -559,7 +600,7 @@ function TierPicker({
         <label key={t} data-checked={tier === t ? "" : undefined} title={tierCopy[t].text}>
           <input
             type="radio"
-            name={`tier-${label}`}
+            name={name}
             checked={tier === t}
             onChange={() => onPick(t)}
           />
@@ -642,7 +683,7 @@ function ImageRow({
           ) : (
             <span className="source-tag" data-overridden="">
               <span className="source-dot" aria-hidden="true" />
-              {layers.scope === "project" ? "Added for this project" : "Added"}
+              {scopeText[layers.scope].added}
             </span>
           )}
           {!inherited && (
@@ -661,6 +702,7 @@ function ImageRow({
       <div className="image-row-body">
         {standard && (
           <TierPicker
+            name={`tier-${layers.scope}-${layers.id ?? ""}-${label}`}
             label={label}
             tier={tier}
             onPick={(t) => {
@@ -733,9 +775,9 @@ function AddMapping({
       }}
     >
       <div className="field">
-        <Label htmlFor={`add-label-${layers.scope}`}>runs-on label</Label>
+        <Label htmlFor={`add-label-${layers.scope}-${layers.id ?? ""}`}>runs-on label</Label>
         <Input
-          id={`add-label-${layers.scope}`}
+          id={`add-label-${layers.scope}-${layers.id ?? ""}`}
           className="mono"
           value={label}
           onChange={(e) => setLabel(e.target.value)}
@@ -744,9 +786,9 @@ function AddMapping({
         />
       </div>
       <div className="field">
-        <Label htmlFor={`add-ref-${layers.scope}`}>Docker image</Label>
+        <Label htmlFor={`add-ref-${layers.scope}-${layers.id ?? ""}`}>Docker image</Label>
         <Input
-          id={`add-ref-${layers.scope}`}
+          id={`add-ref-${layers.scope}-${layers.id ?? ""}`}
           className="mono"
           value={reference}
           onChange={(e) => setReference(e.target.value)}
@@ -774,13 +816,19 @@ function AddMapping({
 export function RunnerImagesPanel({
   layers,
   workflows,
+  workflowImages,
+  onWorkflowImages,
 }: {
   layers: Layers;
   workflows?: Workflow[];
+  workflowImages?: WorkflowImages;
+  onWorkflowImages?: (next: WorkflowImages) => void;
 }) {
   const effective = effectiveOf(layers);
   const mappings = effective.runnerMappings;
-  const usage = workflows ? runnerUsage(workflows, mappings) : null;
+  const usage = workflows
+    ? projectRunnerUsage(workflows, mappings, workflowImages)
+    : null;
   const used = usage ? [...usage.byLabel.keys()].sort() : [];
   const others = Object.keys(mappings)
     .filter((l) => !used.includes(l))
@@ -929,6 +977,19 @@ export function RunnerImagesPanel({
           )}
         </SettingBlock>
       )}
+      {workflows && workflows.length > 0 && onWorkflowImages && (
+        <SettingBlock
+          title="Per workflow"
+          description="Give one workflow its own images, for example Full for a release build while CI stays on Medium. Choices in the Run dialog still apply on top, for a single run."
+        >
+          <WorkflowImagesEditor
+            projectLayers={layers}
+            workflows={workflows}
+            value={workflowImages || {}}
+            onChange={onWorkflowImages}
+          />
+        </SettingBlock>
+      )}
       <SettingBlock
         title={usage ? "Other labels" : "Label mappings"}
         description={
@@ -991,6 +1052,157 @@ export function RunnerImagesPanel({
         />
       </LayerBlock>
     </div>
+  );
+}
+
+function WorkflowImagesEditor({
+  projectLayers,
+  workflows,
+  value,
+  onChange,
+}: {
+  projectLayers: Layers;
+  workflows: Workflow[];
+  value: WorkflowImages;
+  onChange: (next: WorkflowImages) => void;
+}) {
+  const [open, setOpen] = useState<string | null>(null);
+  const project = effectiveOf(projectLayers);
+  const sorted = [...workflows].sort((a, b) => a.name.localeCompare(b.name));
+  const layersFor = (w: Workflow): Layers => ({
+    base: project,
+    overrides: value[w.path] ? { runnerMappings: value[w.path] } : {},
+    sourceOf: () => "Project images",
+    scope: "workflow",
+    id: w.path,
+    onChange: (next) => {
+      const copy = { ...value };
+      if (next.runnerMappings && Object.keys(next.runnerMappings).length)
+        copy[w.path] = next.runnerMappings;
+      else delete copy[w.path];
+      onChange(copy);
+    },
+  });
+  const openWorkflow = sorted.find((w) => w.path === open);
+  const openLayers = openWorkflow && layersFor(openWorkflow);
+  const openUsage =
+    openWorkflow &&
+    runnerUsage([openWorkflow], effectiveOf(openLayers!).runnerMappings);
+  const images = useImageStatus(
+    openUsage
+      ? [...openUsage.byLabel.keys()].map(
+          (l) => effectiveOf(openLayers!).runnerMappings[l],
+        )
+      : [],
+  );
+  return (
+    <ul className="workflow-images">
+      {sorted.map((w) => {
+        const own = value[w.path] || {};
+        const changed = Object.keys(own);
+        const usage = runnerUsage([w], { ...project.runnerMappings, ...own });
+        const labels = [...usage.byLabel.keys()].sort();
+        const isOpen = open === w.path;
+        return (
+          <li key={w.path} data-open={isOpen ? "" : undefined}>
+            <button
+              type="button"
+              className="workflow-images-head"
+              aria-expanded={isOpen}
+              onClick={() => setOpen(isOpen ? null : w.path)}
+            >
+              <span className="workflow-images-name">
+                <strong>{w.name}</strong>
+                <code>{w.path.split("/").pop()}</code>
+              </span>
+              <span className="workflow-images-labels">
+                {labels.length ? (
+                  labels.map((label) => {
+                    const ref = { ...project.runnerMappings, ...own }[label];
+                    const tier = imageTier(ref);
+                    return (
+                      <span
+                        key={label}
+                        className="workflow-image-chip"
+                        data-changed={label in own ? "" : undefined}
+                        title={ref}
+                      >
+                        {label}
+                        <span className="image-tier" data-tier={tier}>
+                          {tierCopy[tier].title}
+                        </span>
+                      </span>
+                    );
+                  })
+                ) : (
+                  <span className="workflow-images-none">No mapped jobs</span>
+                )}
+              </span>
+              <span className="workflow-images-state">
+                {changed.length
+                  ? `${changed.length} own image${changed.length === 1 ? "" : "s"}`
+                  : "Project images"}
+              </span>
+              <span className="other-edit">{isOpen ? "Close" : "Edit"}</span>
+            </button>
+            {isOpen && openLayers && openUsage && (
+              <div className="workflow-images-body">
+                {openUsage.byLabel.size > 0 && (
+                  <ul className="image-list">
+                    {[...openUsage.byLabel.keys()].sort().map((label) => (
+                      <ImageRow
+                        key={label}
+                        layers={openLayers}
+                        label={label}
+                        jobs={openUsage.byLabel.get(label)}
+                        images={images}
+                      />
+                    ))}
+                  </ul>
+                )}
+                {[...openUsage.unmapped].map(([label, jobs]) => (
+                  <div className="image-warning" key={label} role="note">
+                    <CircleAlert className="size-4" />
+                    <div>
+                      <strong>
+                        <code>{label}</code> has no image
+                      </strong>
+                      <p>
+                        Act will skip {jobs.map((j) => j.job).join(", ")}. Map
+                        this label for this workflow only:
+                      </p>
+                      <AddMapping
+                        layers={openLayers}
+                        existing={Object.keys(
+                          effectiveOf(openLayers).runnerMappings,
+                        )}
+                        initialLabel={label}
+                      />
+                    </div>
+                  </div>
+                ))}
+                {openUsage.dynamic.length > 0 && (
+                  <p className="block-note">
+                    Jobs that pick their runner from an expression use these
+                    mappings when the run starts.
+                  </p>
+                )}
+                {changed.length > 0 && (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => openLayers.onChange({})}
+                  >
+                    <RotateCcw className="size-3.5" />
+                    Use project images for {w.name}
+                  </Button>
+                )}
+              </div>
+            )}
+          </li>
+        );
+      })}
+    </ul>
   );
 }
 
