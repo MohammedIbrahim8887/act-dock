@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import {
+  ArrowUpCircle,
   Boxes,
   Cable,
   Copy,
@@ -46,13 +47,15 @@ import {
   invalidMappings,
   type Layers,
 } from "./execution-editor";
+import { UpdatesPanel, type Updates } from "./updates";
 import { fail } from "./common";
-export type SettingsTab = "general" | "images" | "behavior" | "caches";
+export type SettingsTab = "general" | "images" | "behavior" | "caches" | "updates";
 const settingsTabFields: Record<SettingsTab, (keyof ExecutionOptions)[]> = {
   general: [],
   images: ["runnerMappings", "imagePullPolicy"],
   behavior: ["workspaceMode", "concurrentJobs", "reservation"],
   caches: ["actionCachePolicy", "packageCaches"],
+  updates: [],
 };
 const same = (a: unknown, b: unknown) =>
   JSON.stringify(a) === JSON.stringify(b);
@@ -61,10 +64,12 @@ export function SettingsView({
   health,
   tab,
   onTab,
+  updates,
   onSaved,
   onHealth,
   onStopped,
 }: {
+  updates: Updates;
   settings: Settings;
   health: Health | null;
   tab: SettingsTab;
@@ -103,7 +108,9 @@ export function SettingsView({
     { ...settings, executionDefaults: undefined, cacheBudgets: undefined, concurrency: undefined },
   );
   const changed = (t: SettingsTab) =>
-    t === "general"
+    t === "updates"
+      ? false
+      : t === "general"
       ? generalDirty
       : settingsTabFields[t].some(
           (k) => !same(execution[k], settings.executionDefaults?.[k]),
@@ -116,6 +123,7 @@ export function SettingsView({
     ["images", "Runner images", Boxes],
     ["behavior", "Run behavior", Gauge],
     ["caches", "Caches", HardDrive],
+    ["updates", "Updates", ArrowUpCircle],
   ];
   return (
     <div className="page-content settings-page">
@@ -239,6 +247,9 @@ export function SettingsView({
               </div>
             </SettingBlock>
           </div>
+        </TabsContent>
+        <TabsContent value="updates">
+          <UpdatesPanel updates={updates} />
         </TabsContent>
         <TabsContent value="images">
           <RunnerImagesPanel layers={layers} />

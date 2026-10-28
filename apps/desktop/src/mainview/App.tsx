@@ -73,6 +73,7 @@ import {
 import { RunDialog } from "@/components/run-dialog";
 import { RunDetail } from "@/components/run-detail";
 import { SettingsView, AgentsView, type SettingsTab } from "@/components/settings";
+import { UpdateBadge, UpdateBanner, useUpdates } from "@/components/updates";
 import { Empty, IconButton, RunningBorder, fail } from "@/components/common";
 import {
   HealthBanner,
@@ -110,6 +111,11 @@ function Workspace() {
     [view, setView] = useState<View>("project"),
     [projectTab, setProjectTab] = useState<ProjectSettingsTab>("overview"),
     [settingsTab, setSettingsTab] = useState<SettingsTab>("general");
+  const updates = useUpdates();
+  const openUpdates = () => {
+    setSettingsTab("updates");
+    setView("settings");
+  };
   const [workflowError, setWorkflowError] = useState("");
   const { isMobile, setOpenMobile } = useSidebar();
   function closeNavigation() {
@@ -510,7 +516,8 @@ function Workspace() {
                   ? "Runner unavailable"
                   : "Local runner"}
             </span>
-            <span className="ml-auto">v{APP_VERSION}</span>
+            <UpdateBadge updates={updates} onOpen={openUpdates} />
+            <span className={updates.state && ["available", "downloading", "ready"].includes(updates.state.status) ? undefined : "ml-auto"}>v{APP_VERSION}</span>
           </div>
         </SidebarFooter>
       </Sidebar>
@@ -571,6 +578,7 @@ function Workspace() {
             </Button>
           </div>
         )}
+        <UpdateBanner updates={updates} onOpen={openUpdates} />
         {!error && !runnerStopped && view !== "health" && (
           <HealthBanner
             report={report}
@@ -911,6 +919,7 @@ function Workspace() {
               health={health}
               tab={settingsTab}
               onTab={setSettingsTab}
+              updates={updates}
               onSaved={(s) => {
                 setSettings(s);
                 setTheme(s.theme);

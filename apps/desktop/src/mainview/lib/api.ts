@@ -8,6 +8,8 @@ import {
   type ServiceReply,
 } from "../../shared/contracts";
 import type { DesktopRPC } from "../../shared/rpc";
+import type { UpdatePreferences, UpdateState } from "../../shared/updates";
+import { APP_VERSION } from "../../shared/version";
 async function createConnection() {
   const { Electroview } = await import("electrobun/view");
   return new Electroview({
@@ -108,4 +110,61 @@ export async function openExternal(url: string) {
 }
 export async function revealPath(path: string) {
   if (isDesktop()) await (await connection()).rpc!.request.revealPath({ path });
+}
+type UpdateRequest =
+  | "getUpdateState"
+  | "checkForUpdates"
+  | "downloadUpdate"
+  | "installUpdate"
+  | "postponeUpdate"
+  | "setUpdatePreferences";
+/** Talk to the desktop updater. Browser sessions report updates as unavailable. */
+export async function updateRequest(
+  name: UpdateRequest,
+  params: Partial<UpdatePreferences> = {},
+): Promise<UpdateState> {
+  if (isDesktop())
+    return (await connection()).rpc!.request[name](params as never, {
+      maxRequestTime: 60000,
+    }) as Promise<UpdateState>;
+  if (import.meta.env.DEV) {
+    const preview = new URLSearchParams(location.search).get("updates");
+    if (preview) return previewUpdate(name, preview, params);
+  }
+  return {
+    status: "unavailable",
+    currentVersion: APP_VERSION,
+    installKind: "development",
+    message: "Updates are installed by the desktop app.",
+    preferences: { autoDownload: true, autoInstall: true },
+  };
+}
+/** Development-only simulator so every updater state can be reviewed in a browser. */
+let preview: UpdateState | undefined;
+function previewUpdate(
+  name: UpdateRequest,
+  start: string,
+  params: Partial<UpdatePreferences>,
+): UpdateState {
+  preview ||= {
+    status: start as UpdateState["status"],
+    currentVersion: APP_VERSION,
+    installKind: "macos-app",
+    version: "0.2.6",
+    publishedAt: new Date(Date.now() - 3600_000).toISOString(),
+    checkedAt: new Date().toISOString(),
+    totalBytes: 98_400_000,
+    downloadedBytes: 41_200_000,
+    progress: start === "ready" ? 1 : 0.42,
+    installAt: start === "ready" ? Date.now() + 60_000 : undefined,
+    message: start === "error" ? "The download didn't match the release checksum, so it was discarded." : undefined,
+    preferences: { autoDownload: true, autoInstall: true },
+  };
+  if (name === "setUpdatePreferences")
+    preview = { ...preview, preferences: { ...preview.preferences, ...params } };
+  if (name === "postponeUpdate") preview = { ...preview, installAt: undefined };
+  if (name === "checkForUpdates") preview = { ...preview, checkedAt: new Date().toISOString() };
+  if (name === "downloadUpdate") preview = { ...preview, status: "downloading", message: undefined };
+  if (name === "installUpdate") preview = { ...preview, status: "installing", installAt: undefined };
+  return preview;
 }
