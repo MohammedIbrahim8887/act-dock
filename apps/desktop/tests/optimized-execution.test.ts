@@ -161,7 +161,7 @@ test("cached-only action miss never invokes the acquisition helper", async () =>
 test("private one-run files preserve values and disappear on cleanup; metadata stays value-free", async () => {
   const r = run(),
     secrets = new Secrets(store),
-    canary = "canary$TOKEN\\path\nsecond line";
+    canary = "canary$TOKEN\\path\nsecond\tline\\";
   secrets.ephemeral.set(r.id, { TOKEN: canary });
   const prepared = await secrets.prepare(
     r.id,
@@ -169,9 +169,14 @@ test("private one-run files preserve values and disappear on cleanup; metadata s
     r.request,
     [],
   );
-  expect(parseDotenv(await readFile(prepared.path, "utf8")).TOKEN).toBe(canary);
+  expect(JSON.parse(await readFile(prepared.path, "utf8")).TOKEN).toBe(canary);
   expect((await stat(prepared.path)).mode & 0o777).toBe(0o600);
-  expect(JSON.stringify(store.run(r.id))).not.toContain(canary);
+  expect(JSON.stringify(store.run(r.id))).not.toContain("canary$TOKEN");
+  for (const line of canary.split("\n"))
+    expect(
+      normalizeLog(JSON.stringify({ msg: line }), "stdout", prepared.values)
+        .message,
+    ).not.toContain(line);
   await secrets.cleanup(r.id);
   expect(await Bun.file(prepared.path).exists()).toBe(false);
 });
@@ -421,5 +426,43 @@ test("Docker context failures are recoverable and do not poison successful check
   } finally {
     if (previous) process.env.DOCKER_CONTEXT = previous;
     else delete process.env.DOCKER_CONTEXT;
+  }
+});
+
+test("dotenv imports preserve an existing configured map and write exact private YAML values", async () => {
+  const { writeFile, chmod } = await import("node:fs/promises");
+  const original = process.env.ACT_DOCK_HELPER_PATH;
+  const helper = join(dir, "import-helper");
+  await writeFile(
+    helper,
+    `#!${process.execPath}\nawait Bun.stdin.text();console.log(JSON.stringify({ok:true,value:{KEEP:'replacement',NEW:'tab\\tvalue\\\\'}}));\n`,
+  );
+  await chmod(helper, 0o700);
+  process.env.ACT_DOCK_HELPER_PATH = helper;
+  const source = join(dir, "incoming.env"),
+    existing = join(dir, "existing.yaml");
+  await writeFile(source, "KEEP=replacement\nNEW=fixture\n");
+  await writeFile(existing, JSON.stringify({ KEEP: "original" }));
+  store.putProject({ ...store.project("p"), defaults: { envFile: existing } });
+  const secrets = new Secrets(store);
+  try {
+    expect(await secrets.preview("p", source, "env")).toEqual({
+      names: ["KEEP", "NEW"],
+      duplicates: ["KEEP"],
+    });
+    await secrets.import("p", source, "env", ["KEEP", "NEW"], false);
+    const destination = store.project("p").defaults.envFile!;
+    expect(destination.endsWith(".yaml")).toBe(true);
+    expect(JSON.parse(await readFile(destination, "utf8"))).toEqual({
+      KEEP: "original",
+      NEW: "tab\tvalue\\",
+    });
+    expect((await stat(destination)).mode & 0o777).toBe(0o600);
+    expect(JSON.parse(await readFile(existing, "utf8"))).toEqual({
+      KEEP: "original",
+    });
+  } finally {
+    if (original) process.env.ACT_DOCK_HELPER_PATH = original;
+    else delete process.env.ACT_DOCK_HELPER_PATH;
   }
 });

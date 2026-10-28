@@ -1166,6 +1166,5 @@ function memoryBytes(text: string) {
   return Number(match[1]) * units[match[2].toUpperCase()];
 }
 async function readPreparedSecrets(path: string) {
-  const { parseDotenv } = await import("./secrets");
-  return parseDotenv(await Bun.file(path).text());
+  return JSON.parse(await Bun.file(path).text()) as Record<string, string>;
 }

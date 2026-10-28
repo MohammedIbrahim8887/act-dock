@@ -263,23 +263,33 @@ export class Secrets {
     if (!("GITHUB_TOKEN" in values)) values.GITHUB_TOKEN = "";
     const dir = join(this.store.directory, "private", runId);
     await mkdir(dir, { recursive: true, mode: 0o700 });
-    const path = join(dir, "secrets.env");
+    const path = join(dir, "secrets.yaml");
     if (process.platform === "win32")
       await nativeHelper({
         op: "private_file",
         path,
-        value: dotenvText(values),
+        value: JSON.stringify(values),
       });
     else {
       const file = await open(path, "wx", 0o600);
       try {
-        await file.writeFile(dotenvText(values));
+        await file.writeFile(JSON.stringify(values));
         await file.sync();
       } finally {
         await file.close();
       }
     }
-    return { path, values: Object.values(values).filter(Boolean) };
+    // Engine output may frame a multiline value as separate records.
+    return {
+      path,
+      values: [
+        ...new Set(
+          Object.values(values)
+            .flatMap((value) => [value, ...value.split(/\r\n|\r|\n/)])
+            .filter(Boolean),
+        ),
+      ].sort((a, b) => b.length - a.length),
+    };
   }
   async cleanup(runId: string, preserve = false) {
     if (!preserve) this.ephemeral.delete(runId);
@@ -294,6 +304,47 @@ export class Secrets {
       force: true,
     });
   }
+  async importedValues(
+    projectId: string,
+    target: "env" | "vars",
+  ): Promise<Record<string, string>> {
+    const project = this.store.project(projectId);
+    const configured =
+      project.defaults[target === "env" ? "envFile" : "varFile"];
+    const candidates = [
+      join(this.store.directory, `${projectId}.${target}.yaml`),
+      join(this.store.directory, `${projectId}.${target}.env`),
+      ...(configured ? [resolve(project.path, configured)] : []),
+    ];
+    for (const path of candidates) {
+      try {
+        const text = await readFile(path, "utf8");
+        if (/\.ya?ml$/i.test(path)) {
+          const doc = parseDocument(text, { uniqueKeys: true }),
+            values = doc.toJS();
+          if (
+            doc.errors.length ||
+            !values ||
+            typeof values !== "object" ||
+            Array.isArray(values) ||
+            Object.values(values).some((value) => typeof value !== "string")
+          )
+            throw new AppError(
+              "IMPORT_DESTINATION",
+              "The existing destination must contain a string-valued configuration map.",
+            );
+          return values;
+        }
+        return await nativeHelper<Record<string, string>>({
+          op: "parse_dotenv",
+          value: text,
+        });
+      } catch (error) {
+        if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+      }
+    }
+    return {};
+  }
   async preview(
     projectId: string,
     path: string,
@@ -306,14 +357,7 @@ export class Secrets {
       });
     let existing: Record<string, string> = {};
     if (target !== "secrets")
-      try {
-        existing = parseDotenv(
-          await readFile(
-            join(this.store.directory, `${projectId}.${target}.env`),
-            "utf8",
-          ),
-        );
-      } catch {}
+      existing = await this.importedValues(projectId, target);
     if (target === "secrets") {
       const uppercase = Object.fromEntries(
         Object.entries(values).map(([k, v]) => [k.toUpperCase(), v]),
@@ -362,12 +406,9 @@ export class Secrets {
       // Keep environment/variable imports as user-visible file references, not secret-like hidden DB values.
       const destination = join(
         this.store.directory,
-        `${projectId}.${target}.env`,
+        `${projectId}.${target}.yaml`,
       );
-      let previous: Record<string, string> = {};
-      try {
-        previous = parseDotenv(await readFile(destination, "utf8"));
-      } catch {}
+      const previous = await this.importedValues(projectId, target);
       for (const name of names)
         if (name in values && (!(name in previous) || overwrite)) {
           previous[name] = values[name];
@@ -379,11 +420,11 @@ export class Secrets {
         await nativeHelper({
           op: "private_file",
           path: temp,
-          value: dotenvText(previous),
+          value: JSON.stringify(previous),
         });
       else {
         const f = await open(temp, "wx", 0o600);
-        await f.writeFile(dotenvText(previous));
+        await f.writeFile(JSON.stringify(previous));
         await f.close();
       }
       const { rename } = await import("node:fs/promises");
