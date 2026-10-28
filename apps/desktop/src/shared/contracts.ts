@@ -1,4 +1,7 @@
 import { z } from "zod";
+import { architectureSchema, executionOptionsSchema, executionSnapshotSchema, runPhases, imageReferenceSchema, secretNameSchema, executionResponses, type ExecutionSnapshot, type ExecutionResults } from "./execution";
+export * from "./execution";
+const secretOverridesSchema = z.record(secretNameSchema, z.string().refine(v => new TextEncoder().encode(v).length <= 49152, "Secrets must be at most 48 KiB.")).refine(v => new TextEncoder().encode(JSON.stringify(v)).length <= 524288, "Overrides must be at most 512 KiB.");
 export const runRequestSchema = z.object({
   projectId: z.string().min(1),
   workflowPath: z.string().min(1),
@@ -9,7 +12,8 @@ export const runRequestSchema = z.object({
   envFile: z.string().optional(),
   varFile: z.string().optional(),
   secretFile: z.string().optional(),
-  architecture: z.enum(["auto", "linux/amd64"]).default("auto"),
+  architecture: architectureSchema.default("auto"),
+  execution: executionOptionsSchema.optional(),
   idempotencyKey: z.string().min(1).max(200).optional(),
 });
 export type RunRequest = z.infer<typeof runRequestSchema>;
@@ -18,6 +22,8 @@ export const settingsSchema = z.object({
   startAtLogin: z.boolean().default(false),
   actPath: z.string().default(""),
   dockerPath: z.string().default(""),
+  executionDefaults: executionOptionsSchema.optional(),
+  concurrency: z.object({ enabled: z.boolean(), maxWorkflows: z.number().int().min(1).max(8) }).optional(),
 });
 export type Settings = z.infer<typeof settingsSchema>;
 export const runStates = [
@@ -73,6 +79,12 @@ export type Run = {
   exitCode?: number;
   diagnostic?: string;
   command: string[];
+  phase?: (typeof runPhases)[number];
+  queueReason?: string;
+  snapshot?: ExecutionSnapshot;
+  overrideFingerprint?: string;
+  ephemeralSecretNames?: string[];
+  needsSecretInput?: boolean;
 };
 export type LogEntry = {
   cursor: number;
@@ -163,7 +175,27 @@ export const methods = {
     defaults: runRequestSchema.partial(),
   }),
   list_workflows: z.object({ projectId: z.string() }),
-  run_pipeline: runRequestSchema,
+  run_pipeline: runRequestSchema.extend({ secretOverrides: secretOverridesSchema.optional() }),
+  get_capabilities: z.object({}),
+  get_runner_snapshot: z.object({}),
+  patch_settings: settingsSchema.partial(),
+  preflight_run: z.object({ request: runRequestSchema }),
+  list_runner_images: z.object({ projectId: z.string().optional() }),
+  inspect_image: z.object({ reference: imageReferenceSchema, architecture: architectureSchema.default("auto") }),
+  pull_image: z.object({ reference: imageReferenceSchema, architecture: architectureSchema.default("auto") }),
+  cancel_image_pull: z.object({ operationId: z.string() }),
+  list_image_operations: z.object({}),
+  list_caches: z.object({ projectId: z.string().optional() }),
+  clear_cache: z.object({ cacheId: z.string() }),
+  refresh_project_cache: z.object({ projectId: z.string() }),
+  list_project_secrets: z.object({ projectId: z.string() }),
+  put_project_secret: z.object({ projectId: z.string(), name: secretNameSchema, value: z.string().refine(v => new TextEncoder().encode(v).length <= 49152), granted: z.boolean().default(true) }),
+  delete_project_secret: z.object({ projectId: z.string(), name: secretNameSchema }),
+  preview_import: z.object({ projectId: z.string(), path: z.string(), target: z.enum(["env", "vars", "secrets"]) }),
+  import_project_configuration: z.object({ projectId: z.string(), path: z.string(), target: z.enum(["env", "vars", "secrets"]), names: z.array(secretNameSchema), overwrite: z.boolean().default(false) }),
+  supply_run_secrets: id.extend({ values: secretOverridesSchema }),
+  read_events: z.object({ cursor: z.number().int().min(0).default(0), runIds: z.array(z.string()).max(100).optional(), limit: z.number().int().min(1).max(2000).default(500), waitMs: z.number().int().min(0).max(10000).default(0) }),
+  get_run_metrics: id.extend({ cursor: z.number().int().min(0).default(0), limit: z.number().int().min(1).max(1000).default(100) }),
   list_runs: runFiltersSchema.extend({
     cursor: z.number().int().min(0).default(0),
     limit: z.number().int().min(1).max(200).default(100),
@@ -182,7 +214,9 @@ export const methods = {
   stop: z.object({}),
 } as const;
 export type Method = keyof typeof methods;
-export type Results = {
+export type Results = Omit<ExecutionResults, "patch_settings"> & {
+  patch_settings: Settings;
+  get_runner_snapshot: { runs: Run[]; cursor: number };
   list_projects: Project[];
   browse_folders: FolderListing;
   get_run_history: HistoryPage;
@@ -261,6 +295,9 @@ const runSchema = z.object({
   exitCode: z.number().optional(),
   diagnostic: z.string().optional(),
   command: z.array(z.string()),
+  phase: z.enum(runPhases).optional(),
+  queueReason: z.string().optional(),
+  snapshot: executionSnapshotSchema.optional(),
 });
 export const historyPageSchema = z.object({
   runs: z.array(runSchema),
@@ -292,6 +329,9 @@ const dependencySchema = z.object({
   message: z.string(),
 });
 export const responses = {
+  ...executionResponses,
+  patch_settings: settingsSchema,
+  get_runner_snapshot: z.object({ runs: z.array(runSchema), cursor: z.number() }),
   list_projects: z.array(projectSchema),
   browse_folders: folderListingSchema,
   get_run_history: historyPageSchema,

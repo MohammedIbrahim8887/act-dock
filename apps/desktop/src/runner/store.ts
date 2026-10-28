@@ -1,6 +1,6 @@
 import { Database } from "bun:sqlite";
 import { join } from "node:path";
-import { unlinkSync } from "node:fs";
+import { unlinkSync, existsSync, truncateSync } from "node:fs";
 import {
   activeStates,
   AppError,
@@ -11,9 +11,11 @@ import {
   type RunFilters,
   type HistoryQuery,
   type HistoryPage,
+  type RunEvent,
 } from "../shared/contracts";
 export class Store {
   db: Database;
+  listeners = new Set<() => void>();
   constructor(public directory: string) {
     this.db = new Database(join(directory, "act-dock.sqlite"), {
       create: true,
@@ -22,6 +24,11 @@ export class Store {
     const version = (
       this.db.query("PRAGMA user_version").get() as { user_version: number }
     ).user_version;
+    if (version > 3) throw new AppError("DATABASE_NEWER", "This database needs a newer Act Dock. Downgrades are not supported.");
+    if (version > 0 && version < 3) {
+      const backup = join(directory, `act-dock.v${version}.${Date.now()}.sqlite`);
+      this.db.exec(`VACUUM INTO '${backup.replaceAll("'", "''")}'`);
+    }
     if (version < 1)
       this.db.transaction(() => {
         this.db.exec(
@@ -34,6 +41,28 @@ export class Store {
           "CREATE TABLE IF NOT EXISTS log_index (run_id TEXT NOT NULL, cursor INTEGER NOT NULL, offset INTEGER NOT NULL, length INTEGER NOT NULL, PRIMARY KEY(run_id,cursor)); PRAGMA user_version=2;",
         );
       })();
+    if (version < 3) this.db.transaction(() => {
+      this.db.exec(`
+        CREATE TABLE events (seq INTEGER PRIMARY KEY AUTOINCREMENT, run_id TEXT, kind TEXT NOT NULL, time TEXT NOT NULL, data TEXT NOT NULL);
+        CREATE INDEX events_run_seq ON events(run_id,seq);
+        CREATE TABLE image_resolutions (key TEXT PRIMARY KEY, data TEXT NOT NULL);
+        CREATE TABLE cache_entries (id TEXT PRIMARY KEY, data TEXT NOT NULL);
+        CREATE TABLE resources (id TEXT PRIMARY KEY, run_id TEXT NOT NULL, data TEXT NOT NULL);
+        CREATE TABLE metrics (cursor INTEGER PRIMARY KEY AUTOINCREMENT, run_id TEXT NOT NULL, data TEXT NOT NULL);
+        CREATE INDEX metrics_run_cursor ON metrics(run_id,cursor);
+        CREATE TABLE secret_metadata (id TEXT PRIMARY KEY, project_id TEXT NOT NULL, name TEXT NOT NULL, data TEXT NOT NULL, UNIQUE(project_id,name));
+        CREATE TABLE installation (key TEXT PRIMARY KEY, value TEXT NOT NULL);
+        PRAGMA user_version=3;
+      `);
+    })();
+    this.db.query("INSERT OR IGNORE INTO installation VALUES ('id', ?)").run(crypto.randomUUID());
+    // Only committed log bytes are readable. Recover interrupted batch appends.
+    for (const r of this.runs()) {
+      const file = join(directory, "logs", r.id + ".jsonl");
+      const row = this.db.query("SELECT COALESCE(MAX(offset+length),0) AS n FROM log_index WHERE run_id=?").get(r.id) as { n: number };
+      if (existsSync(file)) truncateSync(file, row.n);
+      if (r.state === "queued" && r.ephemeralSecretNames?.length) this.putRun({ ...r, needsSecretInput: true, queueReason: "secret-input-required" });
+    }
     for (const run of this.runs())
       if (run.state === "running" || run.state === "cancelling")
         this.putRun({
@@ -67,6 +96,7 @@ export class Store {
         "INSERT INTO projects VALUES (?, ?, ?) ON CONFLICT(id) DO UPDATE SET data=excluded.data",
       )
       .run(p.id, p.path, JSON.stringify(p));
+    this.emit("projects", null, { projectId: p.id });
     return p;
   }
   removeProject(id: string) {
@@ -195,6 +225,7 @@ export class Store {
         JSON.stringify(r),
         r.request.idempotencyKey || null,
       );
+    this.emit("run", r.id, { state: r.state, phase: r.phase, queueReason: r.queueReason });
     return r;
   }
   settings(): Settings {
@@ -209,6 +240,7 @@ export class Store {
         "INSERT INTO settings VALUES (1, ?) ON CONFLICT(id) DO UPDATE SET data=excluded.data",
       )
       .run(JSON.stringify(s));
+    this.emit("settings", null, {});
     return s;
   }
   prune() {
@@ -223,12 +255,22 @@ export class Store {
         ) {
           this.db.query("DELETE FROM runs WHERE id=?").run(r.id);
           this.db.query("DELETE FROM log_index WHERE run_id=?").run(r.id);
+          this.db.query("DELETE FROM events WHERE run_id=?").run(r.id);
+          this.db.query("DELETE FROM metrics WHERE run_id=?").run(r.id);
           try {
             unlinkSync(join(this.directory, "logs", r.id + ".jsonl"));
           } catch {}
         }
       }
   }
+  installationId() {
+    return (this.db.query("SELECT value FROM installation WHERE key='id'").get() as {value:string}).value;
+  }
+  emit(kind: RunEvent["kind"], runId: string | null, data: RunEvent["data"]) {
+    this.db.query("INSERT INTO events(run_id,kind,time,data) VALUES (?,?,?,?)").run(runId,kind,new Date().toISOString(),JSON.stringify(data));
+    queueMicrotask(() => { for (const listener of this.listeners) listener(); });
+  }
+  eventCursor() { return (this.db.query("SELECT COALESCE(MAX(seq),0) AS n FROM events").get() as {n:number}).n; }
   close() {
     this.db.close();
   }

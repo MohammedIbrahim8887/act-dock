@@ -20,6 +20,7 @@ import { Store } from "./store";
 import { Scheduler, health } from "./process";
 import { checkHealth, fixHealth } from "./doctor";
 import { canonicalProject, discover, validateRun } from "./workflows";
+import { readEvents } from "./events";
 import { browseFolders } from "./folders";
 import { setLogin } from "./login";
 import { listenLocal } from "./transport";
@@ -81,6 +82,19 @@ export async function serve() {
   async function dispatch(method: Method, raw: unknown, source: Run["source"]) {
     // Parsing is repeated per method to retain schema-inferred types.
     switch (method) {
+      case "get_capabilities":
+        return { apiVersion: 2, engineVersion: (await health(store)).act.message, features: ["execution-config", "events"] };
+      case "get_runner_snapshot":
+        return store.db.transaction(() => ({ runs: store.listRuns({},0,200), cursor: store.eventCursor() }))();
+      case "read_events":
+        return readEvents(store, methods.read_events.parse(raw));
+      case "patch_settings": {
+        const patch = methods.patch_settings.parse(raw);
+        const previous = store.settings();
+        const next = { ...previous, ...patch, executionDefaults: { ...previous.executionDefaults, ...patch.executionDefaults } };
+        if (next.startAtLogin !== previous.startAtLogin) await setLogin(next.startAtLogin);
+        return store.saveSettings(next);
+      }
       case "list_projects":
         methods[method].parse(raw);
         return store.projects();
@@ -140,7 +154,7 @@ export async function serve() {
       case "get_settings":
         return store.settings();
       case "update_settings": {
-        const p = methods[method].parse(raw);
+        const p = methods[method].parse({ ...store.settings(), ...(raw as object) });
         if (p.startAtLogin !== store.settings().startAtLogin)
           await setLogin(p.startAtLogin);
         return store.saveSettings(p);
