@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Play, File, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -33,6 +33,8 @@ import type {
   Workflow,
 } from "../../shared/contracts";
 import { api, chooseFile, isDesktop } from "@/lib/api";
+import { ExecutionFields } from "./execution-options";
+import type { PreflightReport, SecretMetadata } from "../../shared/contracts";
 import { fail } from "./common";
 export function Choice({
   label,
@@ -102,17 +104,54 @@ export function RunDialog({
   const [save, setSave] = useState(false),
     [busy, setBusy] = useState(false),
     [error, setError] = useState("");
+  const [preflight, setPreflight] = useState<PreflightReport | null>(null),
+    [checking, setChecking] = useState(false),
+    [savedSecrets, setSavedSecrets] = useState<SecretMetadata[]>([]),
+    [overrideName, setOverrideName] = useState(""),
+    [overrideValue, setOverrideValue] = useState(""),
+    [overrides, setOverrides] = useState<Record<string, string>>({});
+  useEffect(() => {
+    void api("list_project_secrets", { projectId: p.id })
+      .then(setSavedSecrets)
+      .catch((e) => setError(fail(e)));
+  }, [p.id]);
+  useEffect(() => {
+    let alive = true;
+    setPreflight(null);
+    const timer = setTimeout(() => {
+      setChecking(true);
+      void api("preflight_run", { request })
+        .then((report) => {
+          if (alive) setPreflight(report);
+        })
+        .catch((e) => {
+          if (alive) setError(fail(e));
+        })
+        .finally(() => {
+          if (alive) setChecking(false);
+        });
+    }, 250);
+    return () => {
+      alive = false;
+      clearTimeout(timer);
+    };
+  }, [request]);
   const update = (key: keyof RunRequest, value: unknown) =>
     setRequest((r) => ({ ...r, [key]: value }));
   async function submit() {
     setBusy(true);
     setError("");
     try {
-      const r = await api("run_pipeline", request);
+      const r = await api("run_pipeline", {
+        ...request,
+        secretOverrides: overrides,
+      });
       if (save)
         await api("save_defaults", {
           projectId: p.id,
           defaults: {
+            ...p.defaults,
+            execution: request.execution,
             event: request.event,
             architecture: request.architecture,
             eventFile: request.eventFile,
@@ -273,6 +312,7 @@ export function RunDialog({
                 value={request.architecture}
                 onChange={(v) => update("architecture", v)}
                 options={[
+                  { value: "linux/arm64", label: "Linux ARM64" },
                   { value: "auto", label: "Automatic (host architecture)" },
                   {
                     value: "linux/amd64",
@@ -286,13 +326,162 @@ export function RunDialog({
               </p>
             </CollapsibleContent>
           </Collapsible>
+          <details>
+            <summary>Execution preferences</summary>
+            <div className="pt-3">
+              <ExecutionFields
+                prefix="run"
+                value={request.execution || {}}
+                onChange={(execution) => update("execution", execution)}
+              />
+            </div>
+          </details>
+          <details>
+            <summary>Secrets for this run</summary>
+            <div className="field-stack pt-3">
+              <p className="field-help">
+                Only names appear in run history. One-run values stay in memory
+                until admission and must be re-entered if the runner restarts.
+              </p>
+              {savedSecrets
+                .filter((s) => s.granted)
+                .map((secret) => (
+                  <div className="check-row" key={secret.id}>
+                    <Checkbox
+                      id={`select-${secret.name}`}
+                      checked={(
+                        request.execution?.secretNames ||
+                        p.defaults.execution?.secretNames ||
+                        []
+                      ).includes(secret.name)}
+                      onCheckedChange={(checked) => {
+                        const names =
+                          request.execution?.secretNames ||
+                          p.defaults.execution?.secretNames ||
+                          [];
+                        update("execution", {
+                          ...request.execution,
+                          secretNames: checked
+                            ? [...names, secret.name]
+                            : names.filter((n) => n !== secret.name),
+                        });
+                      }}
+                    />
+                    <Label htmlFor={`select-${secret.name}`}>
+                      {secret.name}
+                    </Label>
+                  </div>
+                ))}
+              <div className="field">
+                <Label htmlFor="override-name">One-run secret name</Label>
+                <Input
+                  id="override-name"
+                  value={overrideName}
+                  onChange={(e) =>
+                    setOverrideName(e.target.value.toUpperCase())
+                  }
+                />
+              </div>
+              <div className="field">
+                <Label htmlFor="override-value">One-run value</Label>
+                <Input
+                  id="override-value"
+                  type="password"
+                  autoComplete="off"
+                  value={overrideValue}
+                  onChange={(e) => setOverrideValue(e.target.value)}
+                />
+              </div>
+              <Button
+                variant="outline"
+                disabled={!overrideName || !overrideValue}
+                onClick={() => {
+                  setOverrides((values) => ({
+                    ...values,
+                    [overrideName]: overrideValue,
+                  }));
+                  setOverrideName("");
+                  setOverrideValue("");
+                }}
+              >
+                Use for this run
+              </Button>
+              {Object.keys(overrides).map((name) => (
+                <div className="setting-row" key={name}>
+                  <code>{name}</code>
+                  <Button
+                    variant="ghost"
+                    onClick={() =>
+                      setOverrides((values) =>
+                        Object.fromEntries(
+                          Object.entries(values).filter(
+                            ([key]) => key !== name,
+                          ),
+                        ),
+                      )
+                    }
+                  >
+                    Remove
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </details>
+          <div className="execution-preview" aria-live="polite">
+            <strong>
+              {checking
+                ? "Checking setup…"
+                : preflight?.ready
+                  ? "Ready to queue"
+                  : "Setup preview"}
+            </strong>
+            {preflight && (
+              <>
+                <dl>
+                  {preflight.snapshot.images.map((image) => (
+                    <div key={image.reference}>
+                      <dt>
+                        {image.platform} ·{" "}
+                        {image.available
+                          ? "Available locally"
+                          : "Download required"}
+                      </dt>
+                      <dd>
+                        <code>{image.reference}</code>
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+                {preflight.issues.map((issue, index) => (
+                  <p className="field-help" key={index}>
+                    {issue.severity}: {issue.message}
+                  </p>
+                ))}
+                <details>
+                  <summary>Configuration provenance</summary>
+                  <dl>
+                    {Object.entries(preflight.snapshot.provenance).map(
+                      ([key, source]) => (
+                        <div key={key}>
+                          <dt>{key}</dt>
+                          <dd>{source}</dd>
+                        </div>
+                      ),
+                    )}
+                  </dl>
+                </details>
+              </>
+            )}
+          </div>
           <div className="command-preview">
             <span>Command preview</span>
             <code>
               act {request.event} -W {w.path}
               {request.jobId ? " -j " + request.jobId : ""} --json --rm
               {Object.keys(request.inputs).length ? " --input …" : ""} -P
-              ubuntu-latest=catthehacker/ubuntu:act-latest
+              ubuntu-latest=
+              {preflight?.snapshot.options.runnerMappings["ubuntu-latest"] ||
+                "catthehacker/ubuntu:act-24.04"}
             </code>
             <p>
               File references and runner mappings are added at execution. act
@@ -321,7 +510,11 @@ export function RunDialog({
           </Button>
           <Button onClick={() => void submit()} disabled={busy}>
             <Play className="size-4" />
-            {busy ? "Queueing…" : "Run workflow"}
+            {busy
+              ? "Queueing…"
+              : preflight?.snapshot.images.some((i) => !i.available)
+                ? "Download and run"
+                : "Run workflow"}
           </Button>
         </DialogFooter>
       </DialogContent>

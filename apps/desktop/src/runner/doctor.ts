@@ -13,6 +13,8 @@ import {
   type HealthReport,
 } from "../shared/contracts";
 import { binary } from "./process";
+import { executionEnvironment } from "./executor/act";
+import type { Images } from "./images";
 import { bundledActPath, dataDir, executablePath } from "./paths";
 import { RUNNER_IMAGE } from "./workflows";
 import type { Store } from "./store";
@@ -30,7 +32,7 @@ const dockerInstallUrl =
 type Run = (file: string, args: string[], timeout?: number) => Promise<{ ok: boolean; stdout: string; stderr: string }>;
 const run: Run = async (file, args, timeout = 8000) => {
   try {
-    const r = await exec(file, args, { timeout, maxBuffer: 4 * 1024 * 1024, windowsHide: true });
+    const r = await exec(file, args, { timeout, maxBuffer: 4 * 1024 * 1024, windowsHide: true, env: executionEnvironment(file) });
     return { ok: true, stdout: r.stdout.trim(), stderr: r.stderr.trim() };
   } catch (e) {
     const err = e as { stdout?: string; stderr?: string; message?: string };
@@ -66,10 +68,11 @@ function pullProgress() {
 
 export async function checkHealth(
   store: Store,
-  options: { reachGitHub?: () => Promise<boolean> } = {},
+  options: { reachGitHub?: () => Promise<boolean>; images?: Images } = {},
 ): Promise<HealthReport> {
   const settings = store.settings();
   const checks: HealthCheckInput[] = [];
+  const runnerImage=settings.executionDefaults?.runnerMappings?.["ubuntu-latest"]||RUNNER_IMAGE;
   const docker = binary("docker", settings.dockerPath);
 
   // Docker CLI and engine
@@ -177,23 +180,24 @@ export async function checkHealth(
 
   // Job image
   if (engine && docker) {
-    const image = await run(docker, ["image", "inspect", RUNNER_IMAGE, "--format", "{{.Size}}"]);
-    const progress = pullProgress();
+    const image = await run(docker, ["image", "inspect", runnerImage, "--format", "{{.Size}}"]);
+    const operation=options.images?.list().find(o=>o.reference===runnerImage&&o.state==="pulling");
+    const progress = operation?{label:operation.detail,fraction:operation.fraction}:pullProgress();
     if (image.ok) pull = undefined;
     checks.push(
       image.ok
         ? {
             id: "runner-image", group: "recommended", status: "ok", title: "Job image",
             summary: `Downloaded · ${gb(Number(image.stdout) || 0)}`,
-            facts: [{ label: "Image", value: RUNNER_IMAGE, mono: true }, { label: "Size", value: gb(Number(image.stdout) || 0) }],
+            facts: [{ label: "Image", value: runnerImage, mono: true }, { label: "Size", value: gb(Number(image.stdout) || 0) }],
           }
         : {
             id: "runner-image", group: "recommended", status: progress ? "pending" : "warning", title: "Job image",
             summary: progress ? "Downloading…" : pull?.error ? "Download failed" : "Not downloaded yet",
             detail: pull?.error
               ? pull.error
-              : "Jobs on ubuntu-latest run in this image. Your first run downloads it (about 1–2 GB) before starting, so getting it now makes that run start right away.",
-            facts: [{ label: "Image", value: RUNNER_IMAGE, mono: true }],
+              : "Jobs on ubuntu-latest use this configured image. Download it before the first run. Image size depends on the selected medium, full or custom preset.",
+            facts: [{ label: "Image", value: runnerImage, mono: true }],
             progress,
             action: progress ? undefined : { kind: "runner", id: "pull_image", label: pull?.error ? "Try again" : "Download now" },
           },
