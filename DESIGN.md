@@ -311,6 +311,12 @@ Each setting is a divider-separated block with a title, one line of explanation 
 
 Runner images lead with what the project actually uses: a four-figure summary strip, then one row per `runs-on` label Act will pick for each job, with a Medium/Full/Custom segmented picker, the exact image reference, live local status from Docker (downloaded size and platform, or Download now with progress and Cancel), and the jobs that use it. Labels that would make Act skip jobs get an outlined warning with an inline mapping form; expression-based runners and `container:` jobs are noted. Unused labels collapse into a compact editable list. A **Per workflow** list shows each workflow’s labels as chips (a dot marks a workflow’s own choice); expanding one reuses the same image rows, scoped “Set for this workflow”, so a release workflow can use Full while CI stays on Medium. The runner applies these saved choices after project defaults and before Run dialog overrides. The Overview tab summarizes the effective configuration with sources and shows the layer chain (defaults → global → .actrc → project → Run dialog). All of this stays grayscale; tier badges differ by border style, not color.
 
+### Updates
+
+**Settings → Updates** leads with one bordered status card: a round emblem (inverted for available, ready and installing), a headline naming the version, one line of detail or a thin progress bar with byte counts, and right-aligned actions (Check for updates, Download, Restart and install, Not now, Try again). Automatic download and install are a toggle list that saves immediately, outside the settings draft. A short block explains how this install kind updates and that downloads are checksum-verified.
+
+When an update is ready, a quiet muted bar under the top bar shows the countdown or what it is waiting for, with Restart now and Not now; it never uses the inverted treatment reserved for blocking health problems. The sidebar footer shows a small pill (Update, Updating n%, Update ready) beside the version that opens the tab. A development-only `?updates=<state>` query previews each state in a browser.
+
 ### Dialogs / Empty and Error States
 
 Run configuration uses a shadcn dialog, field groups, command preview, and progressive disclosure for advanced file references. Dialog focus and dismissal remain owned by Radix. Empty states use a quiet outline icon, heading, short explanation, and relevant action. Errors retain diagnostic wording and recovery controls. These are purposeful states within the workspace, not a separate decorative style.
