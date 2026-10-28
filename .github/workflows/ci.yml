@@ -21,7 +21,15 @@ jobs:
           go-version: '1.25.0'
           cache-dependency-path: tools/act-dock-helper/go.sum
       - name: Install workspace dependencies
-        run: bun install --frozen-lockfile
+        run: |
+          for attempt in 1 2 3; do
+            if timeout 300 bun install --frozen-lockfile --network-concurrency 8; then
+              exit 0
+            fi
+            echo "Dependency installation attempt $attempt failed or timed out."
+            sleep 5
+          done
+          exit 1
       - name: Prepare pinned desktop SDK
         run: bun scripts/prepare.ts
       - name: Check workspace
