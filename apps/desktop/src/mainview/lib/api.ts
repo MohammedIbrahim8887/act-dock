@@ -26,7 +26,24 @@ export async function api<M extends Method>(
   method: M,
   params: unknown = {},
 ): Promise<Results[M]> {
-  const feature=requiredFeature(method,params);if(feature){let capabilities;try{capabilities=await api("get_capabilities");}catch{throw new AppError("RUNNER_UPGRADE_REQUIRED","Finish active work and reopen Act Dock to upgrade the background service.");}requireFeature(feature,capabilities);}
+  const feature = requiredFeature(method, params);
+  if (feature) {
+    let capabilities;
+    try {
+      capabilities = await api("get_capabilities");
+    } catch (error) {
+      if (
+        !(error instanceof AppError) ||
+        !["VALIDATION_ERROR", "UNKNOWN_METHOD"].includes(error.code)
+      )
+        throw error;
+      throw new AppError(
+        "RUNNER_UPGRADE_REQUIRED",
+        "Finish active work and reopen Act Dock to upgrade the background service.",
+      );
+    }
+    requireFeature(feature, capabilities);
+  }
   const reply: ServiceReply = isDesktop()
     ? await (await connection()).rpc!.request.service({ method, params })
     : await fetch("/__actdock/rpc", {
@@ -85,7 +102,8 @@ export async function exportLogs(runId: string) {
   return "Downloads";
 }
 export async function openExternal(url: string) {
-  if (isDesktop()) await (await connection()).rpc!.request.openExternal({ url });
+  if (isDesktop())
+    await (await connection()).rpc!.request.openExternal({ url });
   else window.open(url, "_blank", "noopener");
 }
 export async function revealPath(path: string) {

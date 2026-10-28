@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Cable,
   Copy,
@@ -45,6 +45,7 @@ export function SettingsView({
   const [draft, setDraft] = useState(settings),
     [busy, setBusy] = useState(false),
     [stop, setStop] = useState(false);
+  useEffect(() => setDraft(settings), [settings]);
   async function save() {
     setBusy(true);
     try {
@@ -81,6 +82,41 @@ export function SettingsView({
       <Separator />
       <section className="settings-section">
         <h2>Execution defaults</h2>
+        <div className="form-grid">
+          {(["projectGiB", "totalGiB"] as const).map((key) => (
+            <div className="field" key={key}>
+              <Label htmlFor={`cache-budget-${key}`}>
+                {key === "projectGiB"
+                  ? "Project cache budget (GiB)"
+                  : "Total cache budget (GiB)"}
+              </Label>
+              <Input
+                id={`cache-budget-${key}`}
+                type="number"
+                min="0.25"
+                step="0.25"
+                value={
+                  draft.cacheBudgets?.[key] ?? (key === "projectGiB" ? 5 : 20)
+                }
+                onChange={(e) =>
+                  setDraft({
+                    ...draft,
+                    cacheBudgets: {
+                      projectGiB: 5,
+                      totalGiB: 20,
+                      ...draft.cacheBudgets,
+                      [key]: Number(e.target.value),
+                    },
+                  })
+                }
+              />
+            </div>
+          ))}
+        </div>
+        <p className="field-help">
+          Only measured, inactive caches count toward automatic eviction.
+          Unknown sizes are shown in project settings.
+        </p>
         <ExecutionFields
           value={draft.executionDefaults || {}}
           onChange={(executionDefaults) =>

@@ -1,3 +1,4 @@
+import { queueReasonText } from "../../shared/queue-reasons";
 import { useEffect, useState } from "react";
 import {
   ChevronLeft,
@@ -308,7 +309,12 @@ export function RunHistory({
                   </TableCell>
                   <TableCell>{r.projectName}</TableCell>
                   <TableCell>
-                    <Status state={r.state} />{r.queueReason&&<p className="field-help">{r.queueReason.replaceAll("-"," ")}</p>}
+                    <Status state={r.state} />
+                    {r.queueReason && (
+                      <p className="field-help">
+                        {queueReasonText(r.queueReason)}
+                      </p>
+                    )}
                   </TableCell>
                   <TableCell className="tabular-nums">
                     {duration(r.startedAt, r.finishedAt)}

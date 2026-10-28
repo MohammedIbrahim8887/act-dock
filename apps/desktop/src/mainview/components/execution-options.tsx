@@ -86,19 +86,22 @@ export function ExecutionFields({
                     })
                   }
                 />
-                <Button
-                  variant="outline"
-                  onClick={() =>
-                    update({
-                      runnerMappings: {
-                        ...value.runnerMappings,
-                        [key]: `catthehacker/ubuntu:full-${key === "ubuntu-latest" ? "24.04" : key.replace("ubuntu-", "")}`,
-                      },
-                    })
-                  }
-                >
-                  Full
-                </Button>
+                {/^ubuntu-(latest|20\.04|22\.04|24\.04)$/.test(key) && (
+                  <Button
+                    variant="outline"
+                    aria-label={`${image.includes(":full-") ? "Use medium" : "Use full"} image for ${key}`}
+                    onClick={() =>
+                      update({
+                        runnerMappings: {
+                          ...value.runnerMappings,
+                          [key]: `catthehacker/ubuntu:${image.includes(":full-") ? "act" : "full"}-${key === "ubuntu-latest" ? "24.04" : key.replace("ubuntu-", "")}`,
+                        },
+                      })
+                    }
+                  >
+                    {image.includes(":full-") ? "Use medium" : "Use full"}
+                  </Button>
+                )}
               </div>
             </div>
           ))}
@@ -221,9 +224,14 @@ export function ExecutionFields({
               type="number"
               min="1"
               max="64"
-              value={value.concurrentJobs ?? 1}
+              placeholder="Automatic · Act default"
+              value={value.concurrentJobs ?? ""}
               onChange={(e) =>
-                update({ concurrentJobs: Number(e.target.value) })
+                update({
+                  concurrentJobs: e.target.value
+                    ? Number(e.target.value)
+                    : undefined,
+                })
               }
             />
           </div>

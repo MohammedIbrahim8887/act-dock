@@ -10,6 +10,7 @@ async function main() {
     args: process.argv.slice(2),
     allowPositionals: true,
     options: {
+      "secrets-stdin": { type: "boolean" },
       config: { type: "string" },
       platform: { type: "string" },
       wait: { type: "string" },
@@ -81,31 +82,94 @@ async function main() {
         limit: Number(v.limit || 100),
       }),
     );
-  const jsonInput=async()=>JSON.parse(await Bun.stdin.text());
-  if(a[0]==="capabilities")return print(await call("get_capabilities"));
-  if(a[0]==="images"){
-    if(a[1]==="list")return print(await call("list_runner_images",{projectId:v.project}));
-    if(["inspect","pull","refresh"].includes(a[1]))return print(await call(a[1]==="inspect"?"inspect_image":"pull_image",{reference:a[2],architecture:v.platform||"auto"}));
-    if(a[1]==="operations")return print(await call("list_image_operations"));
-    if(a[1]==="cancel")return print(await call("cancel_image_pull",{operationId:a[2]}));
+  const jsonInput = async () => JSON.parse(await Bun.stdin.text());
+  if (a[0] === "capabilities") return print(await call("get_capabilities"));
+  if (a[0] === "images") {
+    if (a[1] === "list")
+      return print(await call("list_runner_images", { projectId: v.project }));
+    if (["inspect", "pull", "refresh"].includes(a[1]))
+      return print(
+        await call(a[1] === "inspect" ? "inspect_image" : "pull_image", {
+          reference: a[2],
+          architecture: v.platform || "auto",
+        }),
+      );
+    if (a[1] === "operations")
+      return print(await call("list_image_operations"));
+    if (a[1] === "cancel")
+      return print(await call("cancel_image_pull", { operationId: a[2] }));
   }
-  if(a[0]==="cache"){
-    if(a[1]==="list")return print(await call("list_caches",{projectId:v.project}));
-    if(a[1]==="clear")return print(await call("clear_cache",{cacheId:a[2]}));
-    if(a[1]==="refresh")return print(await call("refresh_project_cache",{projectId:v.project||a[2]}));
+  if (a[0] === "cache") {
+    if (a[1] === "list")
+      return print(await call("list_caches", { projectId: v.project }));
+    if (a[1] === "clear")
+      return print(await call("clear_cache", { cacheId: a[2] }));
+    if (a[1] === "refresh")
+      return print(
+        await call("refresh_project_cache", { projectId: v.project || a[2] }),
+      );
   }
-  if(a[0]==="secrets"){
-    if(a[1]==="list")return print(await call("list_project_secrets",{projectId:v.project||a[2]}));
-    if(a[1]==="delete")return print(await call("delete_project_secret",{projectId:v.project,name:a[2]}));
+  if (a[0] === "secrets") {
+    if (a[1] === "list")
+      return print(
+        await call("list_project_secrets", { projectId: v.project || a[2] }),
+      );
+    if (a[1] === "delete")
+      return print(
+        await call("delete_project_secret", {
+          projectId: v.project,
+          name: a[2],
+        }),
+      );
     // Secret values are accepted only via stdin; never include them in shell arguments.
-    if(a[1]==="put")return print(await call("put_project_secret",{...await jsonInput(),projectId:v.project}));
-    if(a[1]==="preview")return print(await call("preview_import",{...await jsonInput(),projectId:v.project}));
-    if(a[1]==="import")return print(await call("import_project_configuration",{...await jsonInput(),projectId:v.project}));
-    if(a[1]==="resupply")return print(await call("supply_run_secrets",{runId:a[2],values:await jsonInput()}));
+    if (a[1] === "put")
+      return print(
+        await call("put_project_secret", {
+          ...(await jsonInput()),
+          projectId: v.project,
+        }),
+      );
+    if (a[1] === "preview")
+      return print(
+        await call("preview_import", {
+          ...(await jsonInput()),
+          projectId: v.project,
+        }),
+      );
+    if (a[1] === "import")
+      return print(
+        await call("import_project_configuration", {
+          ...(await jsonInput()),
+          projectId: v.project,
+        }),
+      );
+    if (a[1] === "resupply")
+      return print(
+        await call("supply_run_secrets", {
+          runId: a[2],
+          values: await jsonInput(),
+        }),
+      );
   }
-  if(a[0]==="events")return print(await call("read_events",{cursor:Number(v.cursor||0),limit:Number(v.limit||500),waitMs:Number(v.wait||0),runIds:a[1]?[a[1]]:undefined}));
-  if(a[0]==="metrics")return print(await call("get_run_metrics",{runId:a[1],cursor:Number(v.cursor||0),limit:Number(v.limit||500)}));
-  if(a[0]==="doctor"&&a[1]==="preflight")return print(await call("preflight_run",{request:await jsonInput()}));
+  if (a[0] === "events")
+    return print(
+      await call("read_events", {
+        cursor: Number(v.cursor || 0),
+        limit: Number(v.limit || 500),
+        waitMs: Number(v.wait || 0),
+        runIds: a[1] ? [a[1]] : undefined,
+      }),
+    );
+  if (a[0] === "metrics")
+    return print(
+      await call("get_run_metrics", {
+        runId: a[1],
+        cursor: Number(v.cursor || 0),
+        limit: Number(v.limit || 500),
+      }),
+    );
+  if (a[0] === "doctor" && a[1] === "preflight")
+    return print(await call("preflight_run", { request: await jsonInput() }));
   if (a[0] === "run") {
     const inputs = Object.fromEntries(
       (v.input || []).map((i) => {
@@ -116,7 +180,9 @@ async function main() {
       }),
     );
     const r = runRequestSchema.parse({
-      execution: v.config?JSON.parse(await Bun.file(v.config).text()):undefined,
+      execution: v.config
+        ? JSON.parse(await Bun.file(v.config).text())
+        : undefined,
       projectId: v.project,
       workflowPath: v.workflow,
       event: v.event || "push",
@@ -129,7 +195,12 @@ async function main() {
       architecture: v.architecture || "auto",
       idempotencyKey: v["idempotency-key"],
     });
-    return print(await call("run_pipeline", r));
+    return print(
+      await call("run_pipeline", {
+        ...r,
+        secretOverrides: v["secrets-stdin"] ? await jsonInput() : undefined,
+      }),
+    );
   }
   if (a[0] === "status") return print(await call("get_run", { runId: a[1] }));
   if (a[0] === "doctor") return print(await call("check_health"));
@@ -137,7 +208,7 @@ async function main() {
     return print(await call("cancel_run", { runId: a[1] }));
   if (a[0] === "logs") {
     let cursor = Number(v.cursor || 0);
-    let eventCursor=(await call("get_runner_snapshot")).cursor;
+    let eventCursor = (await call("get_runner_snapshot")).cursor;
     do {
       const page = await call("get_run_logs", { runId: a[1], cursor });
       for (const e of page.entries)
@@ -146,7 +217,12 @@ async function main() {
         );
       cursor = page.nextCursor;
       if (page.end || !v.follow) break;
-      const events=await call("read_events",{cursor:eventCursor,runIds:[a[1]],waitMs:10000});eventCursor=events.nextCursor;
+      const events = await call("read_events", {
+        cursor: eventCursor,
+        runIds: [a[1]],
+        waitMs: 10000,
+      });
+      eventCursor = events.nextCursor;
     } while (true);
     return;
   }
@@ -157,7 +233,10 @@ if (import.meta.main)
     console.error(
       JSON.stringify({
         code: e instanceof AppError ? e.code : "ERROR",
-        message: errorMessage(e),
+        message:
+          e instanceof AppError
+            ? errorMessage(e)
+            : "Command failed. Check JSON input and System health.",
       }),
     );
     process.exitCode = 1;

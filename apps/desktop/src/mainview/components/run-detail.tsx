@@ -1,3 +1,4 @@
+import { queueReasonText } from "../../shared/queue-reasons";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Copy,
@@ -18,7 +19,12 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { subscribeEvents } from "@/lib/events";
 import { api, exportLogs } from "@/lib/api";
-import { activeStates, type LogEntry, type Run, type RunMetric } from "../../shared/contracts";
+import {
+  activeStates,
+  type LogEntry,
+  type Run,
+  type RunMetric,
+} from "../../shared/contracts";
 import {
   advanceProgress,
   currentSteps,
@@ -54,11 +60,45 @@ export function RunDetail({
     [follow],
   );
   const cursor = useRef(0);
-  const [metrics,setMetrics]=useState<RunMetric[]>([]),[resupply,setResupply]=useState<Record<string,string>>({});
-  useEffect(()=>{let alive=true;let next=0;setMetrics([]);setResupply({});let pending=false;
-    const read=async()=>{if(!run||pending)return;pending=true;try{const page=await api("get_run_metrics",{runId:run.id,cursor:next,limit:500});if(alive){next=page.nextCursor;setMetrics(previous=>[...previous,...page.entries].slice(-500));}}catch{}finally{pending=false;}};
-    const unsubscribe=subscribeEvents(events=>{if(events.some(e=>e.kind==="metrics"&&e.runId===run?.id))void read();});void read();return()=>{alive=false;unsubscribe();};
-  },[run?.id]);
+  const [metrics, setMetrics] = useState<RunMetric[]>([]),
+    [resupply, setResupply] = useState<Record<string, string>>({});
+  useEffect(() => {
+    let alive = true;
+    let next = 0;
+    setMetrics([]);
+    setResupply({});
+    let pending = false;
+    const read = async () => {
+      if (!run || pending) return;
+      pending = true;
+      try {
+        const page = await api("get_run_metrics", {
+          runId: run.id,
+          cursor: next,
+          limit: 500,
+        });
+        if (alive) {
+          next = page.nextCursor;
+          setMetrics((previous) => [...previous, ...page.entries].slice(-500));
+        }
+      } catch {
+      } finally {
+        pending = false;
+      }
+    };
+    const unsubscribe = subscribeEvents((events) => {
+      if (
+        !events.length ||
+        events.some((e) => e.kind === "metrics" && e.runId === run?.id)
+      )
+        void read();
+    });
+    void read();
+    return () => {
+      alive = false;
+      unsubscribe();
+    };
+  }, [run?.id]);
   useEffect(() => {
     let alive = true;
     let timer: ReturnType<typeof setTimeout>;
@@ -201,7 +241,7 @@ export function RunDetail({
           )}
           {run.queueReason && (
             <p role="status" className="field-help">
-              Waiting: {run.queueReason.replaceAll("-", " ")}
+              Waiting: {queueReasonText(run.queueReason)}
             </p>
           )}
         </div>
@@ -390,8 +430,66 @@ export function RunDetail({
           </div>
         </TabsContent>
         <TabsContent value="details" className="details-tab">
-          {run.queueReason==="secret-input-required"&&<div className="field-stack"><h3>Re-enter one-run secrets</h3><p className="field-help">The runner restarted before admission. The unsaved values were discarded.</p>{(run.ephemeralSecretNames||[]).map(name=><div className="field" key={name}><label htmlFor={`resupply-${name}`}>{name}</label><Input id={`resupply-${name}`} type="password" autoComplete="off" value={resupply[name]||""} onChange={e=>setResupply(values=>({...values,[name]:e.target.value}))}/></div>)}<Button disabled={busy} onClick={async()=>{setBusy(true);try{await api("supply_run_secrets",{runId:run.id,values:resupply});setResupply({});toast.success("Secret input supplied");}catch(e){toast.error(fail(e));}finally{setBusy(false);}}}>Resume queued run</Button></div>}
-          {metrics.length>0&&<div className="field-stack"><h3>Container metrics</h3>{metrics.slice(-4).map(metric=><p className="field-help" key={metric.cursor}><code>{metric.containerId.slice(0,12)}</code> · {metric.cpuPercent?.toFixed(1)??"Unknown"}% CPU · {metric.memoryBytes===null?"Memory unknown":`${(metric.memoryBytes/1024**2).toFixed(1)} MiB`}</p>)}</div>}
+          {run.queueReason === "secret-input-required" && (
+            <div className="field-stack">
+              <h3>Re-enter one-run secrets</h3>
+              <p className="field-help">
+                The runner restarted before admission. The unsaved values were
+                discarded.
+              </p>
+              {(run.ephemeralSecretNames || []).map((name) => (
+                <div className="field" key={name}>
+                  <label htmlFor={`resupply-${name}`}>{name}</label>
+                  <Input
+                    id={`resupply-${name}`}
+                    type="password"
+                    autoComplete="off"
+                    value={resupply[name] || ""}
+                    onChange={(e) =>
+                      setResupply((values) => ({
+                        ...values,
+                        [name]: e.target.value,
+                      }))
+                    }
+                  />
+                </div>
+              ))}
+              <Button
+                disabled={busy}
+                onClick={async () => {
+                  setBusy(true);
+                  try {
+                    await api("supply_run_secrets", {
+                      runId: run.id,
+                      values: resupply,
+                    });
+                    setResupply({});
+                    toast.success("Secret input supplied");
+                  } catch (e) {
+                    toast.error(fail(e));
+                  } finally {
+                    setBusy(false);
+                  }
+                }}
+              >
+                Resume queued run
+              </Button>
+            </div>
+          )}
+          {metrics.length > 0 && (
+            <div className="field-stack">
+              <h3>Container metrics</h3>
+              {metrics.slice(-4).map((metric) => (
+                <p className="field-help" key={metric.cursor}>
+                  <code>{metric.containerId.slice(0, 12)}</code> ·{" "}
+                  {metric.cpuPercent?.toFixed(1) ?? "Unknown"}% CPU ·{" "}
+                  {metric.memoryBytes === null
+                    ? "Memory unknown"
+                    : `${(metric.memoryBytes / 1024 ** 2).toFixed(1)} MiB`}
+                </p>
+              ))}
+            </div>
+          )}
           <dl className="detail-list">
             <dt>Run ID</dt>
             <dd className="mono">{run.id}</dd>
@@ -419,7 +517,32 @@ export function RunDetail({
             </dd>
           </dl>
           <Separator />
-          {run.snapshot&&<details className="mt-5"><summary>Frozen execution configuration</summary><dl className="detail-list"><dt>Engine</dt><dd>{run.snapshot.engine?.version||"Resolved at admission"}</dd><dt>Selected secret names</dt><dd>{run.snapshot.secretNames.join(", ")||"None"}</dd><dt>Image policy</dt><dd>{run.snapshot.options.imagePullPolicy}</dd><dt>Action sources</dt><dd>{run.snapshot.options.actionCachePolicy}</dd>{run.snapshot.images.map(image=><div key={image.reference}><dt>{image.platform}</dt><dd className="technical-wrap">{image.resolved}</dd></div>)}</dl><pre className="command-block">{JSON.stringify(run.snapshot,null,2)}</pre></details>}
+          {run.snapshot && (
+            <details className="mt-5">
+              <summary>Frozen execution configuration</summary>
+              <dl className="detail-list">
+                <dt>Engine</dt>
+                <dd>
+                  {run.snapshot.engine?.version || "Resolved at admission"}
+                </dd>
+                <dt>Selected secret names</dt>
+                <dd>{run.snapshot.secretNames.join(", ") || "None"}</dd>
+                <dt>Image policy</dt>
+                <dd>{run.snapshot.options.imagePullPolicy}</dd>
+                <dt>Action sources</dt>
+                <dd>{run.snapshot.options.actionCachePolicy}</dd>
+                {run.snapshot.images.map((image) => (
+                  <div key={image.reference}>
+                    <dt>{image.platform}</dt>
+                    <dd className="technical-wrap">{image.resolved}</dd>
+                  </div>
+                ))}
+              </dl>
+              <pre className="command-block">
+                {JSON.stringify(run.snapshot, null, 2)}
+              </pre>
+            </details>
+          )}
           <h3 className="mt-5 mb-2">Invocation</h3>
           <p className="field-help mb-3">
             act also reads your global and project .actrc files.

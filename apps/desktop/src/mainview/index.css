@@ -424,7 +424,9 @@
   animation-play-state: running;
 }
 @keyframes running-border {
-  to { stroke-dashoffset: -100; }
+  to {
+    stroke-dashoffset: -100;
+  }
 }
 .running-foreground,
 [data-run-state="running"][data-slot="badge"],
@@ -1449,11 +1451,18 @@ blockquote {
   border: 1px solid var(--border);
   border-radius: 14px;
   background:
-    radial-gradient(120% 140% at 0% 0%, color-mix(in srgb, var(--muted) 100%, transparent), transparent 60%),
+    radial-gradient(
+      120% 140% at 0% 0%,
+      color-mix(in srgb, var(--muted) 100%, transparent),
+      transparent 60%
+    ),
     var(--background);
   color: var(--hero-fg);
   overflow: hidden;
-  transition: background 0.3s, color 0.3s, border-color 0.3s;
+  transition:
+    background 0.3s,
+    color 0.3s,
+    border-color 0.3s;
 }
 .health-hero[data-state="blocked"] {
   --hero-fg: var(--primary-foreground);
@@ -1462,14 +1471,16 @@ blockquote {
   background: var(--primary);
   border-color: var(--primary);
 }
-.health-hero[data-state="blocked"] [data-slot="button"][data-variant="default"] {
+.health-hero[data-state="blocked"]
+  [data-slot="button"][data-variant="default"] {
   background: var(--primary-foreground);
   color: var(--primary);
 }
 .health-hero[data-state="blocked"] [data-slot="button"][data-variant="ghost"] {
   color: var(--hero-fg);
 }
-.health-hero[data-state="blocked"] [data-slot="button"][data-variant="ghost"]:hover {
+.health-hero[data-state="blocked"]
+  [data-slot="button"][data-variant="ghost"]:hover {
   background: color-mix(in srgb, var(--primary-foreground) 12%, transparent);
 }
 .health-ring {
@@ -1492,7 +1503,9 @@ blockquote {
 .health-ring-segment {
   stroke-linecap: round;
   stroke: var(--hero-fg);
-  transition: stroke 0.3s, opacity 0.3s;
+  transition:
+    stroke 0.3s,
+    opacity 0.3s;
   animation: health-segment-in 0.5s ease-out both;
 }
 .health-ring-segment[data-status="warning"] {
@@ -1500,16 +1513,22 @@ blockquote {
 }
 .health-ring-segment[data-status="pending"] {
   opacity: 0.38;
-  animation: health-segment-in 0.5s ease-out both, health-pulse 1.4s ease-in-out infinite;
+  animation:
+    health-segment-in 0.5s ease-out both,
+    health-pulse 1.4s ease-in-out infinite;
 }
 .health-ring-segment[data-status="error"] {
   opacity: 0;
 }
 @keyframes health-segment-in {
-  from { opacity: 0; }
+  from {
+    opacity: 0;
+  }
 }
 @keyframes health-pulse {
-  50% { opacity: 0.85; }
+  50% {
+    opacity: 0.85;
+  }
 }
 .health-ring-label {
   position: absolute;
@@ -1637,7 +1656,10 @@ blockquote {
   background: color-mix(in srgb, var(--muted) 70%, var(--background));
 }
 @keyframes health-row-in {
-  from { opacity: 0; transform: translateY(3px); }
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
 }
 .health-row-main {
   display: flex;
@@ -1817,8 +1839,12 @@ blockquote {
   animation: health-indeterminate 1.3s ease-in-out infinite;
 }
 @keyframes health-indeterminate {
-  from { transform: translateX(-100%); }
-  to { transform: translateX(290%); }
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(290%);
+  }
 }
 .health-row-skeleton {
   height: 57px;
@@ -1827,7 +1853,9 @@ blockquote {
   animation: health-shimmer 1.2s linear infinite;
 }
 @keyframes health-shimmer {
-  to { background-position: -200% 0; }
+  to {
+    background-position: -200% 0;
+  }
 }
 .health-footnote {
   font-size: 11px;
@@ -1996,9 +2024,43 @@ blockquote {
   }
 }
 
-.project-execution { padding: 16px 20px; border-bottom: 1px solid var(--border); max-height: 65vh; overflow: auto; }
-.project-execution summary, .field-stack summary { cursor: pointer; font-weight: 500; padding: 6px 0; }
-.technical-wrap, .execution-preview code { overflow-wrap: anywhere; white-space: pre-wrap; }
-.execution-preview { border: 1px solid var(--border); border-radius: 8px; padding: 14px; }
-.execution-preview dl { display: grid; gap: 8px; margin-top: 10px; }
-.execution-preview dd { overflow-wrap: anywhere; color: var(--muted-foreground); }
+.project-execution {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  max-height: 65vh;
+  overflow: auto;
+}
+.project-execution .form-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+.project-execution summary,
+.field-stack summary {
+  cursor: pointer;
+  font-weight: 500;
+  padding: 6px 0;
+}
+.technical-wrap,
+.execution-preview code {
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+.execution-preview {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px;
+}
+.execution-preview dl {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+}
+.execution-preview dd {
+  overflow-wrap: anywhere;
+  color: var(--muted-foreground);
+}
+
+summary:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
+  border-radius: 4px;
+}

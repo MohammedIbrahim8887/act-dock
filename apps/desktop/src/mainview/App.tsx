@@ -127,7 +127,9 @@ function Workspace() {
     try {
       const [p, r] = await Promise.all([
         api("list_projects"),
-        api("list_runs", { limit: 200 }),
+        api("get_runner_snapshot")
+          .then((snapshot) => snapshot.runs)
+          .catch(() => api("list_runs", { limit: 200 })),
       ]);
       setProjects(p);
       setRuns(r);
@@ -174,7 +176,10 @@ function Workspace() {
     if (runnerStopped) return;
     void checkHealth();
     // Poll quickly while a fix is in progress or the page is open, and gently otherwise.
-    const id = setInterval(() => void checkHealth(), pendingFix ? 2500 : view === "health" ? 6000 : 20000);
+    const id = setInterval(
+      () => void checkHealth(),
+      pendingFix ? 2500 : view === "health" ? 6000 : 20000,
+    );
     window.addEventListener("focus", checkHealth);
     return () => {
       clearInterval(id);
@@ -206,7 +211,27 @@ function Workspace() {
   useEffect(() => {
     if (runnerStopped) return;
     void refresh();
-    const unsubscribe = subscribeEvents(events=>{if(events.some(e=>["run","queue","projects","settings"].includes(e.kind)))void refresh();});
+    const unsubscribe = subscribeEvents((events) => {
+      if (!events.length || events.some((event) => event.kind === "settings")) {
+        void api("get_settings")
+          .then((next) => {
+            setSettings((previous) =>
+              JSON.stringify(previous) === JSON.stringify(next)
+                ? previous
+                : next,
+            );
+            setTheme(next.theme);
+          })
+          .catch(() => {});
+      }
+      if (
+        !events.length ||
+        events.some((e) =>
+          ["run", "queue", "projects", "settings"].includes(e.kind),
+        )
+      )
+        void refresh();
+    });
     const focus = () => {
       void refresh();
       refreshHealth();
@@ -216,7 +241,7 @@ function Workspace() {
       unsubscribe();
       window.removeEventListener("focus", focus);
     };
-  }, [refresh, refreshHealth, runnerStopped]);
+  }, [refresh, refreshHealth, runnerStopped, setTheme]);
   const refreshWorkflows = useCallback(async () => {
     if (runnerStopped) return;
     const version = ++selectionVersion.current;
@@ -331,7 +356,10 @@ function Workspace() {
                             r.request.projectId === p.id &&
                             r.state === "running",
                         ) && (
-                          <LoaderCircle className="ml-auto size-3 animate-spin running-foreground" aria-label="Running pipeline" />
+                          <LoaderCircle
+                            className="ml-auto size-3 animate-spin running-foreground"
+                            aria-label="Running pipeline"
+                          />
                         )}
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -378,7 +406,11 @@ function Workspace() {
                       <Badge
                         variant="secondary"
                         className={`ml-auto text-[11px] ${running.length ? "running-count" : ""}`}
-                        aria-label={running.length ? `${running.length} running` : `${active.length} queued or cancelling`}
+                        aria-label={
+                          running.length
+                            ? `${running.length} running`
+                            : `${active.length} queued or cancelling`
+                        }
                       >
                         {running.length || active.length}
                       </Badge>
@@ -387,7 +419,11 @@ function Workspace() {
                       <span
                         className="ml-auto health-nav-badge"
                         data-blocked={blocked || undefined}
-                        aria-label={blocked ? "Pipelines are blocked" : `${issueCount} suggestions`}
+                        aria-label={
+                          blocked
+                            ? "Pipelines are blocked"
+                            : `${issueCount} suggestions`
+                        }
                       >
                         {blocked ? "!" : issueCount}
                       </span>
@@ -521,7 +557,17 @@ function Workspace() {
         {view === "project" && (
           <div className={`workspace ${mobileRun ? "show-run" : ""}`}>
             <section className="workflow-pane">
-              {project&&<ProjectExecution key={project.id} project={project} onSaved={p=>setProjects(previous=>previous.map(item=>item.id===p.id?p:item))}/>}
+              {project && (
+                <ProjectExecution
+                  key={project.id}
+                  project={project}
+                  onSaved={(p) =>
+                    setProjects((previous) =>
+                      previous.map((item) => (item.id === p.id ? p : item)),
+                    )
+                  }
+                />
+              )}
               <div className="project-heading">
                 <div>
                   <h1>{project?.name || "Your projects"}</h1>
@@ -621,51 +667,57 @@ function Workspace() {
                             .includes(search.toLowerCase()),
                         )
                         .map((w) => {
-                          const isRunning = running.some(r =>
-                            r.request.projectId === w.projectId && r.request.workflowPath === w.path);
+                          const isRunning = running.some(
+                            (r) =>
+                              r.request.projectId === w.projectId &&
+                              r.request.workflowPath === w.path,
+                          );
                           return (
-                          <Button
-                            key={w.path}
-                            variant="ghost"
-                            className={`workflow-item ${workflow?.path === w.path ? "selected" : ""} ${isRunning ? "is-running" : ""}`}
-                            onClick={() => setSelectedWorkflow(w.path)}
-                          >
-                            {isRunning && <RunningBorder />}
-                            <WorkflowIcon className="size-4 shrink-0" />
-                            <span className="min-w-0 flex-1">
-                              <span className="workflow-name">{w.name}</span>
-                              <span className="workflow-file mono">
-                                {w.path.split("/").pop()}
+                            <Button
+                              key={w.path}
+                              variant="ghost"
+                              className={`workflow-item ${workflow?.path === w.path ? "selected" : ""} ${isRunning ? "is-running" : ""}`}
+                              onClick={() => setSelectedWorkflow(w.path)}
+                            >
+                              {isRunning && <RunningBorder />}
+                              <WorkflowIcon className="size-4 shrink-0" />
+                              <span className="min-w-0 flex-1">
+                                <span className="workflow-name">{w.name}</span>
+                                <span className="workflow-file mono">
+                                  {w.path.split("/").pop()}
+                                </span>
+                                <span className="workflow-tags">
+                                  {w.diagnostic ? (
+                                    <Badge variant="outline">
+                                      <CircleX className="size-3" />
+                                      Invalid workflow
+                                    </Badge>
+                                  ) : (
+                                    <>
+                                      {w.events.slice(0, 2).map((e) => (
+                                        <Badge key={e} variant="secondary">
+                                          {e}
+                                        </Badge>
+                                      ))}
+                                      {isRunning && (
+                                        <Badge
+                                          variant="outline"
+                                          data-run-state="running"
+                                        >
+                                          <LoaderCircle className="size-3 animate-spin" />
+                                          Running
+                                        </Badge>
+                                      )}
+                                      <span>
+                                        {w.jobs.length}{" "}
+                                        {w.jobs.length === 1 ? "job" : "jobs"}
+                                      </span>
+                                    </>
+                                  )}
+                                </span>
                               </span>
-                              <span className="workflow-tags">
-                                {w.diagnostic ? (
-                                  <Badge variant="outline">
-                                    <CircleX className="size-3" />
-                                    Invalid workflow
-                                  </Badge>
-                                ) : (
-                                  <>
-                                    {w.events.slice(0, 2).map((e) => (
-                                      <Badge key={e} variant="secondary">
-                                        {e}
-                                      </Badge>
-                                    ))}
-                                    {isRunning && (
-                                      <Badge variant="outline" data-run-state="running">
-                                        <LoaderCircle className="size-3 animate-spin" />
-                                        Running
-                                      </Badge>
-                                    )}
-                                    <span>
-                                      {w.jobs.length}{" "}
-                                      {w.jobs.length === 1 ? "job" : "jobs"}
-                                    </span>
-                                  </>
-                                )}
-                              </span>
-                            </span>
-                            <ChevronRight className="size-3.5 text-muted-foreground" />
-                          </Button>
+                              <ChevronRight className="size-3.5 text-muted-foreground" />
+                            </Button>
                           );
                         })}
                     </div>
@@ -731,7 +783,9 @@ function Workspace() {
                       className="workflow-blocked"
                       onClick={() => setView("health")}
                     >
-                      <span>Setup needs attention before running.</span>
+                      <span>
+                        Setup needs attention. Preview this run for details.
+                      </span>
                       <span>Fix it</span>
                     </button>
                   ) : (
@@ -748,7 +802,6 @@ function Workspace() {
                     disabled={
                       !!workflow.diagnostic ||
                       runnerStopped ||
-                      blocked ||
                       workflowLoading ||
                       !!workflowError
                     }
@@ -836,10 +889,24 @@ function Workspace() {
           </span>
           <span>
             <span className={running.length ? "running-foreground" : undefined}>
-              {running.length ? `${running.length} running` : !active.length ? "No active runs" : null}
+              {running.length
+                ? `${running.length} running`
+                : !active.length
+                  ? "No active runs"
+                  : null}
             </span>
-            {queued.length > 0 && <span>{running.length ? " · " : ""}{queued.length} queued</span>}
-            {cancelling.length > 0 && <span>{running.length || queued.length ? " · " : ""}{cancelling.length} cancelling</span>}
+            {queued.length > 0 && (
+              <span>
+                {running.length ? " · " : ""}
+                {queued.length} queued
+              </span>
+            )}
+            {cancelling.length > 0 && (
+              <span>
+                {running.length || queued.length ? " · " : ""}
+                {cancelling.length} cancelling
+              </span>
+            )}
             <span className="status-separator">·</span>
             <button
               type="button"

@@ -7,10 +7,12 @@ async function loop() {
   if (running) return;
   running = true;
   try {
-    if (cursor === undefined)
-      cursor = (await api("get_runner_snapshot")).cursor;
     while (listeners.size) {
       try {
+        if (cursor === undefined) {
+          cursor = (await api("get_runner_snapshot")).cursor;
+          for (const listener of listeners) listener([]);
+        }
         const page: Results["read_events"] = await api("read_events", {
           cursor,
           limit: 500,
@@ -18,7 +20,11 @@ async function loop() {
         });
         cursor = page.nextCursor;
         if (page.events.length)
-          for (const listener of listeners) listener(page.events);
+          for (const listener of listeners) {
+            try {
+              listener(page.events);
+            } catch {}
+          }
       } catch {
         await new Promise((resolve) => setTimeout(resolve, 1500));
       }

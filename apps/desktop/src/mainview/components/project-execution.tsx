@@ -1,18 +1,30 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
 import { Choice } from "./run-dialog";
 import { ExecutionFields } from "./execution-options";
 import { api, chooseFile } from "@/lib/api";
+import { subscribeEvents } from "@/lib/events";
 import { fail } from "./common";
 import type {
   Project,
   SecretMetadata,
   CacheEntry,
   ExecutionOptions,
+  ExecutionSnapshot,
 } from "../../shared/contracts";
 export function ProjectExecution({
   project,
@@ -21,6 +33,9 @@ export function ProjectExecution({
   project: Project;
   onSaved: (p: Project) => void;
 }) {
+  const [inherited, setInherited] = useState<ExecutionSnapshot | null>(null),
+    [remove, setRemove] = useState<SecretMetadata | null>(null);
+  const secretName = useRef<HTMLInputElement>(null);
   const [options, setOptions] = useState<ExecutionOptions>(
       project.defaults.execution || {},
     ),
@@ -38,15 +53,22 @@ export function ProjectExecution({
     } | null>(null),
     [overwrite, setOverwrite] = useState(false);
   async function load() {
-    const [s, c] = await Promise.all([
+    const [s, c, config] = await Promise.all([
       api("list_project_secrets", { projectId: project.id }),
       api("list_caches", { projectId: project.id }),
+      api("get_execution_config", { projectId: project.id }),
     ]);
     setSecrets(s);
     setCaches(c);
+    setInherited(config.inherited);
+    setError("");
   }
   useEffect(() => {
     void load().catch((e) => setError(fail(e)));
+    return subscribeEvents((events) => {
+      if (events.some((event) => event.kind === "settings"))
+        void load().catch((e) => setError(fail(e)));
+    });
   }, [project.id]);
   async function perform(action: () => Promise<unknown>) {
     setBusy(true);
@@ -65,14 +87,76 @@ export function ProjectExecution({
       <summary>Project settings</summary>
       <div className="field-stack pt-3">
         <h2>Execution preferences</h2>
-        <ExecutionFields
-          prefix={`project-${project.id}`}
-          value={options}
-          onChange={setOptions}
-        />
+        <p className="field-help">
+          Inherited global and .actrc preferences apply unless you change a
+          field here. Only project overrides are saved.
+        </p>
+        {!inherited && <p role="status">Loading inherited preferences…</p>}
+        {inherited && (
+          <>
+            <ExecutionFields
+              prefix={`project-${project.id}`}
+              value={{
+                ...inherited.options,
+                ...options,
+                runnerMappings: {
+                  ...inherited.options.runnerMappings,
+                  ...options.runnerMappings,
+                },
+              }}
+              onChange={(next) =>
+                setOptions((previous) => {
+                  const effective = {
+                      ...inherited.options,
+                      ...previous,
+                      runnerMappings: {
+                        ...inherited.options.runnerMappings,
+                        ...previous.runnerMappings,
+                      },
+                    },
+                    patch = { ...previous };
+                  for (const key of Object.keys(
+                    next,
+                  ) as (keyof ExecutionOptions)[])
+                    if (
+                      JSON.stringify(next[key]) !==
+                      JSON.stringify(effective[key])
+                    ) {
+                      if (key === "runnerMappings")
+                        patch.runnerMappings = {
+                          ...previous.runnerMappings,
+                          ...Object.fromEntries(
+                            Object.entries(next.runnerMappings || {}).filter(
+                              ([label, image]) =>
+                                image !== effective.runnerMappings[label],
+                            ),
+                          ),
+                        };
+                      else Object.assign(patch, { [key]: next[key] });
+                    }
+                  return patch;
+                })
+              }
+            />
+            <details>
+              <summary>Configuration provenance</summary>
+              <dl>
+                {Object.entries(inherited.provenance).map(([key, source]) => (
+                  <div key={key}>
+                    <dt>{key}</dt>
+                    <dd>{key in options ? "Project override" : source}</dd>
+                  </div>
+                ))}
+              </dl>
+            </details>
+            <Button variant="ghost" onClick={() => setOptions({})}>
+              Use inherited preferences
+            </Button>
+          </>
+        )}
         <Button
           variant="outline"
-          disabled={busy}
+          disabled={busy || !inherited}
           onClick={() =>
             void perform(async () => {
               onSaved(
@@ -107,18 +191,7 @@ export function ProjectExecution({
                 <Button
                   disabled={busy}
                   variant="ghost"
-                  onClick={() =>
-                    void perform(async () => {
-                      await api("delete_project_secret", {
-                        projectId: project.id,
-                        name: s.name,
-                      });
-                      setOptions((o) => ({
-                        ...o,
-                        secretNames: o.secretNames?.filter((n) => n !== s.name),
-                      }));
-                    })
-                  }
+                  onClick={() => setRemove(s)}
                 >
                   Delete {s.name}
                 </Button>
@@ -133,6 +206,7 @@ export function ProjectExecution({
               <Label htmlFor="secret-name">Secret name</Label>
               <Input
                 id="secret-name"
+                ref={secretName}
                 autoComplete="off"
                 value={name}
                 onChange={(e) => setName(e.target.value.toUpperCase())}
@@ -271,9 +345,9 @@ export function ProjectExecution({
           <summary>Cache storage</summary>
           <div className="field-stack pt-3">
             <p className="field-help">
-              Budgets: 5 GiB per project, 20 GiB overall. Inactive caches are
-              evicted oldest first. Unknown sizes cannot be counted toward those
-              budgets.
+              Global cache budgets apply (defaults: 5 GiB per project, 20 GiB
+              overall). Inactive caches are evicted oldest first. Unknown sizes
+              cannot be counted toward those budgets.
             </p>
             {caches.map((c) => (
               <div className="setting-row" key={c.id}>
@@ -323,6 +397,53 @@ export function ProjectExecution({
             {error}
           </p>
         )}
+        <AlertDialog
+          open={!!remove}
+          onOpenChange={(open) => {
+            if (!open) setRemove(null);
+          }}
+        >
+          <AlertDialogContent
+            onCloseAutoFocus={(event) => {
+              event.preventDefault();
+              secretName.current?.focus();
+            }}
+          >
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete {remove?.name}?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This removes the saved value and its project grant. The
+                application cannot recover it. Active runs already using the
+                secret continue with their private copy.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Keep secret</AlertDialogCancel>
+              <AlertDialogAction
+                disabled={busy}
+                onClick={() => {
+                  const selected = remove;
+                  if (selected)
+                    void perform(async () => {
+                      await api("delete_project_secret", {
+                        projectId: project.id,
+                        name: selected.name,
+                      });
+                      setOptions((previous) => ({
+                        ...previous,
+                        secretNames: previous.secretNames?.filter(
+                          (name) => name !== selected.name,
+                        ),
+                      }));
+                      setRemove(null);
+                    });
+                }}
+              >
+                Delete secret
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </details>
   );

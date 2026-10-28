@@ -28,6 +28,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import type {
   Project,
+  ExecutionOptions,
   Run,
   RunRequest,
   Workflow,
@@ -117,7 +118,8 @@ export function RunDialog({
   }, [p.id]);
   useEffect(() => {
     let alive = true;
-    setPreflight(null);
+    setChecking(true);
+    setError("");
     const timer = setTimeout(() => {
       setChecking(true);
       void api("preflight_run", { request })
@@ -138,6 +140,11 @@ export function RunDialog({
   }, [request]);
   const update = (key: keyof RunRequest, value: unknown) =>
     setRequest((r) => ({ ...r, [key]: value }));
+  const blockingIssues =
+    preflight?.issues.filter((issue) => issue.severity === "error") || [];
+  const waitingForDependencies =
+    blockingIssues.length > 0 &&
+    blockingIssues.every((issue) => issue.recoverable);
   async function submit() {
     setBusy(true);
     setError("");
@@ -316,13 +323,14 @@ export function RunDialog({
                   { value: "auto", label: "Automatic (host architecture)" },
                   {
                     value: "linux/amd64",
-                    label: "Linux AMD64 (emulated on Apple Silicon)",
+                    label: "Linux AMD64 · explicit architecture",
                   },
                 ]}
               />
               <p className="field-help">
-                File contents are never stored in Act Dock. Existing .actrc
-                settings still apply.
+                Automatic follows the Docker daemon. Choosing another
+                architecture may require emulation. File contents are never
+                stored in Act Dock. Existing .actrc settings still apply.
               </p>
             </CollapsibleContent>
           </Collapsible>
@@ -331,9 +339,52 @@ export function RunDialog({
             <div className="pt-3">
               <ExecutionFields
                 prefix="run"
-                value={request.execution || {}}
-                onChange={(execution) => update("execution", execution)}
+                value={{
+                  ...p.defaults.execution,
+                  ...preflight?.snapshot.options,
+                  ...request.execution,
+                  runnerMappings: {
+                    ...p.defaults.execution?.runnerMappings,
+                    ...preflight?.snapshot.options.runnerMappings,
+                    ...request.execution?.runnerMappings,
+                  },
+                }}
+                onChange={(execution) => {
+                  const previous = preflight?.snapshot.options || {},
+                    patch: ExecutionOptions = { ...request.execution };
+                  for (const key of Object.keys(
+                    execution,
+                  ) as (keyof ExecutionOptions)[])
+                    if (
+                      JSON.stringify(execution[key]) !==
+                      JSON.stringify(previous[key as keyof typeof previous])
+                    ) {
+                      if (key === "runnerMappings")
+                        patch.runnerMappings = {
+                          ...request.execution?.runnerMappings,
+                          ...Object.fromEntries(
+                            Object.entries(
+                              execution.runnerMappings || {},
+                            ).filter(
+                              ([label, value]) =>
+                                value !==
+                                (previous as ExecutionOptions).runnerMappings?.[
+                                  label
+                                ],
+                            ),
+                          ),
+                        };
+                      else Object.assign(patch, { [key]: execution[key] });
+                    }
+                  update("execution", patch);
+                }}
               />
+              <Button
+                variant="ghost"
+                onClick={() => update("execution", undefined)}
+              >
+                Use inherited preferences
+              </Button>
             </div>
           </details>
           <details>
@@ -448,6 +499,13 @@ export function RunDialog({
                       </dt>
                       <dd>
                         <code>{image.reference}</code>
+                        {!image.available && (
+                          <p>
+                            {image.downloadBytes
+                              ? `Download estimate: ${(image.downloadBytes / 1024 ** 3).toFixed(2)} GiB compressed. Storage required is larger.`
+                              : "Download and storage sizes are not available for this reference."}
+                          </p>
+                        )}
                       </dd>
                     </div>
                   ))}
@@ -457,8 +515,17 @@ export function RunDialog({
                     {issue.severity}: {issue.message}
                   </p>
                 ))}
+                {waitingForDependencies && (
+                  <p className="field-help">
+                    You can queue this run. It will wait until these
+                    dependencies are ready.
+                  </p>
+                )}
                 <details>
                   <summary>Configuration provenance</summary>
+                  <pre className="command-block">
+                    {JSON.stringify(preflight.snapshot.options, null, 2)}
+                  </pre>
                   <dl>
                     {Object.entries(preflight.snapshot.provenance).map(
                       ([key, source]) => (
@@ -512,9 +579,11 @@ export function RunDialog({
             <Play className="size-4" />
             {busy
               ? "Queueing…"
-              : preflight?.snapshot.images.some((i) => !i.available)
-                ? "Download and run"
-                : "Run workflow"}
+              : waitingForDependencies
+                ? "Queue workflow"
+                : preflight?.snapshot.images.some((i) => !i.available)
+                  ? "Download and run"
+                  : "Run workflow"}
           </Button>
         </DialogFooter>
       </DialogContent>
