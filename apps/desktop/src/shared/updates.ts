@@ -2,6 +2,16 @@
 export const RELEASE_REPOSITORY = "MohammedIbrahim8887/act-dock";
 export const MANIFEST_URL = `https://github.com/${RELEASE_REPOSITORY}/releases/latest/download/manifest.json`;
 const assetPrefix = `https://github.com/${RELEASE_REPOSITORY}/releases/download/`;
+/**
+ * Where to look for releases. ACT_DOCK_UPDATE_FEED lets end-to-end tests serve
+ * a manifest from this machine; only loopback addresses are accepted.
+ */
+export function updateFeed(env: Record<string, string | undefined>) {
+  const local = env.ACT_DOCK_UPDATE_FEED?.match(/^(http:\/\/127\.0\.0\.1:\d+)\/[\w./-]*manifest\.json$/);
+  return local
+    ? { manifest: local[0], assets: `${local[1]}/` }
+    : { manifest: MANIFEST_URL, assets: assetPrefix };
+}
 
 export type UpdatePreferences = {
   /** Download new versions in the background as soon as they are found. */
@@ -83,7 +93,10 @@ export function isNewerVersion(candidate: string, current: string) {
 }
 
 /** Reject manifests that could point downloads anywhere but this repository's releases. */
-export function parseManifest(raw: unknown): ReleaseManifest {
+export function parseManifest(
+  raw: unknown,
+  prefix = assetPrefix,
+): ReleaseManifest {
   const m = raw as Partial<ReleaseManifest> | null;
   if (!m || typeof m.version !== "string" || !semver.test(m.version))
     throw new Error("The release manifest has no valid version.");
@@ -93,7 +106,9 @@ export function parseManifest(raw: unknown): ReleaseManifest {
     (a): a is ReleaseAsset =>
       !!a &&
       typeof a.url === "string" &&
-      a.url.startsWith(`${assetPrefix}v${m.version}/`) &&
+      a.url.startsWith(
+        prefix === assetPrefix ? `${prefix}v${m.version}/` : prefix,
+      ) &&
       typeof a.sha256 === "string" &&
       /^[a-f0-9]{64}$/.test(a.sha256) &&
       typeof a.size === "number" &&

@@ -13,12 +13,12 @@ import {
 } from "node:fs";
 import { basename, dirname, join } from "node:path";
 import {
-  MANIFEST_URL,
   assetFor,
   defaultUpdatePreferences,
   detectInstall,
   isNewerVersion,
   parseManifest,
+  updateFeed,
   type InstallKind,
   type ReleaseAsset,
   type UpdatePreferences,
@@ -220,12 +220,13 @@ export class DesktopUpdater {
   private async runCheck() {
     this.set({ status: "checking", message: undefined });
     try {
-      const response = await this.deps.fetch(`${MANIFEST_URL}?t=${this.now()}`, {
+      const feed = updateFeed(this.deps.env);
+      const response = await this.deps.fetch(`${feed.manifest}?t=${this.now()}`, {
         signal: AbortSignal.timeout(20_000),
         headers: { Accept: "application/json" },
       });
       if (!response.ok) throw new Error(`The release server answered ${response.status}.`);
-      const manifest = parseManifest(await response.json());
+      const manifest = parseManifest(await response.json(), feed.assets);
       const checkedAt = new Date(this.now()).toISOString();
       if (!isNewerVersion(manifest.version, this.deps.version)) {
         this.set({ status: "idle", checkedAt, version: undefined });

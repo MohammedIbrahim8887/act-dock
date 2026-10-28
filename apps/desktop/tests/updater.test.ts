@@ -20,6 +20,7 @@ import {
   detectInstall,
   isNewerVersion,
   parseManifest,
+  updateFeed,
 } from "../src/shared/updates";
 
 const flush = () => new Promise((r) => setTimeout(r, 20));
@@ -42,6 +43,10 @@ test("versions compare numerically and manifests cannot point downloads elsewher
   });
   expect(manifest.assets.map((a) => a.kind)).toEqual(["macos-arm64"]);
   expect(() => parseManifest({ version: "latest", assets: [] })).toThrow();
+  // The test feed override only accepts loopback addresses.
+  expect(updateFeed({ ACT_DOCK_UPDATE_FEED: "http://127.0.0.1:8765/manifest.json" }).assets).toBe("http://127.0.0.1:8765/");
+  expect(updateFeed({ ACT_DOCK_UPDATE_FEED: "http://evil.example/manifest.json" }).manifest).toContain("github.com");
+  expect(updateFeed({ ACT_DOCK_UPDATE_FEED: "https://127.0.0.1.evil.example/manifest.json" }).manifest).toContain("github.com");
 });
 
 test("install kinds follow where the app runs from", () => {
