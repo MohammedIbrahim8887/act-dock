@@ -1,0 +1,379 @@
+diff --git a/pkg/runner/runner.go b/pkg/runner/runner.go
+index b72bbc6..e852adc 100644
+--- a/pkg/runner/runner.go
++++ b/pkg/runner/runner.go
+@@ -120,102 +120,88 @@ func (runner *runnerImpl) configure() (Runner, error) {
+ 
+ // NewPlanExecutor ...
+ func (runner *runnerImpl) NewPlanExecutor(plan *model.Plan) common.Executor {
+-	maxJobNameLen := 0
+-
+-	stagePipeline := make([]common.Executor, 0)
+-	log.Debugf("Plan Stages: %v", plan.Stages)
+-
+-	for i := range plan.Stages {
+-		stage := plan.Stages[i]
+-		stagePipeline = append(stagePipeline, func(ctx context.Context) error {
+-			pipeline := make([]common.Executor, 0)
+-			for _, run := range stage.Runs {
+-				log.Debugf("Stages Runs: %v", stage.Runs)
+-				stageExecutor := make([]common.Executor, 0)
+-				job := run.Job()
+-				log.Debugf("Job.Name: %v", job.Name)
+-				log.Debugf("Job.RawNeeds: %v", job.RawNeeds)
+-				log.Debugf("Job.RawRunsOn: %v", job.RawRunsOn)
+-				log.Debugf("Job.Env: %v", job.Env)
+-				log.Debugf("Job.If: %v", job.If)
+-				for step := range job.Steps {
+-					if nil != job.Steps[step] {
+-						log.Debugf("Job.Steps: %v", job.Steps[step].String())
+-					}
++	return newReadinessExecutor(plan, runner.config.GetConcurrentJobs(), func(run *model.Run) common.Executor {
++		return func(ctx context.Context) error {
++			maxJobNameLen := 0
++			stageExecutor := make([]common.Executor, 0)
++			job := run.Job()
++			log.Debugf("Job.Name: %v", job.Name)
++			log.Debugf("Job.RawNeeds: %v", job.RawNeeds)
++			log.Debugf("Job.RawRunsOn: %v", job.RawRunsOn)
++			log.Debugf("Job.Env: %v", job.Env)
++			log.Debugf("Job.If: %v", job.If)
++			for step := range job.Steps {
++				if nil != job.Steps[step] {
++					log.Debugf("Job.Steps: %v", job.Steps[step].String())
++				}
++			}
++			log.Debugf("Job.TimeoutMinutes: %v", job.TimeoutMinutes)
++			log.Debugf("Job.Services: %v", job.Services)
++			log.Debugf("Job.Strategy: %v", job.Strategy)
++			log.Debugf("Job.RawContainer: %v", job.RawContainer)
++			log.Debugf("Job.Defaults.Run.Shell: %v", job.Defaults.Run.Shell)
++			log.Debugf("Job.Defaults.Run.WorkingDirectory: %v", job.Defaults.Run.WorkingDirectory)
++			log.Debugf("Job.Outputs: %v", job.Outputs)
++			log.Debugf("Job.Uses: %v", job.Uses)
++			log.Debugf("Job.With: %v", job.With)
++			// log.Debugf("Job.RawSecrets: %v", job.RawSecrets)
++			log.Debugf("Job.Result: %v", job.Result)
++
++			if job.Strategy != nil {
++				log.Debugf("Job.Strategy.FailFast: %v", job.Strategy.FailFast)
++				log.Debugf("Job.Strategy.MaxParallel: %v", job.Strategy.MaxParallel)
++				log.Debugf("Job.Strategy.FailFastString: %v", job.Strategy.FailFastString)
++				log.Debugf("Job.Strategy.MaxParallelString: %v", job.Strategy.MaxParallelString)
++				log.Debugf("Job.Strategy.RawMatrix: %v", job.Strategy.RawMatrix)
++
++				strategyRc := runner.newRunContext(ctx, run, nil)
++				if err := strategyRc.NewExpressionEvaluator(ctx).EvaluateYamlNode(ctx, &job.Strategy.RawMatrix); err != nil {
++					log.Errorf("Error while evaluating matrix: %v", err)
+ 				}
+-				log.Debugf("Job.TimeoutMinutes: %v", job.TimeoutMinutes)
+-				log.Debugf("Job.Services: %v", job.Services)
+-				log.Debugf("Job.Strategy: %v", job.Strategy)
+-				log.Debugf("Job.RawContainer: %v", job.RawContainer)
+-				log.Debugf("Job.Defaults.Run.Shell: %v", job.Defaults.Run.Shell)
+-				log.Debugf("Job.Defaults.Run.WorkingDirectory: %v", job.Defaults.Run.WorkingDirectory)
+-				log.Debugf("Job.Outputs: %v", job.Outputs)
+-				log.Debugf("Job.Uses: %v", job.Uses)
+-				log.Debugf("Job.With: %v", job.With)
+-				// log.Debugf("Job.RawSecrets: %v", job.RawSecrets)
+-				log.Debugf("Job.Result: %v", job.Result)
++			}
+ 
+-				if job.Strategy != nil {
+-					log.Debugf("Job.Strategy.FailFast: %v", job.Strategy.FailFast)
+-					log.Debugf("Job.Strategy.MaxParallel: %v", job.Strategy.MaxParallel)
+-					log.Debugf("Job.Strategy.FailFastString: %v", job.Strategy.FailFastString)
+-					log.Debugf("Job.Strategy.MaxParallelString: %v", job.Strategy.MaxParallelString)
+-					log.Debugf("Job.Strategy.RawMatrix: %v", job.Strategy.RawMatrix)
++			var matrixes []map[string]interface{}
++			if m, err := job.GetMatrixes(); err != nil {
++				log.Errorf("Error while get job's matrix: %v", err)
++			} else {
++				log.Debugf("Job Matrices: %v", m)
++				log.Debugf("Runner Matrices: %v", runner.config.Matrix)
++				matrixes = selectMatrixes(m, runner.config.Matrix)
++			}
++			log.Debugf("Final matrix after applying user inclusions '%v'", matrixes)
+ 
+-					strategyRc := runner.newRunContext(ctx, run, nil)
+-					if err := strategyRc.NewExpressionEvaluator(ctx).EvaluateYamlNode(ctx, &job.Strategy.RawMatrix); err != nil {
+-						log.Errorf("Error while evaluating matrix: %v", err)
+-					}
+-				}
++			maxParallel := 4
++			if job.Strategy != nil {
++				maxParallel = job.Strategy.MaxParallel
++			}
+ 
+-				var matrixes []map[string]interface{}
+-				if m, err := job.GetMatrixes(); err != nil {
+-					log.Errorf("Error while get job's matrix: %v", err)
+-				} else {
+-					log.Debugf("Job Matrices: %v", m)
+-					log.Debugf("Runner Matrices: %v", runner.config.Matrix)
+-					matrixes = selectMatrixes(m, runner.config.Matrix)
+-				}
+-				log.Debugf("Final matrix after applying user inclusions '%v'", matrixes)
++			if len(matrixes) < maxParallel {
++				maxParallel = len(matrixes)
++			}
+ 
+-				maxParallel := 4
+-				if job.Strategy != nil {
+-					maxParallel = job.Strategy.MaxParallel
++			for i, matrix := range matrixes {
++				rc := runner.newRunContext(ctx, run, matrix)
++				rc.JobName = rc.Name
++				if len(matrixes) > 1 {
++					rc.Name = fmt.Sprintf("%s-%d", rc.Name, i+1)
+ 				}
+-
+-				if len(matrixes) < maxParallel {
+-					maxParallel = len(matrixes)
++				if len(rc.String()) > maxJobNameLen {
++					maxJobNameLen = len(rc.String())
+ 				}
++				stageExecutor = append(stageExecutor, func(ctx context.Context) error {
++					jobName := fmt.Sprintf("%-*s", maxJobNameLen, rc.String())
++					executor, err := rc.Executor()
+ 
+-				for i, matrix := range matrixes {
+-					rc := runner.newRunContext(ctx, run, matrix)
+-					rc.JobName = rc.Name
+-					if len(matrixes) > 1 {
+-						rc.Name = fmt.Sprintf("%s-%d", rc.Name, i+1)
++					if err != nil {
++						return err
+ 					}
+-					if len(rc.String()) > maxJobNameLen {
+-						maxJobNameLen = len(rc.String())
+-					}
+-					stageExecutor = append(stageExecutor, func(ctx context.Context) error {
+-						jobName := fmt.Sprintf("%-*s", maxJobNameLen, rc.String())
+-						executor, err := rc.Executor()
+-
+-						if err != nil {
+-							return err
+-						}
+ 
+-						return executor(common.WithJobErrorContainer(WithJobLogger(ctx, rc.Run.JobID, jobName, rc.Config, &rc.Masks, matrix)))
+-					})
+-				}
+-				pipeline = append(pipeline, common.NewParallelExecutor(maxParallel, stageExecutor...))
++					return executor(common.WithJobErrorContainer(WithJobLogger(ctx, rc.Run.JobID, jobName, rc.Config, &rc.Masks, matrix)))
++				})
+ 			}
+-
+-			log.Debugf("PlanExecutor concurrency: %d", runner.config.GetConcurrentJobs())
+-			return common.NewParallelExecutor(runner.config.GetConcurrentJobs(), pipeline...)(ctx)
+-		})
+-	}
+-
+-	return common.NewPipelineExecutor(stagePipeline...).Then(handleFailure(plan))
++			return common.NewParallelExecutor(maxParallel, stageExecutor...)(ctx)
++		}
++	}).Then(handleFailure(plan))
+ }
+ 
+ func handleFailure(plan *model.Plan) common.Executor {
+diff --git a/pkg/runner/readiness.go b/pkg/runner/readiness.go
+new file mode 100644
+index 0000000..acd8eab
+--- /dev/null
++++ b/pkg/runner/readiness.go
+@@ -0,0 +1,81 @@
++package runner
++
++import (
++	"context"
++	"fmt"
++	"github.com/nektos/act/pkg/common"
++	"github.com/nektos/act/pkg/model"
++)
++
++// newReadinessExecutor removes plan-wide stage barriers without splitting a
++// job's matrix or cleanup. Completion is published only after its executor
++// returns, establishing visibility of outputs before a dependent starts.
++func newReadinessExecutor(plan *model.Plan, parallel int, makeExecutor func(*model.Run) common.Executor) common.Executor {
++	return func(ctx context.Context) error {
++		type key struct {
++			workflow *model.Workflow
++			id       string
++		}
++		type result struct {
++			key key
++			err error
++		}
++		pending := make([]*model.Run, 0)
++		known := map[key]bool{}
++		for _, stage := range plan.Stages {
++			for _, run := range stage.Runs {
++				k := key{run.Workflow, run.JobID}
++				if !known[k] {
++					known[k] = true
++					pending = append(pending, run)
++				}
++			}
++		}
++		completed := map[key]bool{}
++		results := make(chan result, len(pending))
++		if parallel < 1 {
++			parallel = 1
++		}
++		active := 0
++		var firstErr error
++		for len(pending) > 0 || active > 0 {
++			for i := 0; i < len(pending) && active < parallel && firstErr == nil; {
++				run := pending[i]
++				ready := true
++				for _, need := range run.Job().Needs() {
++					k := key{run.Workflow, need}
++					if known[k] && !completed[k] {
++						ready = false
++						break
++					}
++				}
++				if !ready {
++					i++
++					continue
++				}
++				pending = append(pending[:i], pending[i+1:]...)
++				active++
++				go func(run *model.Run) { results <- result{key{run.Workflow, run.JobID}, makeExecutor(run)(ctx)} }(run)
++			}
++			if active == 0 {
++				if firstErr != nil {
++					return firstErr
++				}
++				if len(pending) > 0 {
++					return fmt.Errorf("workflow dependency graph contains unsatisfied jobs")
++				}
++				break
++			}
++			result := <-results
++			active--
++			completed[result.key] = true
++			if result.err != nil && firstErr == nil {
++				firstErr = result.err
++			}
++		}
++		if firstErr != nil {
++			return firstErr
++		}
++		return ctx.Err()
++	}
++}
+diff --git a/pkg/runner/readiness_test.go b/pkg/runner/readiness_test.go
+new file mode 100644
+index 0000000..27a2d79
+--- /dev/null
++++ b/pkg/runner/readiness_test.go
+@@ -0,0 +1,108 @@
++package runner
++
++import (
++	"context"
++	"errors"
++	"github.com/nektos/act/pkg/common"
++	"github.com/nektos/act/pkg/model"
++	"gopkg.in/yaml.v3"
++	"sync/atomic"
++	"testing"
++	"time"
++)
++
++func readinessFixture(t *testing.T) *model.Plan {
++	t.Helper()
++	var w model.Workflow
++	if err := yaml.Unmarshal([]byte(`name: asymmetric
++jobs:
++  fast: {runs-on: ubuntu-latest, steps: [{run: 'true'}]}
++  slow: {runs-on: ubuntu-latest, steps: [{run: 'true'}]}
++  child: {needs: fast, runs-on: ubuntu-latest, steps: [{run: 'true'}]}
++`), &w); err != nil {
++		t.Fatal(err)
++	}
++	return &model.Plan{Stages: []*model.Stage{{Runs: []*model.Run{{Workflow: &w, JobID: "fast"}, {Workflow: &w, JobID: "slow"}}}, {Runs: []*model.Run{{Workflow: &w, JobID: "child"}}}}}
++}
++func TestReadinessStartsEligibleChild(t *testing.T) {
++	plan := readinessFixture(t)
++	child := make(chan struct{})
++	slow := make(chan struct{})
++	finished := make(chan error, 1)
++	go func() {
++		finished <- newReadinessExecutor(plan, 2, func(run *model.Run) common.Executor {
++			return func(context.Context) error {
++				switch run.JobID {
++				case "slow":
++					<-slow
++				case "child":
++					close(child)
++				}
++				return nil
++			}
++		})(context.Background())
++	}()
++	select {
++	case <-child:
++	case <-time.After(time.Second):
++		close(slow)
++		t.Fatal("child waited for unrelated slow job")
++	}
++	close(slow)
++	if err := <-finished; err != nil {
++		t.Fatal(err)
++	}
++}
++func TestReadinessRespectsLimitAndOutputVisibility(t *testing.T) {
++	plan := readinessFixture(t)
++	var active, peak atomic.Int32
++	var output string
++	err := newReadinessExecutor(plan, 1, func(run *model.Run) common.Executor {
++		return func(context.Context) error {
++			n := active.Add(1)
++			if n > peak.Load() {
++				peak.Store(n)
++			}
++			defer active.Add(-1)
++			switch run.JobID {
++			case "fast":
++				output = "visible"
++			case "child":
++				if output != "visible" {
++					t.Error("dependency output unavailable")
++				}
++			}
++			return nil
++		}
++	})(context.Background())
++	if err != nil {
++		t.Fatal(err)
++	}
++	if peak.Load() != 1 {
++		t.Fatal("concurrency limit exceeded")
++	}
++}
++func TestReadinessWaitsForCleanupAfterError(t *testing.T) {
++	plan := readinessFixture(t)
++	cleaned := make(chan struct{})
++	err := newReadinessExecutor(plan, 2, func(run *model.Run) common.Executor {
++		return func(context.Context) error {
++			if run.JobID == "fast" {
++				return errors.New("fatal")
++			}
++			if run.JobID == "slow" {
++				time.Sleep(time.Millisecond)
++				close(cleaned)
++			}
++			return nil
++		}
++	})(context.Background())
++	if err == nil {
++		t.Fatal("lost error")
++	}
++	select {
++	case <-cleaned:
++	default:
++		t.Fatal("returned before cleanup")
++	}
++}

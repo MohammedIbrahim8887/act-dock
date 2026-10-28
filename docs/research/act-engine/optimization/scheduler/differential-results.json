@@ -1,0 +1,667 @@
+{
+  "host": "macOS ARM64; Linux AMD64 Docker emulation",
+  "source": "4f411281417e88660bea1c1a1749aa71ae0bd60f",
+  "image": "catthehacker/ubuntu@sha256:4f2d5083a9d10d018c1c511eb8665cd480553c11975e78fd903a46daa830768b",
+  "samples": [
+    {
+      "case": "asymmetric",
+      "repeat": 0,
+      "variant": "official",
+      "seconds": 8.866345166999963,
+      "exit": 0,
+      "markers": [
+        "fixture:child",
+        "fixture:slow"
+      ],
+      "statuses": [
+        [
+          "child",
+          "\ud83c\udfc1  Job succeeded"
+        ],
+        [
+          "fast",
+          "\ud83c\udfc1  Job succeeded"
+        ],
+        [
+          "slow",
+          "\ud83c\udfc1  Job succeeded"
+        ]
+      ],
+      "containersRemain": false
+    },
+    {
+      "case": "asymmetric",
+      "repeat": 0,
+      "variant": "readiness",
+      "seconds": 4.913744208000935,
+      "exit": 0,
+      "markers": [
+        "fixture:child",
+        "fixture:slow"
+      ],
+      "statuses": [
+        [
+          "child",
+          "\ud83c\udfc1  Job succeeded"
+        ],
+        [
+          "fast",
+          "\ud83c\udfc1  Job succeeded"
+        ],
+        [
+          "slow",
+          "\ud83c\udfc1  Job succeeded"
+        ]
+      ],
+      "containersRemain": false
+    },
+    {
+      "case": "asymmetric",
+      "repeat": 1,
+      "variant": "readiness",
+      "seconds": 4.222269750000123,
+      "exit": 0,
+      "markers": [
+        "fixture:child",
+        "fixture:slow"
+      ],
+      "statuses": [
+        [
+          "child",
+          "\ud83c\udfc1  Job succeeded"
+        ],
+        [
+          "fast",
+          "\ud83c\udfc1  Job succeeded"
+        ],
+        [
+          "slow",
+          "\ud83c\udfc1  Job succeeded"
+        ]
+      ],
+      "containersRemain": false
+    },
+    {
+      "case": "asymmetric",
+      "repeat": 1,
+      "variant": "official",
+      "seconds": 5.922021042000779,
+      "exit": 0,
+      "markers": [
+        "fixture:child",
+        "fixture:slow"
+      ],
+      "statuses": [
+        [
+          "child",
+          "\ud83c\udfc1  Job succeeded"
+        ],
+        [
+          "fast",
+          "\ud83c\udfc1  Job succeeded"
+        ],
+        [
+          "slow",
+          "\ud83c\udfc1  Job succeeded"
+        ]
+      ],
+      "containersRemain": false
+    },
+    {
+      "case": "asymmetric",
+      "repeat": 2,
+      "variant": "official",
+      "seconds": 6.814394249999168,
+      "exit": 0,
+      "markers": [
+        "fixture:child",
+        "fixture:slow"
+      ],
+      "statuses": [
+        [
+          "child",
+          "\ud83c\udfc1  Job succeeded"
+        ],
+        [
+          "fast",
+          "\ud83c\udfc1  Job succeeded"
+        ],
+        [
+          "slow",
+          "\ud83c\udfc1  Job succeeded"
+        ]
+      ],
+      "containersRemain": false
+    },
+    {
+      "case": "asymmetric",
+      "repeat": 2,
+      "variant": "readiness",
+      "seconds": 5.109170375000758,
+      "exit": 0,
+      "markers": [
+        "fixture:child",
+        "fixture:slow"
+      ],
+      "statuses": [
+        [
+          "child",
+          "\ud83c\udfc1  Job succeeded"
+        ],
+        [
+          "fast",
+          "\ud83c\udfc1  Job succeeded"
+        ],
+        [
+          "slow",
+          "\ud83c\udfc1  Job succeeded"
+        ]
+      ],
+      "containersRemain": false
+    },
+    {
+      "case": "linear",
+      "repeat": 0,
+      "variant": "official",
+      "seconds": 2.815020000000004,
+      "exit": 0,
+      "markers": [
+        "fixture:a",
+        "fixture:b",
+        "fixture:c"
+      ],
+      "statuses": [
+        [
+          "a",
+          "\ud83c\udfc1  Job succeeded"
+        ],
+        [
+          "b",
+          "\ud83c\udfc1  Job succeeded"
+        ],
+        [
+          "c",
+          "\ud83c\udfc1  Job succeeded"
+        ]
+      ],
+      "containersRemain": false
+    },
+    {
+      "case": "linear",
+      "repeat": 0,
+      "variant": "readiness",
+      "seconds": 2.798314540999854,
+      "exit": 0,
+      "markers": [
+        "fixture:a",
+        "fixture:b",
+        "fixture:c"
+      ],
+      "statuses": [
+        [
+          "a",
+          "\ud83c\udfc1  Job succeeded"
+        ],
+        [
+          "b",
+          "\ud83c\udfc1  Job succeeded"
+        ],
+        [
+          "c",
+          "\ud83c\udfc1  Job succeeded"
+        ]
+      ],
+      "containersRemain": false
+    },
+    {
+      "case": "linear",
+      "repeat": 1,
+      "variant": "readiness",
+      "seconds": 2.8623621250008,
+      "exit": 0,
+      "markers": [
+        "fixture:a",
+        "fixture:b",
+        "fixture:c"
+      ],
+      "statuses": [
+        [
+          "a",
+          "\ud83c\udfc1  Job succeeded"
+        ],
+        [
+          "b",
+          "\ud83c\udfc1  Job succeeded"
+        ],
+        [
+          "c",
+          "\ud83c\udfc1  Job succeeded"
+        ]
+      ],
+      "containersRemain": false
+    },
+    {
+      "case": "linear",
+      "repeat": 1,
+      "variant": "official",
+      "seconds": 3.2454452919992036,
+      "exit": 0,
+      "markers": [
+        "fixture:a",
+        "fixture:b",
+        "fixture:c"
+      ],
+      "statuses": [
+        [
+          "a",
+          "\ud83c\udfc1  Job succeeded"
+        ],
+        [
+          "b",
+          "\ud83c\udfc1  Job succeeded"
+        ],
+        [
+          "c",
+          "\ud83c\udfc1  Job succeeded"
+        ]
+      ],
+      "containersRemain": false
+    },
+    {
+      "case": "linear",
+      "repeat": 2,
+      "variant": "official",
+      "seconds": 2.689329832999647,
+      "exit": 0,
+      "markers": [
+        "fixture:a",
+        "fixture:b",
+        "fixture:c"
+      ],
+      "statuses": [
+        [
+          "a",
+          "\ud83c\udfc1  Job succeeded"
+        ],
+        [
+          "b",
+          "\ud83c\udfc1  Job succeeded"
+        ],
+        [
+          "c",
+          "\ud83c\udfc1  Job succeeded"
+        ]
+      ],
+      "containersRemain": false
+    },
+    {
+      "case": "linear",
+      "repeat": 2,
+      "variant": "readiness",
+      "seconds": 2.6225624999988213,
+      "exit": 0,
+      "markers": [
+        "fixture:a",
+        "fixture:b",
+        "fixture:c"
+      ],
+      "statuses": [
+        [
+          "a",
+          "\ud83c\udfc1  Job succeeded"
+        ],
+        [
+          "b",
+          "\ud83c\udfc1  Job succeeded"
+        ],
+        [
+          "c",
+          "\ud83c\udfc1  Job succeeded"
+        ]
+      ],
+      "containersRemain": false
+    },
+    {
+      "case": "parallel",
+      "repeat": 0,
+      "variant": "official",
+      "seconds": 1.775545583001076,
+      "exit": 0,
+      "markers": [
+        "fixture:a",
+        "fixture:b"
+      ],
+      "statuses": [
+        [
+          "a",
+          "\ud83c\udfc1  Job succeeded"
+        ],
+        [
+          "b",
+          "\ud83c\udfc1  Job succeeded"
+        ]
+      ],
+      "containersRemain": false
+    },
+    {
+      "case": "parallel",
+      "repeat": 0,
+      "variant": "readiness",
+      "seconds": 1.586439832999531,
+      "exit": 0,
+      "markers": [
+        "fixture:a",
+        "fixture:b"
+      ],
+      "statuses": [
+        [
+          "a",
+          "\ud83c\udfc1  Job succeeded"
+        ],
+        [
+          "b",
+          "\ud83c\udfc1  Job succeeded"
+        ]
+      ],
+      "containersRemain": false
+    },
+    {
+      "case": "parallel",
+      "repeat": 1,
+      "variant": "readiness",
+      "seconds": 1.1822412500005157,
+      "exit": 0,
+      "markers": [
+        "fixture:a",
+        "fixture:b"
+      ],
+      "statuses": [
+        [
+          "a",
+          "\ud83c\udfc1  Job succeeded"
+        ],
+        [
+          "b",
+          "\ud83c\udfc1  Job succeeded"
+        ]
+      ],
+      "containersRemain": false
+    },
+    {
+      "case": "parallel",
+      "repeat": 1,
+      "variant": "official",
+      "seconds": 1.1596890420005366,
+      "exit": 0,
+      "markers": [
+        "fixture:a",
+        "fixture:b"
+      ],
+      "statuses": [
+        [
+          "a",
+          "\ud83c\udfc1  Job succeeded"
+        ],
+        [
+          "b",
+          "\ud83c\udfc1  Job succeeded"
+        ]
+      ],
+      "containersRemain": false
+    },
+    {
+      "case": "parallel",
+      "repeat": 2,
+      "variant": "official",
+      "seconds": 1.2474909580014355,
+      "exit": 0,
+      "markers": [
+        "fixture:a",
+        "fixture:b"
+      ],
+      "statuses": [
+        [
+          "a",
+          "\ud83c\udfc1  Job succeeded"
+        ],
+        [
+          "b",
+          "\ud83c\udfc1  Job succeeded"
+        ]
+      ],
+      "containersRemain": false
+    },
+    {
+      "case": "parallel",
+      "repeat": 2,
+      "variant": "readiness",
+      "seconds": 1.0535938750017522,
+      "exit": 0,
+      "markers": [
+        "fixture:a",
+        "fixture:b"
+      ],
+      "statuses": [
+        [
+          "a",
+          "\ud83c\udfc1  Job succeeded"
+        ],
+        [
+          "b",
+          "\ud83c\udfc1  Job succeeded"
+        ]
+      ],
+      "containersRemain": false
+    },
+    {
+      "case": "failure",
+      "repeat": 0,
+      "variant": "official",
+      "seconds": 1.848186875000465,
+      "exit": 1,
+      "markers": [
+        "fixture:always"
+      ],
+      "statuses": [
+        [
+          "always",
+          "\ud83c\udfc1  Job succeeded"
+        ],
+        [
+          "bad",
+          "\ud83c\udfc1  Job failed"
+        ]
+      ],
+      "containersRemain": false
+    },
+    {
+      "case": "failure",
+      "repeat": 0,
+      "variant": "readiness",
+      "seconds": 2.1189216669990856,
+      "exit": 1,
+      "markers": [
+        "fixture:always"
+      ],
+      "statuses": [
+        [
+          "always",
+          "\ud83c\udfc1  Job succeeded"
+        ],
+        [
+          "bad",
+          "\ud83c\udfc1  Job failed"
+        ]
+      ],
+      "containersRemain": false
+    },
+    {
+      "case": "skip",
+      "repeat": 0,
+      "variant": "official",
+      "seconds": 1.298664165999071,
+      "exit": 0,
+      "markers": [
+        "fixture:always"
+      ],
+      "statuses": [
+        [
+          "always",
+          "\ud83c\udfc1  Job succeeded"
+        ]
+      ],
+      "containersRemain": false
+    },
+    {
+      "case": "skip",
+      "repeat": 0,
+      "variant": "readiness",
+      "seconds": 1.071658542001387,
+      "exit": 0,
+      "markers": [
+        "fixture:always"
+      ],
+      "statuses": [
+        [
+          "always",
+          "\ud83c\udfc1  Job succeeded"
+        ]
+      ],
+      "containersRemain": false
+    },
+    {
+      "case": "matrix",
+      "repeat": 0,
+      "variant": "official",
+      "seconds": 1.972434458000862,
+      "exit": 0,
+      "markers": [
+        "fixture:matrix",
+        "fixture:matrix",
+        "fixture:matrix-child"
+      ],
+      "statuses": [
+        [
+          "child",
+          "\ud83c\udfc1  Job succeeded"
+        ],
+        [
+          "matrix",
+          "\ud83c\udfc1  Job succeeded"
+        ],
+        [
+          "matrix",
+          "\ud83c\udfc1  Job succeeded"
+        ]
+      ],
+      "containersRemain": false
+    },
+    {
+      "case": "matrix",
+      "repeat": 0,
+      "variant": "readiness",
+      "seconds": 2.297768582999197,
+      "exit": 0,
+      "markers": [
+        "fixture:matrix",
+        "fixture:matrix",
+        "fixture:matrix-child"
+      ],
+      "statuses": [
+        [
+          "child",
+          "\ud83c\udfc1  Job succeeded"
+        ],
+        [
+          "matrix",
+          "\ud83c\udfc1  Job succeeded"
+        ],
+        [
+          "matrix",
+          "\ud83c\udfc1  Job succeeded"
+        ]
+      ],
+      "containersRemain": false
+    },
+    {
+      "case": "reusable",
+      "repeat": 0,
+      "variant": "official",
+      "seconds": 2.2193690829990373,
+      "exit": 0,
+      "markers": [
+        "fixture:reusable",
+        "fixture:root"
+      ],
+      "statuses": [
+        [
+          "nested",
+          "\ud83c\udfc1  Job succeeded"
+        ],
+        [
+          "root",
+          "\ud83c\udfc1  Job succeeded"
+        ]
+      ],
+      "containersRemain": false
+    },
+    {
+      "case": "reusable",
+      "repeat": 0,
+      "variant": "readiness",
+      "seconds": 1.9409124170015275,
+      "exit": 0,
+      "markers": [
+        "fixture:reusable",
+        "fixture:root"
+      ],
+      "statuses": [
+        [
+          "nested",
+          "\ud83c\udfc1  Job succeeded"
+        ],
+        [
+          "root",
+          "\ud83c\udfc1  Job succeeded"
+        ]
+      ],
+      "containersRemain": false
+    },
+    {
+      "case": "post",
+      "repeat": 0,
+      "variant": "official",
+      "seconds": 1.8106573750010284,
+      "exit": 0,
+      "markers": [
+        "fixture:main",
+        "fixture:post"
+      ],
+      "statuses": [
+        [
+          "post",
+          "\ud83c\udfc1  Job succeeded"
+        ]
+      ],
+      "containersRemain": false
+    },
+    {
+      "case": "post",
+      "repeat": 0,
+      "variant": "readiness",
+      "seconds": 1.738674666999941,
+      "exit": 0,
+      "markers": [
+        "fixture:main",
+        "fixture:post"
+      ],
+      "statuses": [
+        [
+          "post",
+          "\ud83c\udfc1  Job succeeded"
+        ]
+      ],
+      "containersRemain": false
+    }
+  ]
+}

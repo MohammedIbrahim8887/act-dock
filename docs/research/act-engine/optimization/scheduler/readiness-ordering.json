@@ -1,0 +1,44 @@
+[
+  {
+    "repeat": 0,
+    "variant": "official",
+    "childStart": "2026-10-28T13:43:45+03:00",
+    "slowCompleted": "2026-10-28T13:43:43+03:00",
+    "childStartedBeforeSlowCompleted": false
+  },
+  {
+    "repeat": 0,
+    "variant": "readiness",
+    "childStart": "2026-10-28T13:43:51+03:00",
+    "slowCompleted": "2026-10-28T13:43:52+03:00",
+    "childStartedBeforeSlowCompleted": true
+  },
+  {
+    "repeat": 1,
+    "variant": "official",
+    "childStart": "2026-10-28T13:44:01+03:00",
+    "slowCompleted": "2026-10-28T13:44:01+03:00",
+    "childStartedBeforeSlowCompleted": false
+  },
+  {
+    "repeat": 1,
+    "variant": "readiness",
+    "childStart": "2026-10-28T13:43:55+03:00",
+    "slowCompleted": "2026-10-28T13:43:56+03:00",
+    "childStartedBeforeSlowCompleted": true
+  },
+  {
+    "repeat": 2,
+    "variant": "official",
+    "childStart": "2026-10-28T13:44:08+03:00",
+    "slowCompleted": "2026-10-28T13:44:07+03:00",
+    "childStartedBeforeSlowCompleted": false
+  },
+  {
+    "repeat": 2,
+    "variant": "readiness",
+    "childStart": "2026-10-28T13:44:13+03:00",
+    "slowCompleted": "2026-10-28T13:44:14+03:00",
+    "childStartedBeforeSlowCompleted": true
+  }
+]
