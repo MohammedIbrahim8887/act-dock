@@ -1,11 +1,16 @@
 import { useEffect, useState } from "react";
 import {
+  Boxes,
   Cable,
   Copy,
   Check,
   CircleCheck,
   CircleX,
+  Gauge,
+  HardDrive,
+  Power,
   RefreshCw,
+  SlidersHorizontal,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -24,20 +29,46 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
-import type { Settings, Health } from "../../shared/contracts";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  defaultExecution,
+  type ExecutionOptions,
+  type Settings,
+  type Health,
+} from "../../shared/contracts";
 import { api, chooseFile, isDesktop } from "@/lib/api";
-import { ExecutionFields } from "./execution-options";
-import { Choice } from "./run-dialog";
+import {
+  CachePolicyPanel,
+  OptionCards,
+  RunBehaviorPanel,
+  RunnerImagesPanel,
+  SettingBlock,
+  invalidMappings,
+  type Layers,
+} from "./execution-editor";
 import { fail } from "./common";
+export type SettingsTab = "general" | "images" | "behavior" | "caches";
+const settingsTabFields: Record<SettingsTab, (keyof ExecutionOptions)[]> = {
+  general: [],
+  images: ["runnerMappings", "imagePullPolicy"],
+  behavior: ["workspaceMode", "concurrentJobs", "reservation"],
+  caches: ["actionCachePolicy", "packageCaches"],
+};
+const same = (a: unknown, b: unknown) =>
+  JSON.stringify(a) === JSON.stringify(b);
 export function SettingsView({
   settings,
   health,
+  tab,
+  onTab,
   onSaved,
   onHealth,
   onStopped,
 }: {
   settings: Settings;
   health: Health | null;
+  tab: SettingsTab;
+  onTab: (t: SettingsTab) => void;
   onSaved: (s: Settings) => void;
   onHealth: () => void;
   onStopped: () => void;
@@ -57,206 +88,267 @@ export function SettingsView({
       setBusy(false);
     }
   }
+  const execution = draft.executionDefaults || {};
+  const layers: Layers = {
+    base: defaultExecution,
+    overrides: execution,
+    sourceOf: () => "Built-in default",
+    scope: "global",
+    onChange: (executionDefaults) => setDraft({ ...draft, executionDefaults }),
+  };
+  const dirty = !same(draft, settings),
+    invalid = invalidMappings(execution);
+  const generalDirty = !same(
+    { ...draft, executionDefaults: undefined, cacheBudgets: undefined, concurrency: undefined },
+    { ...settings, executionDefaults: undefined, cacheBudgets: undefined, concurrency: undefined },
+  );
+  const changed = (t: SettingsTab) =>
+    t === "general"
+      ? generalDirty
+      : settingsTabFields[t].some(
+          (k) => !same(execution[k], settings.executionDefaults?.[k]),
+        ) ||
+        (t === "caches" && !same(draft.cacheBudgets, settings.cacheBudgets)) ||
+        (t === "behavior" && !same(draft.concurrency, settings.concurrency));
+  const budgets = { projectGiB: 5, totalGiB: 20, ...draft.cacheBudgets };
+  const tabs: [SettingsTab, string, typeof Boxes][] = [
+    ["general", "General", SlidersHorizontal],
+    ["images", "Runner images", Boxes],
+    ["behavior", "Run behavior", Gauge],
+    ["caches", "Caches", HardDrive],
+  ];
   return (
-    <div className="page-content">
-      <header className="page-heading">
+    <div className="page-content settings-page">
+      <header className="settings-heading">
         <h1>Settings</h1>
-        <p>Make Act Dock fit your local workflow.</p>
+        <p>Defaults for every project. Each project can change them in its own settings.</p>
       </header>
-      <section className="settings-section">
-        <h2>Appearance</h2>
-        <Choice
-          id="theme"
-          label="Theme"
-          value={draft.theme}
-          onChange={(v) =>
-            setDraft({ ...draft, theme: v as Settings["theme"] })
-          }
-          options={[
-            { value: "system", label: "Follow system" },
-            { value: "light", label: "Light" },
-            { value: "dark", label: "Dark" },
-          ]}
-        />
-      </section>
-      <Separator />
-      <section className="settings-section">
-        <h2>Execution defaults</h2>
-        <div className="form-grid">
-          {(["projectGiB", "totalGiB"] as const).map((key) => (
-            <div className="field" key={key}>
-              <Label htmlFor={`cache-budget-${key}`}>
-                {key === "projectGiB"
-                  ? "Project cache budget (GiB)"
-                  : "Total cache budget (GiB)"}
-              </Label>
-              <Input
-                id={`cache-budget-${key}`}
-                type="number"
-                min="0.25"
-                step="0.25"
-                value={
-                  draft.cacheBudgets?.[key] ?? (key === "projectGiB" ? 5 : 20)
-                }
-                onChange={(e) =>
-                  setDraft({
-                    ...draft,
-                    cacheBudgets: {
-                      projectGiB: 5,
-                      totalGiB: 20,
-                      ...draft.cacheBudgets,
-                      [key]: Number(e.target.value),
-                    },
-                  })
-                }
-              />
-            </div>
+      <Tabs value={tab} onValueChange={(v) => onTab(v as SettingsTab)}>
+        <TabsList variant="line" className="settings-tabs">
+          {tabs.map(([value, label, Icon]) => (
+            <TabsTrigger key={value} value={value}>
+              <Icon className="size-3.5" />
+              {label}
+              {changed(value) && (
+                <span className="tab-dot" aria-label="Unsaved changes" />
+              )}
+            </TabsTrigger>
           ))}
-        </div>
-        <p className="field-help">
-          Only measured, inactive caches count toward automatic eviction.
-          Unknown sizes are shown in project settings.
-        </p>
-        <ExecutionFields
-          value={draft.executionDefaults || {}}
-          onChange={(executionDefaults) =>
-            setDraft({ ...draft, executionDefaults })
-          }
-        />
-        <div className="setting-row">
-          <div>
-            <Label htmlFor="workflow-concurrency">
-              Run independent workflows concurrently
-            </Label>
-            <p>
-              Conflicting workspaces, containers and writable caches still
-              queue.
-            </p>
-          </div>
-          <Switch
-            id="workflow-concurrency"
-            checked={draft.concurrency?.enabled || false}
-            onCheckedChange={(enabled) =>
-              setDraft({
-                ...draft,
-                concurrency: {
-                  enabled,
-                  maxWorkflows: draft.concurrency?.maxWorkflows || 2,
-                },
-              })
-            }
-          />
-        </div>
-        {draft.concurrency?.enabled && (
-          <div className="field">
-            <Label htmlFor="max-workflows">Maximum active workflows</Label>
-            <Input
-              id="max-workflows"
-              type="number"
-              min="1"
-              max="8"
-              value={draft.concurrency.maxWorkflows}
-              onChange={(e) =>
-                setDraft({
-                  ...draft,
-                  concurrency: {
-                    enabled: true,
-                    maxWorkflows: Number(e.target.value),
-                  },
-                })
+        </TabsList>
+        <TabsContent value="general">
+          <div className="tab-stack">
+            <SettingBlock title="Appearance">
+              <OptionCards
+                name="theme"
+                label="Theme"
+                value={draft.theme}
+                onChange={(theme) => setDraft({ ...draft, theme })}
+                options={[
+                  { value: "system", title: "Follow system", description: "Match your computer’s light or dark mode." },
+                  { value: "light", title: "Light", description: "Always use the light theme." },
+                  { value: "dark", title: "Dark", description: "Always use the dark theme." },
+                ]}
+              />
+            </SettingBlock>
+            <SettingBlock
+              title="Background runner"
+              description="Opening Act Dock or calling its CLI or MCP tools starts the runner on demand. Closing the app leaves pipelines running."
+            >
+              <ul className="toggle-list">
+                <li>
+                  <div>
+                    <Label htmlFor="login">Start at login</Label>
+                    <p>Keep the runner available after you sign in to your computer.</p>
+                  </div>
+                  <Switch
+                    id="login"
+                    checked={draft.startAtLogin}
+                    onCheckedChange={(v) => setDraft({ ...draft, startAtLogin: v })}
+                  />
+                </li>
+                <li>
+                  <div>
+                    <Label>Stop the runner</Label>
+                    <p>Cancels queued and active runs. It starts again when needed.</p>
+                  </div>
+                  <Button variant="outline" size="sm" onClick={() => setStop(true)}>
+                    <Power className="size-3.5" />
+                    Stop runner
+                  </Button>
+                </li>
+              </ul>
+            </SettingBlock>
+            <SettingBlock
+              title="Dependencies"
+              description="Leave these empty to use the bundled Act engine and detect Docker automatically."
+              aside={
+                <Button size="sm" variant="ghost" onClick={onHealth}>
+                  <RefreshCw className="size-3.5" />
+                  Check again
+                </Button>
               }
-            />
-            <p className="field-help">
-              Admission also respects 75% of Docker CPU and memory capacity.
-            </p>
+            >
+              <div className="dependency-list">
+                {(["act", "docker"] as const).map((name) => {
+                  const key = name === "act" ? "actPath" : "dockerPath";
+                  return (
+                    <div className="field" key={name}>
+                      <Label htmlFor={name}>
+                        {name === "act" ? "Act engine" : "Docker executable"}
+                      </Label>
+                      <div className="file-field">
+                        <Input
+                          id={name}
+                          className="mono"
+                          placeholder={
+                            name === "act"
+                              ? "Bundled Act engine"
+                              : "Detect automatically"
+                          }
+                          value={draft[key]}
+                          onChange={(e) =>
+                            setDraft({ ...draft, [key]: e.target.value })
+                          }
+                        />
+                        {isDesktop() && (
+                          <Button
+                            variant="outline"
+                            onClick={async () => {
+                              const path = await chooseFile();
+                              if (path) setDraft({ ...draft, [key]: path });
+                            }}
+                          >
+                            Browse…
+                          </Button>
+                        )}
+                      </div>
+                      <p
+                        className="dependency-status"
+                        data-ok={health?.[name].ok ? "" : undefined}
+                      >
+                        {health?.[name].ok ? (
+                          <CircleCheck className="size-3.5" />
+                        ) : (
+                          <CircleX className="size-3.5" />
+                        )}
+                        {health?.[name].message || "Checking…"}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            </SettingBlock>
           </div>
-        )}
-      </section>
-      <Separator />
-      <section className="settings-section">
-        <h2>Background runner</h2>
-        <div className="setting-row">
-          <div>
-            <Label htmlFor="login">Start at login</Label>
-            <p>Keep the runner available after you sign in to your computer.</p>
-          </div>
-          <Switch
-            id="login"
-            checked={draft.startAtLogin}
-            onCheckedChange={(v) => setDraft({ ...draft, startAtLogin: v })}
-          />
-        </div>
-        <p className="field-help">
-          By default, opening Act Dock or calling its CLI/MCP tools starts the
-          runner on demand. Closing the app leaves pipelines running.
-        </p>
-      </section>
-      <Separator />
-      <section className="settings-section">
-        <div className="section-title">
-          <h2>Dependencies</h2>
-          <Button size="sm" variant="ghost" onClick={onHealth}>
-            <RefreshCw className="size-3.5" />
-            Check again
+        </TabsContent>
+        <TabsContent value="images">
+          <RunnerImagesPanel layers={layers} />
+        </TabsContent>
+        <TabsContent value="behavior">
+          <RunBehaviorPanel layers={layers}>
+            <SettingBlock
+              title="Workflows at the same time"
+              description="Run independent workflows side by side. Runs that share a workspace, container names or a writable cache still wait their turn."
+            >
+              <div className="inline-control">
+                <Switch
+                  id="workflow-concurrency"
+                  checked={draft.concurrency?.enabled || false}
+                  onCheckedChange={(enabled) =>
+                    setDraft({
+                      ...draft,
+                      concurrency: {
+                        enabled,
+                        maxWorkflows: draft.concurrency?.maxWorkflows || 2,
+                      },
+                    })
+                  }
+                />
+                <Label htmlFor="workflow-concurrency">
+                  Run independent workflows concurrently
+                </Label>
+                {draft.concurrency?.enabled && (
+                  <div className="stepper">
+                    <Input
+                      type="number"
+                      min={1}
+                      max={8}
+                      aria-label="Maximum active workflows"
+                      value={draft.concurrency.maxWorkflows}
+                      onChange={(e) => {
+                        const n = Math.round(Number(e.target.value));
+                        if (n >= 1 && n <= 8)
+                          setDraft({
+                            ...draft,
+                            concurrency: { enabled: true, maxWorkflows: n },
+                          });
+                      }}
+                    />
+                    <span>at most</span>
+                  </div>
+                )}
+              </div>
+              <p className="block-note">
+                Admission also stays within 75% of Docker’s CPU and memory.
+              </p>
+            </SettingBlock>
+          </RunBehaviorPanel>
+        </TabsContent>
+        <TabsContent value="caches">
+          <CachePolicyPanel layers={layers}>
+            <SettingBlock
+              title="Storage budgets"
+              description="When a budget is exceeded, idle caches are removed oldest first. Caches whose size isn’t measured yet don’t count."
+            >
+              <div className="reservation-grid">
+                {(["projectGiB", "totalGiB"] as const).map((key) => (
+                  <div className="field" key={key}>
+                    <Label htmlFor={`cache-budget-${key}`}>
+                      {key === "projectGiB" ? "Per project" : "All projects"}
+                    </Label>
+                    <div className="stepper">
+                      <Input
+                        id={`cache-budget-${key}`}
+                        type="number"
+                        min={0.25}
+                        step={0.25}
+                        value={budgets[key]}
+                        onChange={(e) => {
+                          const n = Number(e.target.value);
+                          if (n > 0)
+                            setDraft({
+                              ...draft,
+                              cacheBudgets: { ...budgets, [key]: n },
+                            });
+                        }}
+                      />
+                      <span>GiB</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </SettingBlock>
+          </CachePolicyPanel>
+        </TabsContent>
+      </Tabs>
+      {dirty && (
+        <div className="save-bar" role="region" aria-label="Unsaved changes">
+          <span>
+            {invalid.length
+              ? `Fix the image for ${invalid.join(", ")} to save.`
+              : "You have unsaved changes."}
+          </span>
+          <Button variant="ghost" size="sm" onClick={() => setDraft(settings)}>
+            Discard
+          </Button>
+          <Button
+            size="sm"
+            disabled={busy || invalid.length > 0}
+            onClick={() => void save()}
+          >
+            {busy ? "Saving…" : "Save changes"}
           </Button>
         </div>
-        {(["act", "docker"] as const).map((name) => (
-          <div className="field" key={name}>
-            <Label htmlFor={name}>
-              {name === "act" ? "act engine" : "Docker executable"}
-            </Label>
-            <div className="file-field">
-              <Input
-                id={name}
-                className="mono"
-                placeholder={
-                  name === "act"
-                    ? "Use the bundled act engine"
-                    : "Detect automatically"
-                }
-                value={draft[name === "act" ? "actPath" : "dockerPath"]}
-                onChange={(e) =>
-                  setDraft({
-                    ...draft,
-                    [name === "act" ? "actPath" : "dockerPath"]: e.target.value,
-                  })
-                }
-              />
-              {isDesktop() && (
-                <Button
-                  variant="outline"
-                  onClick={async () => {
-                    const path = await chooseFile();
-                    if (path)
-                      setDraft({
-                        ...draft,
-                        [name === "act" ? "actPath" : "dockerPath"]: path,
-                      });
-                  }}
-                >
-                  Browse
-                </Button>
-              )}
-            </div>
-            <p className="dependency-status">
-              {health?.[name].ok ? (
-                <CircleCheck className="size-3.5" />
-              ) : (
-                <CircleX className="size-3.5" />
-              )}
-              {health?.[name].message || "Checking…"}
-            </p>
-          </div>
-        ))}
-      </section>
-      <div className="settings-actions">
-        <Button onClick={() => void save()} disabled={busy}>
-          {busy ? "Saving…" : "Save settings"}
-        </Button>
-        <Button variant="outline" onClick={() => setStop(true)}>
-          Stop runner
-        </Button>
-      </div>
+      )}
       <AlertDialog open={stop} onOpenChange={setStop}>
         <AlertDialogContent>
           <AlertDialogHeader>

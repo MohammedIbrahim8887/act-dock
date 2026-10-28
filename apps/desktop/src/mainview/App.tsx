@@ -59,7 +59,10 @@ import {
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 import { subscribeEvents } from "@/lib/events";
-import { ProjectExecution } from "@/components/project-execution";
+import {
+  ProjectSettingsView,
+  type ProjectSettingsTab,
+} from "@/components/project-settings";
 import { api, openExternal } from "@/lib/api";
 import { AddProjectDialog } from "@/components/add-project-dialog";
 import {
@@ -69,7 +72,7 @@ import {
 } from "@/components/run-history";
 import { RunDialog } from "@/components/run-dialog";
 import { RunDetail } from "@/components/run-detail";
-import { SettingsView, AgentsView } from "@/components/settings";
+import { SettingsView, AgentsView, type SettingsTab } from "@/components/settings";
 import { Empty, IconButton, RunningBorder, fail } from "@/components/common";
 import {
   HealthBanner,
@@ -88,7 +91,13 @@ import {
   type Settings,
   type Workflow,
 } from "../shared/contracts";
-type View = "project" | "history" | "agents" | "settings" | "health";
+type View =
+  | "project"
+  | "project-settings"
+  | "history"
+  | "agents"
+  | "settings"
+  | "health";
 function Workspace() {
   const [projects, setProjects] = useState<Project[]>([]),
     [runs, setRuns] = useState<Run[]>([]),
@@ -98,7 +107,9 @@ function Workspace() {
     [selectedRun, setSelectedRun] = useState<Run | null>(null);
   const [settings, setSettings] = useState<Settings>(settingsSchema.parse({})),
     [health, setHealth] = useState<Health | null>(null),
-    [view, setView] = useState<View>("project");
+    [view, setView] = useState<View>("project"),
+    [projectTab, setProjectTab] = useState<ProjectSettingsTab>("overview"),
+    [settingsTab, setSettingsTab] = useState<SettingsTab>("general");
   const [workflowError, setWorkflowError] = useState("");
   const { isMobile, setOpenMobile } = useSidebar();
   function closeNavigation() {
@@ -345,7 +356,7 @@ function Workspace() {
                   projects.map((p) => (
                     <SidebarMenuItem key={p.id}>
                       <SidebarMenuButton
-                        isActive={view === "project" && p.id === selected}
+                        isActive={(view === "project" || view === "project-settings") && p.id === selected}
                         onClick={() => selectProject(p)}
                         tooltip={p.path}
                       >
@@ -510,8 +521,22 @@ function Workspace() {
             <Separator orientation="vertical" className="h-4" />
             <span>Workspace</span>
             <ChevronRight className="size-3" />
+            {view === "project-settings" && project && (
+              <>
+                <button
+                  type="button"
+                  className="breadcrumb-link"
+                  onClick={() => setView("project")}
+                >
+                  {project.name}
+                </button>
+                <ChevronRight className="size-3" />
+              </>
+            )}
             <strong>
-              {view === "project"
+              {view === "project-settings"
+                ? "Project settings"
+                : view === "project"
                 ? project?.name || "Projects"
                 : view === "history"
                   ? "Run history"
@@ -557,17 +582,6 @@ function Workspace() {
         {view === "project" && (
           <div className={`workspace ${mobileRun ? "show-run" : ""}`}>
             <section className="workflow-pane">
-              {project && (
-                <ProjectExecution
-                  key={project.id}
-                  project={project}
-                  onSaved={(p) =>
-                    setProjects((previous) =>
-                      previous.map((item) => (item.id === p.id ? p : item)),
-                    )
-                  }
-                />
-              )}
               <div className="project-heading">
                 <div>
                   <h1>{project?.name || "Your projects"}</h1>
@@ -576,6 +590,14 @@ function Workspace() {
                   </p>
                 </div>
                 <div className="flex items-center">
+                  {project && (
+                    <IconButton
+                      label="Project settings"
+                      onClick={() => setView("project-settings")}
+                    >
+                      <SettingsIcon className="size-4" />
+                    </IconButton>
+                  )}
                   <IconButton
                     label="Refresh workflows"
                     onClick={() => void refreshWorkflows()}
@@ -864,11 +886,31 @@ function Workspace() {
             />
           </ScrollArea>
         )}
+        {view === "project-settings" && project && (
+          <ScrollArea className="page-scroll">
+            <ProjectSettingsView
+              key={project.id}
+              project={project}
+              workflows={workflows}
+              settings={settings}
+              tab={projectTab}
+              onTab={setProjectTab}
+              onBack={() => setView("project")}
+              onSaved={(p) =>
+                setProjects((previous) =>
+                  previous.map((item) => (item.id === p.id ? p : item)),
+                )
+              }
+            />
+          </ScrollArea>
+        )}
         {view === "settings" && (
           <ScrollArea className="page-scroll">
             <SettingsView
               settings={settings}
               health={health}
+              tab={settingsTab}
+              onTab={setSettingsTab}
               onSaved={(s) => {
                 setSettings(s);
                 setTheme(s.theme);
