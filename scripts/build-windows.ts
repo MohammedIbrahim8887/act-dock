@@ -1,3 +1,4 @@
+import { bundleHelper } from "./helper";
 import { cp, mkdir, readdir, copyFile, rm } from 'node:fs/promises';
 import { join } from 'node:path';
 import { root,desktop,output,run,download,capture } from './lib';
@@ -27,6 +28,7 @@ export async function buildWindows(){
   await run(['bun','build','src/bun/index.ts','--target=bun','--outdir',join(resources,'app/bun')],desktop);
   await run(['bun','build','--compile','--target=bun-windows-x64-baseline','src/cli/index.ts','--outfile',join(resources,'app/act-dock.exe')],desktop);
   await bundleAct('win32-x64',join(resources,'app'));
+  await bundleHelper('win32-x64',join(resources,'app')); 
   await cp(join(desktop,'dist'),join(resources,'app/views/mainview'),{recursive:true});
   const runner=await Bun.file(join(resources,'app/act-dock.exe')).bytes();
   if(runner[0]!==0x4d||runner[1]!==0x5a)throw new Error('Windows runner is not a PE executable');

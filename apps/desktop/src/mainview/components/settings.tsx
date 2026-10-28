@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import type { Settings, Health } from "../../shared/contracts";
 import { api, chooseFile, isDesktop } from "@/lib/api";
+import { ExecutionFields } from "./execution-options";
 import { Choice } from "./run-dialog";
 import { fail } from "./common";
 export function SettingsView({
@@ -47,7 +48,7 @@ export function SettingsView({
   async function save() {
     setBusy(true);
     try {
-      onSaved(await api("update_settings", draft));
+      onSaved(await api("patch_settings", draft));
       toast.success("Settings saved");
     } catch (e) {
       toast.error(fail(e));
@@ -76,6 +77,64 @@ export function SettingsView({
             { value: "dark", label: "Dark" },
           ]}
         />
+      </section>
+      <Separator />
+      <section className="settings-section">
+        <h2>Execution defaults</h2>
+        <ExecutionFields
+          value={draft.executionDefaults || {}}
+          onChange={(executionDefaults) =>
+            setDraft({ ...draft, executionDefaults })
+          }
+        />
+        <div className="setting-row">
+          <div>
+            <Label htmlFor="workflow-concurrency">
+              Run independent workflows concurrently
+            </Label>
+            <p>
+              Conflicting workspaces, containers and writable caches still
+              queue.
+            </p>
+          </div>
+          <Switch
+            id="workflow-concurrency"
+            checked={draft.concurrency?.enabled || false}
+            onCheckedChange={(enabled) =>
+              setDraft({
+                ...draft,
+                concurrency: {
+                  enabled,
+                  maxWorkflows: draft.concurrency?.maxWorkflows || 2,
+                },
+              })
+            }
+          />
+        </div>
+        {draft.concurrency?.enabled && (
+          <div className="field">
+            <Label htmlFor="max-workflows">Maximum active workflows</Label>
+            <Input
+              id="max-workflows"
+              type="number"
+              min="1"
+              max="8"
+              value={draft.concurrency.maxWorkflows}
+              onChange={(e) =>
+                setDraft({
+                  ...draft,
+                  concurrency: {
+                    enabled: true,
+                    maxWorkflows: Number(e.target.value),
+                  },
+                })
+              }
+            />
+            <p className="field-help">
+              Admission also respects 75% of Docker CPU and memory capacity.
+            </p>
+          </div>
+        )}
       </section>
       <Separator />
       <section className="settings-section">
@@ -114,7 +173,11 @@ export function SettingsView({
               <Input
                 id={name}
                 className="mono"
-                placeholder={name === "act" ? "Use the bundled act engine" : "Detect automatically"}
+                placeholder={
+                  name === "act"
+                    ? "Use the bundled act engine"
+                    : "Detect automatically"
+                }
                 value={draft[name === "act" ? "actPath" : "dockerPath"]}
                 onChange={(e) =>
                   setDraft({
@@ -186,8 +249,7 @@ export function SettingsView({
 }
 export function AgentsView({ health }: { health: Health | null }) {
   const [copied, setCopied] = useState(false);
-  const path =
-    health?.executable || "act-dock";
+  const path = health?.executable || "act-dock";
   const config = JSON.stringify(
     { mcpServers: { "act-dock": { command: path, args: ["mcp"] } } },
     null,

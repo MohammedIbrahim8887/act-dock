@@ -1,3 +1,4 @@
+import { bundleHelper } from "./helper";
 import {mkdir,cp,copyFile,readdir,rm} from 'node:fs/promises';
 import {join} from 'node:path';
 import {root,desktop,output,run,download,capture} from './lib';
@@ -23,6 +24,7 @@ export async function buildLinux(){
  await run(['bun','build','src/bun/index.ts','--target=bun','--outdir',join(resources,'app/bun')],desktop);
  await run(['bun','build','--compile','--target=bun-linux-x64-baseline','src/cli/index.ts','--outfile',join(resources,'app/act-dock')],desktop);
  await bundleAct('linux-x64',join(resources,'app'));
+  await bundleHelper('linux-x64',join(resources,'app')); 
  await cp(join(desktop,'dist'),join(resources,'app/views/mainview'),{recursive:true});
  await run(['tar','--no-xattrs','--format=ustar','--zstd','-cf',join(output,'stable-linux-x64-ActDock.tar.zst'),'-C',cache,'Act Dock']);
  const tools=join(root,'.cache/tools');
