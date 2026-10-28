@@ -15,6 +15,7 @@ import {
 } from "../shared/contracts";
 export class Store {
   db: Database;
+  closed=false;
   listeners = new Set<() => void>();
   constructor(public directory: string) {
     this.db = new Database(join(directory, "act-dock.sqlite"), {
@@ -272,6 +273,6 @@ export class Store {
   }
   eventCursor() { return (this.db.query("SELECT COALESCE(MAX(seq),0) AS n FROM events").get() as {n:number}).n; }
   close() {
-    this.db.close();
+    this.closed=true;for(const listener of this.listeners)listener();this.listeners.clear();this.db.close();
   }
 }

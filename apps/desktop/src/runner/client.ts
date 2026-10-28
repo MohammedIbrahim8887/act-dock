@@ -1,3 +1,4 @@
+import { requiredFeature, requireFeature } from "../shared/capabilities";
 import { spawn } from "node:child_process";
 import {
   existsSync,
@@ -26,6 +27,8 @@ export async function request<M extends Method>(
   params: unknown = {},
   source: Run["source"] = "cli",
 ): Promise<Results[M]> {
+  const feature=requiredFeature(method,params);
+  if(feature){let capabilities;try{capabilities=await request("get_capabilities",{},source);}catch{throw new AppError("RUNNER_UPGRADE_REQUIRED","The background service needs an upgrade. Finish active work and reopen Act Dock.");}requireFeature(feature,capabilities);}
   const result = serviceReplySchema.parse(await localRequest({ method, params, source }));
   if (!result.ok) throw new AppError(result.error.code, result.error.message);
   return parseResponse(method, result.data);
@@ -90,6 +93,7 @@ export async function installRunner(source: string) {
   const pending = [
     [source, executablePath],
     [act, bundledActPath],
+    [join(dirname(source), process.platform === "win32" ? "act-dock-helper.exe" : "act-dock-helper"), join(dirname(executablePath), process.platform === "win32" ? "act-dock-helper.exe" : "act-dock-helper")],
   ].filter(([from, to]) => existsSync(from) && (!existsSync(to) || hash(from) !== hash(to)));
   if (!pending.length) return;
   if (await isAlive()) {

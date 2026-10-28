@@ -4,12 +4,15 @@ import { call, request, ensureRunner, isAlive } from "../runner/client";
 import { serve } from "../runner/service";
 import { startMcp } from "./mcp";
 import { errorMessage, AppError, runRequestSchema } from "../shared/contracts";
-const help = `Act Dock — local GitHub Actions\n\nprojects list | projects add /absolute/path\nworkflows list PROJECT_ID\nrun --project ID --workflow .github/workflows/ci.yml --event push [--job ID]\n    [--input NAME=VALUE] [--event-file PATH] [--env-file PATH]\n    [--var-file PATH] [--secret-file PATH] [--architecture auto|linux/amd64]\n    [--idempotency-key KEY]\nruns list [--project ID] [--cursor 0] [--limit 100] [--status STATE] [--source desktop|cli|mcp] [--search TEXT] [--since ISO_DATE]\nstatus RUN_ID | logs RUN_ID [--follow] [--cursor 0] | cancel RUN_ID\ndoctor\nrunner start | runner stop | runner status\nmcp\n\nResponses are JSON. MCP reserves stdout for protocol messages.`;
+const help = `Act Dock — local GitHub Actions\n\nprojects list | projects add /absolute/path\nworkflows list PROJECT_ID\nrun --project ID --workflow .github/workflows/ci.yml --event push [--job ID]\n    [--input NAME=VALUE] [--event-file PATH] [--env-file PATH]\n    [--var-file PATH] [--secret-file PATH] [--architecture auto|linux/amd64|linux/arm64] [--config execution.json]\n    [--idempotency-key KEY]\nruns list [--project ID] [--cursor 0] [--limit 100] [--status STATE] [--source desktop|cli|mcp] [--search TEXT] [--since ISO_DATE]\nstatus RUN_ID | logs RUN_ID [--follow] [--cursor 0] | cancel RUN_ID\nimages list|inspect REF|pull REF|refresh REF|operations|cancel ID [--platform linux/arm64]\ncache list|clear ID|refresh PROJECT [--project ID]\nsecrets list|put|delete NAME|preview|import [--project ID] (write/import JSON via stdin)\nevents [RUN_ID] [--cursor 0] [--wait 10000] | metrics RUN_ID\ndoctor | doctor preflight (RunRequest JSON via stdin)\nrunner start | runner stop | runner status\nmcp\n\nResponses are JSON. MCP reserves stdout for protocol messages.`;
 async function main() {
   const { positionals: a, values: v } = parseArgs({
     args: process.argv.slice(2),
     allowPositionals: true,
     options: {
+      config: { type: "string" },
+      platform: { type: "string" },
+      wait: { type: "string" },
       project: { type: "string" },
       workflow: { type: "string" },
       event: { type: "string" },
@@ -78,6 +81,31 @@ async function main() {
         limit: Number(v.limit || 100),
       }),
     );
+  const jsonInput=async()=>JSON.parse(await Bun.stdin.text());
+  if(a[0]==="capabilities")return print(await call("get_capabilities"));
+  if(a[0]==="images"){
+    if(a[1]==="list")return print(await call("list_runner_images",{projectId:v.project}));
+    if(["inspect","pull","refresh"].includes(a[1]))return print(await call(a[1]==="inspect"?"inspect_image":"pull_image",{reference:a[2],architecture:v.platform||"auto"}));
+    if(a[1]==="operations")return print(await call("list_image_operations"));
+    if(a[1]==="cancel")return print(await call("cancel_image_pull",{operationId:a[2]}));
+  }
+  if(a[0]==="cache"){
+    if(a[1]==="list")return print(await call("list_caches",{projectId:v.project}));
+    if(a[1]==="clear")return print(await call("clear_cache",{cacheId:a[2]}));
+    if(a[1]==="refresh")return print(await call("refresh_project_cache",{projectId:v.project||a[2]}));
+  }
+  if(a[0]==="secrets"){
+    if(a[1]==="list")return print(await call("list_project_secrets",{projectId:v.project||a[2]}));
+    if(a[1]==="delete")return print(await call("delete_project_secret",{projectId:v.project,name:a[2]}));
+    // Secret values are accepted only via stdin; never include them in shell arguments.
+    if(a[1]==="put")return print(await call("put_project_secret",{...await jsonInput(),projectId:v.project}));
+    if(a[1]==="preview")return print(await call("preview_import",{...await jsonInput(),projectId:v.project}));
+    if(a[1]==="import")return print(await call("import_project_configuration",{...await jsonInput(),projectId:v.project}));
+    if(a[1]==="resupply")return print(await call("supply_run_secrets",{runId:a[2],values:await jsonInput()}));
+  }
+  if(a[0]==="events")return print(await call("read_events",{cursor:Number(v.cursor||0),limit:Number(v.limit||500),waitMs:Number(v.wait||0),runIds:a[1]?[a[1]]:undefined}));
+  if(a[0]==="metrics")return print(await call("get_run_metrics",{runId:a[1],cursor:Number(v.cursor||0),limit:Number(v.limit||500)}));
+  if(a[0]==="doctor"&&a[1]==="preflight")return print(await call("preflight_run",{request:await jsonInput()}));
   if (a[0] === "run") {
     const inputs = Object.fromEntries(
       (v.input || []).map((i) => {
@@ -88,6 +116,7 @@ async function main() {
       }),
     );
     const r = runRequestSchema.parse({
+      execution: v.config?JSON.parse(await Bun.file(v.config).text()):undefined,
       projectId: v.project,
       workflowPath: v.workflow,
       event: v.event || "push",
@@ -108,6 +137,7 @@ async function main() {
     return print(await call("cancel_run", { runId: a[1] }));
   if (a[0] === "logs") {
     let cursor = Number(v.cursor || 0);
+    let eventCursor=(await call("get_runner_snapshot")).cursor;
     do {
       const page = await call("get_run_logs", { runId: a[1], cursor });
       for (const e of page.entries)
@@ -116,7 +146,7 @@ async function main() {
         );
       cursor = page.nextCursor;
       if (page.end || !v.follow) break;
-      await Bun.sleep(500);
+      const events=await call("read_events",{cursor:eventCursor,runIds:[a[1]],waitMs:10000});eventCursor=events.nextCursor;
     } while (true);
     return;
   }

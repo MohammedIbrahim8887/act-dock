@@ -7,6 +7,8 @@ import {
   type RunRequest,
   type Workflow,
   type Job,
+  defaultMappings,
+  type ExecutionSnapshot,
 } from "../shared/contracts";
 const strings = (v: unknown): string[] =>
   v == null ? [] : (Array.isArray(v) ? v : [v]).map(String);
@@ -71,6 +73,7 @@ export async function discover(project: Project): Promise<Workflow[]> {
               name: String(j.name || id),
               needs: strings(j.needs),
               runners: strings(j["runs-on"]),
+              uses: typeof j.uses === "string" ? j.uses : undefined,
             };
           });
           const inputs = d.on?.workflow_dispatch?.inputs || {};
@@ -148,8 +151,8 @@ export async function validateRun(project: Project, request: RunRequest) {
   (request.jobId ? [jobs.get(request.jobId)!] : w.jobs).forEach(visit);
   for (const j of selected.values()) {
     if (
-      !j.runners.length ||
-      j.runners.some((r) => !/^ubuntu-(latest|20\.04|22\.04|24\.04)$/.test(r))
+      (!j.runners.length && !j.uses) ||
+      j.runners.some((r) => !/^ubuntu-(latest|20\.04|22\.04|24\.04)$/.test(r) && !request.execution?.runnerMappings?.[r] && !r.includes("${{"))
     )
       throw new AppError(
         "UNSUPPORTED_RUNNER",
@@ -186,8 +189,8 @@ export async function validateRun(project: Project, request: RunRequest) {
   return w;
 }
 /** The image act uses for ubuntu-* runners. */
-export const RUNNER_IMAGE = "catthehacker/ubuntu:act-latest";
-export function commandArgs(project: Project, r: RunRequest, runId: string) {
+export const RUNNER_IMAGE = "catthehacker/ubuntu:act-24.04";
+export function commandArgs(project: Project, r: RunRequest, runId: string, snapshot?: ExecutionSnapshot) {
   const args = [
     r.event,
     "-W",
@@ -199,13 +202,16 @@ export function commandArgs(project: Project, r: RunRequest, runId: string) {
     `--label act-dock.run=${runId}`,
   ];
   if (r.jobId) args.push("-j", r.jobId);
-  for (const label of [
-    "ubuntu-latest",
-    "ubuntu-20.04",
-    "ubuntu-22.04",
-    "ubuntu-24.04",
-  ])
-    args.push("-P", `${label}=${RUNNER_IMAGE}`);
+  const mappings = snapshot?.options.runnerMappings || defaultMappings;
+  for (const [label,reference] of Object.entries(mappings)) {
+    const image = snapshot?.images.find(i=>i.reference===reference&&i.available)?.resolved || reference;
+    args.push("-P",`${label}=${image}`);
+  }
+  if(snapshot){
+    args.push("--pull=false","--reuse=false");
+    if(snapshot.options.concurrentJobs)args.push("--concurrent-jobs",String(snapshot.options.concurrentJobs));
+    if(snapshot.options.workspaceMode==="bind")args.push("--bind");
+  }
   for (const [key, value] of Object.entries(r.inputs))
     args.push("--input", `${key}=${value}`);
   for (const [key, flag] of [

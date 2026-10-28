@@ -137,7 +137,7 @@ describe("workflows", () => {
     expect(args).toContain("name=$(touch /tmp/never)");
     expect(args).toContain("--label act-dock.run=abc");
     expect(args).toContain("--insecure-secrets=false");
-    expect(args).toContain("ubuntu-latest=catthehacker/ubuntu:act-latest");
+    expect(args).toContain("ubuntu-latest=catthehacker/ubuntu:act-24.04");
   });
 });
 describe("scheduler", () => {
@@ -192,8 +192,8 @@ describe("scheduler", () => {
     expect(store.run(a.id).exitCode).toBe(7);
     store.saveSettings({ ...store.settings(), actPath: "/does/not/exist" });
     const b = scheduler.enqueue(request(), "cli");
-    await waitFor(() => store.run(b.id).state === "failed");
-    expect(store.run(b.id).diagnostic).toContain("not found");
+    await waitFor(() => store.run(b.id).queueReason === "ACT_UNAVAILABLE");
+    expect(store.run(b.id).state).toBe("queued");
   });
 });
 describe("persistence", () => {
@@ -234,7 +234,7 @@ describe("persistence", () => {
     expect(
       (second.db.query("PRAGMA user_version").get() as { user_version: number })
         .user_version,
-    ).toBe(2);
+    ).toBe(3);
     second.close();
   });
   test("prunes expired completed runs but preserves active runs", () => {

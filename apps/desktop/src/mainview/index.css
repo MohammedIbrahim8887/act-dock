@@ -1995,3 +1995,10 @@ blockquote {
     animation: none !important;
   }
 }
+
+.project-execution { padding: 16px 20px; border-bottom: 1px solid var(--border); max-height: 65vh; overflow: auto; }
+.project-execution summary, .field-stack summary { cursor: pointer; font-weight: 500; padding: 6px 0; }
+.technical-wrap, .execution-preview code { overflow-wrap: anywhere; white-space: pre-wrap; }
+.execution-preview { border: 1px solid var(--border); border-radius: 8px; padding: 14px; }
+.execution-preview dl { display: grid; gap: 8px; margin-top: 10px; }
+.execution-preview dd { overflow-wrap: anywhere; color: var(--muted-foreground); }

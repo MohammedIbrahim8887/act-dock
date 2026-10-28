@@ -85,7 +85,8 @@ test("MCP and CLI share one on-demand service, runs survive client exit, and res
       }),
     );
     const list = await client.listTools();
-    expect(list.tools).toHaveLength(9);
+    expect(list.tools.map(t=>t.name)).toEqual(expect.arrayContaining(["get_capabilities","preflight_run","read_events","list_project_secrets","get_run_metrics"]));
+    expect(list.tools.map(t=>t.name)).not.toContain("get_secret_value");
     expect(list.tools.map((t) => t.name)).toContain("run_pipeline");
     const invoke = async <T>(
       name: string,

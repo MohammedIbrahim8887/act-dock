@@ -1,3 +1,4 @@
+import { requiredFeature, requireFeature } from "../../shared/capabilities";
 import {
   AppError,
   parseResponse,
@@ -25,6 +26,7 @@ export async function api<M extends Method>(
   method: M,
   params: unknown = {},
 ): Promise<Results[M]> {
+  const feature=requiredFeature(method,params);if(feature){let capabilities;try{capabilities=await api("get_capabilities");}catch{throw new AppError("RUNNER_UPGRADE_REQUIRED","Finish active work and reopen Act Dock to upgrade the background service.");}requireFeature(feature,capabilities);}
   const reply: ServiceReply = isDesktop()
     ? await (await connection()).rpc!.request.service({ method, params })
     : await fetch("/__actdock/rpc", {

@@ -58,6 +58,8 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
+import { subscribeEvents } from "@/lib/events";
+import { ProjectExecution } from "@/components/project-execution";
 import { api, openExternal } from "@/lib/api";
 import { AddProjectDialog } from "@/components/add-project-dialog";
 import {
@@ -204,14 +206,14 @@ function Workspace() {
   useEffect(() => {
     if (runnerStopped) return;
     void refresh();
-    const id = setInterval(() => void refresh(), 1500);
+    const unsubscribe = subscribeEvents(events=>{if(events.some(e=>["run","queue","projects","settings"].includes(e.kind)))void refresh();});
     const focus = () => {
       void refresh();
       refreshHealth();
     };
     window.addEventListener("focus", focus);
     return () => {
-      clearInterval(id);
+      unsubscribe();
       window.removeEventListener("focus", focus);
     };
   }, [refresh, refreshHealth, runnerStopped]);
@@ -519,6 +521,7 @@ function Workspace() {
         {view === "project" && (
           <div className={`workspace ${mobileRun ? "show-run" : ""}`}>
             <section className="workflow-pane">
+              {project&&<ProjectExecution key={project.id} project={project} onSaved={p=>setProjects(previous=>previous.map(item=>item.id===p.id?p:item))}/>}
               <div className="project-heading">
                 <div>
                   <h1>{project?.name || "Your projects"}</h1>
