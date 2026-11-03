@@ -1,4 +1,5 @@
 import { readdir, realpath, readFile, stat } from "node:fs/promises";
+import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { isAbsolute, join, relative, resolve } from "node:path";
 import { parseDocument } from "yaml";
 import {
@@ -20,7 +21,21 @@ export async function canonicalProject(path: string) {
     throw new AppError("INVALID_PATH", "Choose a directory.");
   return p;
 }
-export async function discover(project: Project): Promise<Workflow[]> {
+const GITLAB_RESERVED = new Set([
+  "stages",
+  "variables",
+  "default",
+  "include",
+  "image",
+  "services",
+  "before_script",
+  "after_script",
+  "cache",
+  "workflow",
+  "pages",
+]);
+
+async function discoverGitHub(project: Project): Promise<Workflow[]> {
   const dir = join(project.path, ".github/workflows");
   let names: string[];
   try {
@@ -98,19 +113,108 @@ export async function discover(project: Project): Promise<Workflow[]> {
       }),
   );
 }
+
+async function discoverGitLab(project: Project): Promise<Workflow[]> {
+  const candidates = [".gitlab-ci.yml", ".gitlab-ci.yaml"];
+  const found: string[] = [];
+  for (const name of candidates) {
+    try {
+      const s = await stat(join(project.path, name));
+      if (s.isFile()) found.push(name);
+    } catch {}
+  }
+
+  try {
+    const gitlabDir = join(project.path, ".gitlab/ci");
+    const subFiles = await readdir(gitlabDir);
+    for (const f of subFiles) {
+      if (/\.ya?ml$/i.test(f)) {
+        found.push(join(".gitlab/ci", f));
+      }
+    }
+  } catch {}
+
+  if (found.length === 0) return [];
+
+  return Promise.all(
+    found.map(async (relPath) => {
+      const fullPath = join(project.path, relPath);
+      const fileName = relPath.split("/").pop() || relPath;
+      const w: Workflow = {
+        projectId: project.id,
+        path: relPath,
+        name: "GitLab CI Pipeline",
+        events: ["push", "merge_request", "schedule", "manual"],
+        jobs: [],
+        inputs: [],
+      };
+
+      try {
+        await safeWorkflowPath(project, w.path);
+        const raw = await readFile(fullPath, "utf8");
+        const doc = parseDocument(raw, { uniqueKeys: false });
+        const d = (doc.toJS() || {}) as Record<string, unknown>;
+
+        const jobs: Job[] = [];
+        for (const [key, value] of Object.entries(d)) {
+          if (GITLAB_RESERVED.has(key) || key.startsWith(".")) continue;
+          if (typeof value === "object" && value !== null) {
+            const j = value as Record<string, unknown>;
+            const needs: string[] = [];
+            if (Array.isArray(j.needs)) {
+              for (const n of j.needs) {
+                if (typeof n === "string") needs.push(n);
+                else if (typeof n === "object" && n !== null && "job" in n) {
+                  needs.push(String((n as { job: unknown }).job));
+                }
+              }
+            } else if (typeof j.needs === "string") {
+              needs.push(j.needs);
+            }
+            jobs.push({
+              id: key,
+              name: String(j.name || key),
+              needs,
+              runners: strings(j.tags),
+              uses: typeof j.extends === "string" ? j.extends : undefined,
+              container: !!j.image,
+            });
+          }
+        }
+
+        w.jobs = jobs;
+        if (Array.isArray(d.stages) && d.stages.length > 0) {
+          const stagesStr = d.stages.slice(0, 3).join(" → ");
+          w.name = `GitLab CI: ${stagesStr}${d.stages.length > 3 ? "…" : ""}`;
+        }
+      } catch (e) {
+        w.diagnostic = e instanceof Error ? e.message : String(e);
+      }
+      return w;
+    }),
+  );
+}
+
+export async function discover(project: Project): Promise<Workflow[]> {
+  const [githubWorkflows, gitlabWorkflows] = await Promise.all([
+    discoverGitHub(project),
+    discoverGitLab(project),
+  ]);
+  return [...githubWorkflows, ...gitlabWorkflows];
+}
+
 export async function safeWorkflowPath(project: Project, path: string) {
   const candidate = await realpath(resolve(project.path, path));
-  const base = await realpath(join(project.path, ".github/workflows"));
-  const rel = relative(base, candidate);
+  const projectBase = await realpath(project.path);
+  const rel = relative(projectBase, candidate);
   if (
-    !rel ||
     rel.startsWith("..") ||
     isAbsolute(rel) ||
-    !/\.ya?ml$/.test(candidate)
+    !/\.ya?ml$/i.test(candidate)
   )
     throw new AppError(
       "INVALID_WORKFLOW",
-      "Select a YAML file inside .github/workflows.",
+      "Select a YAML file inside the project directory.",
     );
   return candidate;
 }
@@ -159,13 +263,31 @@ export async function validateRun(project: Project, request: RunRequest) {
           (r) =>
             /^ubuntu-(latest|20\.04|22\.04|24\.04)$/i.test(r) ||
             !!request.execution?.runnerMappings?.[r.toLowerCase()] ||
+            r.toLowerCase() === "mtx-runner" ||
+            r.toLowerCase() === "self-hosted" ||
+            r.toLowerCase() === "linux" ||
+            r.toLowerCase() === "docker" ||
             r.includes("${{"),
         ))
-    )
-      throw new AppError(
-        "UNSUPPORTED_RUNNER",
-        `${j.name} uses ${j.runners.join(", ") || "a reusable workflow"}. Map a Linux runner label to a Docker image in project settings.`,
+    ) {
+      const isExplicitUnsupported = j.runners.some((r) =>
+        /^(macos|windows)/i.test(r),
       );
+      if (isExplicitUnsupported) {
+        throw new AppError(
+          "UNSUPPORTED_RUNNER",
+          `${j.name} uses ${j.runners.join(", ")}. macOS and Windows runners are not supported in local containers.`,
+        );
+      }
+      if (request.execution?.runnerMappings) {
+        for (const r of j.runners) {
+          const key = r.toLowerCase();
+          if (!request.execution.runnerMappings[key]) {
+            request.execution.runnerMappings[key] = RUNNER_IMAGE;
+          }
+        }
+      }
+    }
   }
   if (request.event === "workflow_dispatch")
     for (const i of w.inputs) {
@@ -198,23 +320,160 @@ export async function validateRun(project: Project, request: RunRequest) {
 }
 /** The image act uses for ubuntu-* runners. */
 export const RUNNER_IMAGE = "catthehacker/ubuntu:act-24.04";
+
+export function isGitLabWorkflow(workflowPath: string): boolean {
+  const norm = workflowPath.toLowerCase();
+  return (
+    norm === ".gitlab-ci.yml" ||
+    norm === ".gitlab-ci.yaml" ||
+    norm.includes(".gitlab/ci/")
+  );
+}
+
+export function prepareGitLabWorkflowSync(
+  projectPath: string,
+  workflowPath: string,
+): string {
+  const fullPath = resolve(projectPath, workflowPath);
+  const raw = readFileSync(fullPath, "utf8");
+  const doc = parseDocument(raw, { uniqueKeys: false });
+  const d = (doc.toJS() || {}) as Record<string, unknown>;
+
+  let out =
+    "name: GitLab CI\non:\n  push:\n  pull_request:\n  workflow_dispatch:\n";
+  const globalVars = (d.variables as Record<string, unknown>) || {};
+  const globalBefore = Array.isArray(d.before_script)
+    ? d.before_script.map(String)
+    : [];
+
+  const envs = Object.entries(globalVars).filter(
+    ([, v]) =>
+      typeof v === "string" || typeof v === "number" || typeof v === "boolean",
+  );
+  if (envs.length > 0) {
+    out += "env:\n";
+    for (const [k, v] of envs) {
+      out += `  ${k}: "${String(v).replace(/"/g, '\\"')}"\n`;
+    }
+  }
+
+  const validJobMap = new Map<string, string>();
+  for (const [key, value] of Object.entries(d)) {
+    if (
+      GITLAB_RESERVED.has(key) ||
+      key.startsWith(".") ||
+      typeof value !== "object" ||
+      !value
+    )
+      continue;
+    validJobMap.set(key, key.replace(/[^a-zA-Z0-9_-]/g, "_"));
+  }
+
+  out += "jobs:\n";
+  for (const [key, value] of Object.entries(d)) {
+    if (!validJobMap.has(key)) continue;
+    const j = value as Record<string, unknown>;
+    const safeId = validJobMap.get(key)!;
+    const tags = strings(j.tags);
+    const runner = tags[0] || "mtx-runner";
+
+    out += `  ${safeId}:\n`;
+    out += `    name: "${key.replace(/"/g, '\\"')}"\n`;
+    out += `    runs-on: "${runner}"\n`;
+
+    const rawNeeds: string[] = [];
+    if (Array.isArray(j.needs)) {
+      for (const item of j.needs) {
+        if (typeof item === "string") rawNeeds.push(item);
+        else if (
+          typeof item === "object" &&
+          item !== null &&
+          "job" in item &&
+          typeof (item as { job: unknown }).job === "string"
+        ) {
+          rawNeeds.push((item as { job: string }).job);
+        }
+      }
+    } else if (typeof j.needs === "string") {
+      rawNeeds.push(j.needs);
+    }
+
+    const safeNeeds = rawNeeds
+      .map((needKey) => validJobMap.get(needKey))
+      .filter((safeDep): safeDep is string => Boolean(safeDep));
+
+    if (safeNeeds.length > 0) {
+      out += `    needs: [${safeNeeds.join(", ")}]\n`;
+    }
+
+    out += `    steps:\n`;
+    const scripts: string[] = [];
+    if (Array.isArray(j.before_script))
+      scripts.push(...j.before_script.flat(Infinity).map(String));
+    else if (globalBefore.length > 0) scripts.push(...globalBefore);
+
+    if (Array.isArray(j.script))
+      scripts.push(...j.script.flat(Infinity).map(String));
+    else if (typeof j.script === "string") scripts.push(j.script);
+    else scripts.push(`echo "Completed ${key}"`);
+
+    out += `      - name: "${key.replace(/"/g, '\\"')}"\n`;
+    out += `        shell: bash\n`;
+    out += `        run: |\n`;
+    out += `          if ! command -v envsubst >/dev/null 2>&1; then\n`;
+    out += `            cat << 'ACTDOCK_ENVSUBST' > /tmp/envsubst 2>/dev/null || true\n`;
+    out += `#!/usr/bin/env python3\n`;
+    out += `import os, sys, re\n`;
+    out += `pattern = re.compile(r'\\$\\{([A-Za-z0-9_]+)\\}|\\$([A-Za-z0-9_]+)')\n`;
+    out += `def repl(m):\n`;
+    out += `    k = m.group(1) or m.group(2)\n`;
+    out += `    return os.environ.get(k, '')\n`;
+    out += `sys.stdout.write(pattern.sub(repl, sys.stdin.read()))\n`;
+    out += `ACTDOCK_ENVSUBST\n`;
+    out += `            chmod +x /tmp/envsubst 2>/dev/null || true\n`;
+    out += `            export PATH="/tmp:$PATH"\n`;
+    out += `          fi\n`;
+    for (const line of scripts) {
+      for (const sub of line.split("\n")) {
+        out += `          ${sub}\n`;
+      }
+    }
+  }
+
+  const outDir = join(projectPath, ".act-dock/workflows");
+  mkdirSync(outDir, { recursive: true });
+  const outFile = join(outDir, "gitlab-ci.yml");
+  writeFileSync(outFile, out, "utf8");
+  return outFile;
+}
+
 export function commandArgs(
   project: Project,
   r: RunRequest,
   runId: string,
   snapshot?: ExecutionSnapshot,
 ) {
+  let targetWorkflow = resolve(project.path, r.workflowPath);
+  let targetJobId = r.jobId;
+
+  if (isGitLabWorkflow(r.workflowPath)) {
+    targetWorkflow = prepareGitLabWorkflowSync(project.path, r.workflowPath);
+    if (r.jobId) {
+      targetJobId = r.jobId.replace(/[^a-zA-Z0-9_-]/g, "_");
+    }
+  }
+
   const args = [
     r.event,
     "-W",
-    resolve(project.path, r.workflowPath),
+    targetWorkflow,
     "--json",
     "--rm",
     "--insecure-secrets=false",
     "--container-options",
     `--label act-dock.run=${runId}`,
   ];
-  if (r.jobId) args.push("-j", r.jobId);
+  if (targetJobId) args.push("-j", targetJobId);
   const mappings = snapshot?.options.runnerMappings || defaultMappings;
   for (const [label, reference] of Object.entries(mappings)) {
     const image =

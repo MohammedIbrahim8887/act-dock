@@ -20,8 +20,8 @@ export type UpdatePreferences = {
   autoInstall: boolean;
 };
 export const defaultUpdatePreferences: UpdatePreferences = {
-  autoDownload: true,
-  autoInstall: true,
+  autoDownload: false,
+  autoInstall: false,
 };
 
 /** How this copy of Act Dock was installed, which decides how it can update. */

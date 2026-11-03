@@ -132,16 +132,17 @@ export class Scheduler {
       try {
         const root = realpathSync(project.path),
           file = realpathSync(join(root, request.workflowPath)),
-          rel = relative(join(root, ".github/workflows"), file);
+          rel = relative(root, file);
         if (
           rel === ".." ||
           rel.startsWith("../") ||
           rel.startsWith("..\\") ||
-          isAbsolute(rel)
+          isAbsolute(rel) ||
+          !/\.ya?ml$/i.test(file)
         )
           throw new AppError(
             "INVALID_WORKFLOW",
-            "Workflow files must remain inside .github/workflows.",
+            "Workflow files must remain inside the project repository.",
           );
         snapshot.queuedWorkflowHashes = {
           [request.workflowPath]: createHash("sha256")

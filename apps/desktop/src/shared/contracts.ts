@@ -87,6 +87,7 @@ export type Project = {
   path: string;
   name: string;
   defaults: ProjectDefaults;
+  category?: string;
 };
 export type WorkflowInput = {
   name: string;
@@ -167,12 +168,20 @@ export const historyQuerySchema = runFiltersSchema.extend({
 });
 export type HistoryQuery = z.infer<typeof historyQuerySchema>;
 export type HistoryPage = z.infer<typeof historyPageSchema>;
+export const detectedProjectSchema = z.object({
+  name: z.string(),
+  path: z.string(),
+  platform: z.enum(["github", "gitlab", "both"]),
+  workflowsCount: z.number().int(),
+});
+export type DetectedProject = z.infer<typeof detectedProjectSchema>;
 export const folderListingSchema = z.object({
   path: z.string(),
   parentPath: z.string().nullable(),
   folders: z.array(z.object({ name: z.string(), path: z.string() })),
   shortcuts: z.array(z.object({ name: z.string(), path: z.string() })),
   hasWorkflows: z.boolean(),
+  detectedProjects: z.array(detectedProjectSchema).optional(),
 });
 export type FolderListing = z.infer<typeof folderListingSchema>;
 export const checkStatuses = [
@@ -251,7 +260,20 @@ export const methods = {
     showHidden: z.boolean().default(false),
   }),
   get_run_history: historyQuerySchema,
-  add_project: z.object({ path: z.string().min(1) }),
+  add_project: z.object({
+    path: z.string().min(1),
+    category: z.string().optional(),
+  }),
+  add_projects_batch: z.object({
+    projects: z.array(
+      z.object({
+        path: z.string().min(1),
+        name: z.string().optional(),
+        category: z.string().optional(),
+      }),
+    ),
+    category: z.string().optional(),
+  }),
   remove_project: z.object({ projectId: z.string() }),
   save_defaults: z.object({
     projectId: z.string(),
@@ -369,6 +391,7 @@ export type Results = Omit<ExecutionResults, "patch_settings"> & {
   browse_folders: FolderListing;
   get_run_history: HistoryPage;
   add_project: Project;
+  add_projects_batch: Project[];
   remove_project: null;
   save_defaults: Project;
   list_workflows: Workflow[];
@@ -404,6 +427,7 @@ const projectSchema = z.object({
   path: z.string(),
   name: z.string(),
   defaults: projectDefaultsSchema,
+  category: z.string().optional(),
 });
 const workflowSchema = z.object({
   projectId: z.string(),

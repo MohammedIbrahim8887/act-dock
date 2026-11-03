@@ -71,11 +71,13 @@ export function Choice({
 export function RunDialog({
   workflow: w,
   project: p,
+  initialJobId,
   onClose,
   onRun,
 }: {
   workflow: Workflow;
   project: Project;
+  initialJobId?: string;
   onClose: () => void;
   onRun: (r: Run) => void;
 }) {
@@ -86,6 +88,7 @@ export function RunDialog({
   const [request, setRequest] = useState<RunRequest>({
     projectId: p.id,
     workflowPath: w.path,
+    jobId: initialJobId,
     event:
       p.defaults.event && w.events.includes(p.defaults.event)
         ? p.defaults.event
@@ -545,10 +548,11 @@ export function RunDialog({
             <code>
               act {request.event} -W {w.path}
               {request.jobId ? " -j " + request.jobId : ""} --json --rm
-              {Object.keys(request.inputs).length ? " --input …" : ""} -P
-              ubuntu-latest=
-              {preflight?.snapshot.options.runnerMappings["ubuntu-latest"] ||
-                "catthehacker/ubuntu:act-24.04"}
+              {Object.keys(request.inputs).length ? " --input …" : ""}
+              {Object.entries(preflight?.snapshot.options.runnerMappings || {})
+                .slice(0, 2)
+                .map(([label, ref]) => ` -P ${label}=${ref}`)
+                .join("") || " -P ubuntu-latest=catthehacker/ubuntu:act-24.04"}
             </code>
             <p>
               File references and runner mappings are added at execution. act

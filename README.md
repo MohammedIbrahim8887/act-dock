@@ -34,7 +34,7 @@ Every installer bundles a pinned, checksum-verified [act](https://github.com/nek
 - Select a workflow or job, event, typed manual inputs, optional event/env/variable/secrets files, and container architecture.
 - Queue runs with explicit waiting reasons, follow durable live logs, search/copy/export output, cancel, and run again. Green outlines and a current-step summary identify active work.
 - Search run history and filter by project, status, source, and date, with counted pagination.
-- Install the agent skill from **Agent connections**, optionally connect MCP, or use the same runner through the CLI.
+- Copy an MCP configuration from **Agent connections**, or use the same runner through the CLI.
 
 Run configurations store file references rather than secret contents. Workflows run against current working files. The app honors managed `.actrc` preferences. Ubuntu labels resolve independently: `ubuntu-latest` and `ubuntu-24.04` use `catthehacker/ubuntu:act-24.04`, while 22.04 and legacy 20.04 use their matching tags. Medium remains the default; full/custom images are optional. This is local GitHub Actions execution with [act's supported functionality](https://nektosact.com/usage/index.html).
 
@@ -50,29 +50,7 @@ Workflow concurrency is opt-in (initially two, configurable 1–8). Shared workt
 
 See [optimization architecture and verification](docs/research/act-engine/optimization/README.md) for contracts, reproducible benchmarks and platform release gates. Official Act remains the shipping engine; the isolated readiness patch is research only. No release is triggered by these local changes.
 
-## AI agents: install the skill
-
-Install Act Dock and open it once, then give your agent the reusable [Act Dock skill](skills/act-dock/SKILL.md):
-
-```sh
-npx skills add MohammedIbrahim8887/act-dock --skill act-dock
-```
-
-The [Skills CLI](https://skills.sh/docs) prompts for an agent (such as Codex, Claude Code, or Cursor) and project-local or global installation. Add `-g` for user-wide installation. The installer needs Node.js/npm; the packaged Act Dock runner itself does not. Reload your agent, then ask:
-
-> Use the Act Dock skill to run CI for this project and explain any failures.
-
-The skill locates the installed runner, checks readiness, discovers workflows, follows runs to completion, and reads failing logs. It uses an existing MCP connection or the CLI, rather than asking you to paste MCP setup every session. Skill installation does **not** install Act Dock or automatically register MCP. Hosted agents such as Devin need Act Dock and Docker inside their environment; they cannot use a laptop's stdio server remotely. Agent/skill support varies by client version.
-
-The distributable lives in `skills/act-dock/`, including its connection reference and MIT license. To verify discovery from a checkout without installing:
-
-```sh
-npx skills add . --list
-```
-
-Publication requires pushing these files to the public repository. Skills CLI installs directly from GitHub; a skills.sh listing is not a prerequisite and is not guaranteed by a local change.
-
-### Optional MCP connection
+## AI agents (MCP)
 
 Open the packaged app once to install the standalone runner, then copy its configuration from **Agent connections**. Use the absolute executable path displayed there:
 

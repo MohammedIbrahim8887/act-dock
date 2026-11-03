@@ -59,11 +59,67 @@ export async function browseFolders({
       await stat(join(current, ".github/workflows"))
     ).isDirectory();
   } catch {}
+  if (!hasWorkflows) {
+    try {
+      hasWorkflows =
+        (await stat(join(current, ".gitlab-ci.yml"))).isFile() ||
+        (await stat(join(current, ".gitlab-ci.yaml"))).isFile();
+    } catch {}
+  }
+
+  // Scan child folders for microservices with CI/CD
+  const detectedProjects: {
+    name: string;
+    path: string;
+    platform: "github" | "gitlab" | "both";
+    workflowsCount: number;
+  }[] = [];
+
+  await Promise.all(
+    folders.map(async (folder) => {
+      try {
+        let hasGh = false;
+        let hasGl = false;
+        let count = 0;
+        try {
+          const gh = await readdir(join(folder.path, ".github/workflows"));
+          const ymls = gh.filter((f) => /\.ya?ml$/i.test(f));
+          if (ymls.length > 0) {
+            hasGh = true;
+            count += ymls.length;
+          }
+        } catch {}
+        try {
+          if ((await stat(join(folder.path, ".gitlab-ci.yml"))).isFile()) {
+            hasGl = true;
+            count += 1;
+          }
+        } catch {}
+        try {
+          if ((await stat(join(folder.path, ".gitlab-ci.yaml"))).isFile()) {
+            hasGl = true;
+            count += 1;
+          }
+        } catch {}
+        if (hasGh || hasGl) {
+          detectedProjects.push({
+            name: folder.name,
+            path: folder.path,
+            platform: hasGh && hasGl ? "both" : hasGh ? "github" : "gitlab",
+            workflowsCount: count,
+          });
+        }
+      } catch {}
+    }),
+  );
+  detectedProjects.sort((a, b) => a.name.localeCompare(b.name));
+
   return {
     path: current,
     parentPath: dirname(current) === current ? null : dirname(current),
     folders,
     shortcuts,
     hasWorkflows,
+    detectedProjects,
   };
 }

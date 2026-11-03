@@ -229,6 +229,38 @@
   line-height: 1.6;
   color: var(--muted-foreground);
 }
+.sidebar-tree-node {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 550;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.15s ease;
+}
+.sidebar-tree-node:hover {
+  color: var(--foreground);
+  background: var(--muted);
+}
+.sidebar-tree-children {
+  margin-left: 12px;
+  padding-left: 8px;
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.sidebar-tree-children [data-slot="sidebar-menu-button"] {
+  height: 28px;
+  font-size: 12px;
+  padding-left: 6px;
+  padding-right: 6px;
+  border-radius: 5px;
+}
 .recent-group {
   margin-top: 8px;
 }
@@ -495,16 +527,17 @@
   position: relative;
   display: flex;
   align-items: flex-start;
-  gap: 12px;
-  padding: 0 0 22px;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 6px 8px 16px 8px;
 }
 .job-row:not(:last-child)::after {
   content: "";
   position: absolute;
   width: 1px;
-  left: 4px;
-  top: 13px;
-  bottom: 4px;
+  left: 15px;
+  top: 24px;
+  bottom: 0px;
   background: var(--border);
 }
 .job-node {
@@ -513,8 +546,17 @@
   border: 1px solid var(--muted-foreground);
   background: var(--background);
   border-radius: 3px;
-  margin-top: 4px;
+  margin-top: 3px;
+  margin-left: 3.5px;
+  margin-right: 3.5px;
   flex-shrink: 0;
+}
+.job-actions {
+  opacity: 0.7;
+  transition: opacity 0.15s ease;
+}
+.job-row:hover .job-actions {
+  opacity: 1;
 }
 .job-row p {
   color: var(--muted-foreground);

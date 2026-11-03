@@ -55,6 +55,10 @@ export const defaultMappings = {
   "ubuntu-20.04": "catthehacker/ubuntu:act-20.04",
   "ubuntu-22.04": "catthehacker/ubuntu:act-22.04",
   "ubuntu-24.04": "catthehacker/ubuntu:act-24.04",
+  "mtx-runner": "catthehacker/ubuntu:act-24.04",
+  "self-hosted": "catthehacker/ubuntu:act-24.04",
+  "linux": "catthehacker/ubuntu:act-24.04",
+  "docker": "catthehacker/ubuntu:act-24.04",
 };
 export const defaultExecution: ResolvedExecution = {
   runnerMappings: defaultMappings,
