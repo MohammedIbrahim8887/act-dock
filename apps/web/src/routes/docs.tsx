@@ -459,6 +459,29 @@ function Docs() {
                 Agent runs use the same queue as the app, so they wait their
                 turn and show up in your history with an <em>MCP</em> source.
               </p>
+              <h3>Recommended: install the skill</h3>
+              <p>
+                Open Act Dock once, then install its public agent skill with the
+                Skills CLI. Choose Codex, Claude Code, Cursor, or another
+                supported target and project-local or global installation.
+              </p>
+              <CodeBlock label="Install Act Dock skill" code="npx skills add MohammedIbrahim8887/act-dock --skill act-dock" />
+              <p>
+                The installer requires Node.js and npm. Reload your agent, then
+                ask: <em>“Use the Act Dock skill to run CI for this project and explain any failures.”</em>
+                {" "}The skill locates the runner and uses the CLI or an existing MCP
+                connection, so you don’t need to paste setup instructions into
+                every conversation. It does not install Act Dock or register MCP
+                automatically.
+              </p>
+              <p className="docs-note">
+                Hosted agents such as Devin need Act Dock and Docker in their
+                own environment; a local stdio server cannot reach your laptop
+                from a remote sandbox. Skill support depends on the agent and
+                version. See the <a href="https://skills.sh/docs">Skills CLI guide</a>
+                {" "}or <a href="https://github.com/MohammedIbrahim8887/act-dock/tree/main/skills/act-dock">read the skill source</a>.
+              </p>
+              <h3>Optional: connect MCP directly</h3>
               <ol className="docs-steps">
                 <li>
                   <b>Open the desktop app once.</b> This installs the standalone

@@ -41,14 +41,7 @@ function Downloads({release}:{release:ReleaseManifest|null}) {
   </section>
 }
 const tools = ['list_projects','add_project','list_workflows','run_pipeline','list_runs','get_run','get_run_logs','cancel_run','check_health']
-const mcpConfig = `{
-  "mcpServers": {
-    "act-dock": {
-      "command": "/path/shown/in/Agent connections",
-      "args": ["mcp"]
-    }
-  }
-}`
+const skillCommand = 'npx skills add MohammedIbrahim8887/act-dock --skill act-dock'
 function ProductWindow() {
   const [paused, setPaused] = useState(false)
   return <figure className="product-window" aria-label="Animated preview: Act Dock runs a CI workflow, highlights each step, and streams its output until all three jobs pass.">
@@ -60,9 +53,10 @@ function ProductWindow() {
 }
 function AgentSection() {
   return <section className="agent-section">
-    <div><h2>Part of your agent’s toolkit.</h2><p>Nine focused MCP tools. Your agent can check the machine is ready, add a project, run a pipeline, read its logs, and cancel it. It uses the same queue and history you see in the app.</p>
-      <CodeBlock label="mcp.json" code={mcpConfig}/>
-      <Button asChild variant="outline"><Link to="/docs" hash="mcp">Set up your agent<ArrowRight size={14}/></Link></Button></div>
+    <div><h2>One skill. A shorter setup.</h2><p>Give your agent the Act Dock skill. It knows how to find the runner, check your setup, run CI, and explain failures—without pasting MCP instructions into every chat.</p>
+      <CodeBlock label="Install the agent skill" code={skillCommand}/>
+      <p>Open Act Dock once, then run the command and choose your agent. Works with Codex, Claude Code, Cursor, and other supported Skills CLI targets. Ask: “Use Act Dock to run CI for this project.”</p>
+      <Button asChild variant="outline"><Link to="/docs" hash="mcp">Skill & connection guide<ArrowRight size={14}/></Link></Button></div>
     <div className="tool-list" aria-label="Available MCP tools">{tools.map(t=><div key={t}><Check size={14} aria-hidden="true"/><code>{t}</code></div>)}</div>
   </section>
 }

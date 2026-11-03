@@ -388,6 +388,8 @@ export function SettingsView({
 }
 export function AgentsView({ health }: { health: Health | null }) {
   const [copied, setCopied] = useState(false);
+  const [copiedSkill, setCopiedSkill] = useState(false);
+  const skillCommand = "npx skills add MohammedIbrahim8887/act-dock --skill act-dock";
   const path = health?.executable || "act-dock";
   const config = JSON.stringify(
     { mcpServers: { "act-dock": { command: path, args: ["mcp"] } } },
@@ -404,7 +406,45 @@ export function AgentsView({ health }: { health: Health | null }) {
         <p>Give local AI agents the same pipeline runner you use here.</p>
       </header>
       <section className="settings-section">
-        <h2>MCP connection</h2>
+        <h2>Start with the Act Dock skill</h2>
+        <p>
+          Install once in Codex, Claude Code, Cursor, or another supported agent.
+          The skill teaches your agent to find the runner, check setup, run a
+          workflow, and follow its logs. No repeated configuration prompts.
+        </p>
+        <Textarea
+          aria-label="Skill install command"
+          className="mono"
+          readOnly
+          rows={2}
+          value={skillCommand}
+        />
+        <Button
+          onClick={() =>
+            void navigator.clipboard.writeText(skillCommand).then(() => {
+              setCopiedSkill(true);
+              setTimeout(() => setCopiedSkill(false), 2000);
+            }).catch(() => toast.error("Select the install command and copy it manually."))
+          }
+        >
+          {copiedSkill ? <Check /> : <Copy />}
+          {copiedSkill ? "Copied" : "Copy install command"}
+        </Button>
+        <p className="field-help" role="status">
+          {copiedSkill ? "Install command copied. " : ""}
+          Run in your terminal; choose your agent and project or global scope.
+          Requires Node.js and npm for the installer. Reload your agent, then ask:
+        </p>
+        <blockquote>“Use the Act Dock skill to run CI for this project and explain any failures.”</blockquote>
+        <p className="field-help">
+          The skill uses the installed CLI or an existing MCP connection. It does
+          not register an MCP server automatically. Hosted agents such as Devin
+          need Act Dock and Docker in their own environment, not on your laptop.
+        </p>
+      </section>
+      <Separator />
+      <section className="settings-section">
+        <h2>Manual MCP connection (optional)</h2>
         <p>
           Add this stdio server to your agent’s MCP configuration, then restart
           or reconnect the agent.
