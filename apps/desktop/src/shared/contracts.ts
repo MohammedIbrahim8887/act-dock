@@ -518,6 +518,7 @@ export const responses = {
   browse_folders: folderListingSchema,
   get_run_history: historyPageSchema,
   add_project: projectSchema,
+  add_projects_batch: z.array(projectSchema),
   remove_project: z.null(),
   save_defaults: projectSchema,
   list_workflows: z.array(workflowSchema),

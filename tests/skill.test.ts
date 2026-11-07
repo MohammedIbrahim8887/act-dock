@@ -23,12 +23,10 @@ test("public skill has portable discovery metadata and bundled references", () =
   expect(skill).toContain("Enqueueing is not completion");
 });
 
-test("desktop, website, docs and README advertise the same installable skill", () => {
+test("the docs and skill reference advertise the same installable skill", () => {
+  // The README, landing page and desktop settings lead with MCP setup and do not repeat the install command.
   for (const file of [
-    "README.md",
-    "apps/web/src/routes/index.tsx",
     "apps/web/src/routes/docs.tsx",
-    "apps/desktop/src/mainview/components/settings.tsx",
     "skills/act-dock/references/connection.md",
   ]) {
     expect(readFileSync(resolve(root, file), "utf8")).toContain(command);

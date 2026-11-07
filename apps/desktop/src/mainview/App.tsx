@@ -3,7 +3,11 @@ import brandMark from "../../assets/brand/pipeline-loop.png";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ThemeProvider, useTheme } from "next-themes";
 import { toast } from "sonner";
-import { parseJobStatusesFromLogs, type JobStatus } from "@/lib/job-status";
+import {
+  createLogReader,
+  parseJobStatusesFromLogs,
+  type JobStatus,
+} from "@/lib/job-status";
 import {
   Workflow as WorkflowIcon,
   Plus,
@@ -147,7 +151,6 @@ function Workspace() {
     workflows.find((w) => w.path === selectedWorkflow) || workflows[0] || null;
 
   const [jobStatuses, setJobStatuses] = useState<Record<string, JobStatus>>({});
-  const [runningJobId, setRunningJobId] = useState<string | null>(null);
 
   const activeWorkflowRun = useMemo(() => {
     if (
@@ -171,25 +174,27 @@ function Workspace() {
       setJobStatuses({});
       return;
     }
+    const runId = activeWorkflowRun.id;
+    const jobs = workflow.jobs;
     let alive = true;
-    async function loadJobStatuses() {
-      try {
-        const page = await api("get_run_logs", {
-          runId: activeWorkflowRun!.id,
-          cursor: 0,
-          limit: 2000,
-        });
-        if (alive && workflow) {
-          setJobStatuses(parseJobStatusesFromLogs(workflow.jobs, page.entries));
-        }
-      } catch {}
-    }
-    void loadJobStatuses();
+    const readLogs = createLogReader((cursor) =>
+      api("get_run_logs", { runId, cursor, limit: 2000 }),
+    );
+    // Refreshes run one after another so an older response cannot overwrite newer state.
+    let queue: Promise<void> = Promise.resolve();
+    const refresh = () => {
+      queue = queue.then(async () => {
+        if (!alive) return;
+        try {
+          const entries = await readLogs();
+          if (alive) setJobStatuses(parseJobStatusesFromLogs(jobs, entries));
+        } catch {}
+      });
+    };
+    refresh();
 
     const unsubscribe = subscribeEvents((events) => {
-      if (events.some((e) => e.runId === activeWorkflowRun?.id)) {
-        void loadJobStatuses();
-      }
+      if (events.some((e) => e.runId === runId)) refresh();
     });
 
     return () => {
@@ -198,27 +203,11 @@ function Workspace() {
     };
   }, [activeWorkflowRun?.id, workflow]);
 
-  const handleRunSpecificJob = async (jobId: string) => {
-    if (!project || !workflow) return;
-    setRunningJobId(jobId);
-    try {
-      toast.info(`Queuing job ${jobId}...`);
-      const r = await api("run_pipeline", {
-        projectId: project.id,
-        workflowPath: workflow.path,
-        jobId,
-        event: project.defaults.event || "push",
-        inputs: {},
-        architecture: project.defaults.architecture || "auto",
-        execution: project.defaults.execution,
-      });
-      toast.success(`Queued job ${jobId}`);
-      showRun(r);
-    } catch (err) {
-      toast.error(fail(err));
-    } finally {
-      setRunningJobId(null);
-    }
+  // Rerunning one job goes through the run dialog, which applies the workflow's
+  // required inputs and event rules instead of submitting defaults blindly.
+  const handleRunSpecificJob = (jobId: string) => {
+    if (!workflow) return;
+    setRunWorkflow({ workflow, initialJobId: jobId });
   };
 
   const [collapsedCategories, setCollapsedCategories] = useState<Record<string, boolean>>({});
@@ -1004,10 +993,7 @@ function Workspace() {
                           <>
                             <div className="jobs-list">
                               {workflow.jobs.map((j) => {
-                                const status =
-                                  runningJobId === j.id
-                                    ? "running"
-                                    : jobStatuses[j.id];
+                                const status = jobStatuses[j.id];
                                 return (
                                   <div className="job-row" key={j.id}>
                                     <div className="flex items-center justify-center size-5 shrink-0">
@@ -1066,16 +1052,12 @@ function Workspace() {
                                         variant="ghost"
                                         className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
                                         title={`Rerun only ${j.name}`}
-                                        disabled={
-                                          runnerStopped || runningJobId !== null
-                                        }
+                                        disabled={runnerStopped}
                                         onClick={() =>
                                           handleRunSpecificJob(j.id)
                                         }
                                       >
-                                        <RefreshCw
-                                          className={`size-3.5 ${runningJobId === j.id ? "animate-spin" : ""}`}
-                                        />
+                                        <RefreshCw className="size-3.5" />
                                       </Button>
                                     </div>
                                   </div>

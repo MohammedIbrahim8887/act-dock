@@ -13,6 +13,7 @@ import {
   methods,
   runRequestSchema,
   type Method,
+  type Project,
   type Run,
 } from "../shared/contracts";
 import { dataDir, preparePaths, socketPath } from "./paths";

@@ -7,8 +7,8 @@
  * Returns workflows tagged with their source platform.
  */
 
-import { mkdir, readdir, readFile } from 'node:fs/promises';
-import { join, resolve } from 'node:path';
+import { readdir, readFile } from 'node:fs/promises';
+import { join } from 'node:path';
 
 export type WorkflowSource = 'github' | 'gitlab';
 
@@ -59,7 +59,6 @@ function extractGitLabEvents(content: string): string[] {
   // Match job-level `on:` or top-level `trigger:` but most common is implicit
   // Look for `only:`/`except:` keywords which define when jobs run
   const onlyMatches = content.match(/only:\s*([\s\S]*?)(?:\n|\z)/i);
-  const exceptMatches = content.match(/except:\s*([\s\S]*?)(?:\n|\z)/i);
 
   if (onlyMatches && onlyMatches[1]) {
     const onlyContent = onlyMatches[1].trim();
@@ -230,7 +229,7 @@ export async function detectCiCdPlatform(projectPath: string): Promise<'github' 
 /**
  * Get display label for a workflow source
  */
-export function getSourceLabel(source: WorkflowSource): string {
+export function getSourceLabel(source: WorkflowSource | 'both'): string {
   switch (source) {
     case 'github':
       return 'GitHub Actions';
@@ -246,7 +245,7 @@ export function getSourceLabel(source: WorkflowSource): string {
 /**
  * Get color/icon class for a workflow source (for UI)
  */
-export function getSourceClass(source: WorkflowSource): string {
+export function getSourceClass(source: WorkflowSource | 'both'): string {
   switch (source) {
     case 'github':
       return 'text-primary';

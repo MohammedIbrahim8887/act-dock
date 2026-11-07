@@ -9,6 +9,8 @@ import {
   type Project,
   type RunRequest,
 } from "../shared/contracts";
+import { materializeGitLabWorkflow } from "./gitlab";
+import { isGitLabWorkflow } from "./workflows";
 
 export type DocumentData = {
   name?: string;
@@ -58,7 +60,10 @@ export function actContainerName(...parts: string[]) {
   return `${prefix}-${createHash("sha256").update(name).digest("hex")}`;
 }
 export async function analyzeWorkflow(project: Project, request: RunRequest) {
-  const path = resolve(project.path, request.workflowPath),
+  // Analyze the file Act will actually run: GitLab pipelines are normalized first.
+  const path = isGitLabWorkflow(request.workflowPath)
+      ? materializeGitLabWorkflow(project.path, request.workflowPath)
+      : resolve(project.path, request.workflowPath),
     data = await yamlData(path);
   const jobs = data.jobs || {},
     selected = new Set<string>();

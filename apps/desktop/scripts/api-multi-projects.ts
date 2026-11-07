@@ -5,7 +5,7 @@
 
 import { Store } from './store';
 import { apiResponse } from './api-utils';
-import { discoverAllWorkflows, detectCiCdPlatform } from './discover-workflows';
+import { discoverAllWorkflows } from './discover-workflows';
 
 export async function add_projects_multiple(request: {
   projects: { id: string; path: string; name: string }[];
@@ -32,7 +32,7 @@ export async function add_projects_multiple(request: {
       
       // Discover workflows from this project
       try {
-        const workflows = await discoverAllWorkflows(project.path);
+        await discoverAllWorkflows(project.path);
         // Store workflow info if needed
       } catch {
         // Continue even if workflow discovery fails

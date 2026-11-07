@@ -189,7 +189,14 @@ export class DesktopUpdater {
   start() {
     if (this.state.status === "unavailable") return;
     this.cleanupStale();
-    // Background automatic checks disabled to prevent overwriting custom build
+    this.setTimer(() => void this.check(), FIRST_CHECK_DELAY);
+    const loop = () => {
+      this.setTimer(() => {
+        void this.check();
+        loop();
+      }, CHECK_INTERVAL);
+    };
+    loop();
   }
 
   setPreferences(next: Partial<UpdatePreferences>) {

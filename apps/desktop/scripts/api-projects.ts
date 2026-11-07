@@ -6,7 +6,6 @@
 import { Store } from './store';
 import { apiResponse } from './api-utils';
 import { add_projects_multiple, platforms_for_projects } from './api-multi-projects';
-import { add_project } from './api-single-project'; // Assume exists
 
 /** 
  * Handle adding a single project (existing functionality)
@@ -41,7 +40,7 @@ export async function add_project_handler(request: {
     // Discover workflows
     try {
       const { discoverAllWorkflows } = await import('./discover-workflows');
-      const workflows = await discoverAllWorkflows(path);
+      await discoverAllWorkflows(path);
     } catch {
       // Continue even if discovery fails
     }
