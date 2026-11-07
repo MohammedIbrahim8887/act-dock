@@ -25,22 +25,11 @@ export function SiteFooter() {
 
 export function CodeBlock({ code, label }: { code: string; label?: string }) {
   const [copied, setCopied] = useState(false)
-  const [copyFailed, setCopyFailed] = useState(false)
-  const copy = async () => {
-    setCopyFailed(false)
-    try {
-      await navigator.clipboard.writeText(code)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 1600)
-    } catch {
-      setCopyFailed(true)
-    }
-  }
+  const copy = () => void navigator.clipboard.writeText(code).then(() => { setCopied(true); setTimeout(() => setCopied(false), 1600) }).catch(() => {})
   return <div className="code-block">
     {label && <div className="code-label">{label}</div>}
     <pre><code>{code}</code></pre>
     <button type="button" onClick={copy} aria-label={copied ? 'Copied' : 'Copy ' + (label ?? 'code')}>{copied ? <Check size={14}/> : <Copy size={14}/>}</button>
-    {copyFailed && <p className="px-3 pb-3 text-sm" role="alert">Clipboard unavailable. Select the command or code and copy it manually.</p>}
     <span className="sr-only" aria-live="polite">{copied ? 'Copied to clipboard' : ''}</span>
   </div>
 }

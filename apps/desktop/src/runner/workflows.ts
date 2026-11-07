@@ -10,6 +10,12 @@ import {
   defaultMappings,
   type ExecutionSnapshot,
 } from "../shared/contracts";
+import {
+  GITLAB_EVENTS,
+  actEventFor,
+  materializeGitLabWorkflow,
+  parseGitLabPipeline,
+} from "./gitlab";
 const strings = (v: unknown): string[] =>
   v == null ? [] : (Array.isArray(v) ? v : [v]).map(String);
 export async function canonicalProject(path: string) {
@@ -20,7 +26,7 @@ export async function canonicalProject(path: string) {
     throw new AppError("INVALID_PATH", "Choose a directory.");
   return p;
 }
-export async function discover(project: Project): Promise<Workflow[]> {
+async function discoverGitHub(project: Project): Promise<Workflow[]> {
   const dir = join(project.path, ".github/workflows");
   let names: string[];
   try {
@@ -98,19 +104,87 @@ export async function discover(project: Project): Promise<Workflow[]> {
       }),
   );
 }
+
+async function discoverGitLab(project: Project): Promise<Workflow[]> {
+  const candidates = [".gitlab-ci.yml", ".gitlab-ci.yaml"];
+  const found: string[] = [];
+  for (const name of candidates) {
+    try {
+      const s = await stat(join(project.path, name));
+      if (s.isFile()) found.push(name);
+    } catch {}
+  }
+
+  try {
+    const gitlabDir = join(project.path, ".gitlab/ci");
+    const subFiles = await readdir(gitlabDir);
+    for (const f of subFiles) {
+      if (/\.ya?ml$/i.test(f)) {
+        found.push(join(".gitlab/ci", f));
+      }
+    }
+  } catch {}
+
+  if (found.length === 0) return [];
+
+  return Promise.all(
+    found.map(async (relPath) => {
+      const w: Workflow = {
+        projectId: project.id,
+        path: relPath,
+        name: "GitLab CI Pipeline",
+        events: Object.keys(GITLAB_EVENTS),
+        jobs: [],
+        inputs: [],
+      };
+      try {
+        await safeWorkflowPath(project, relPath);
+        const pipeline = parseGitLabPipeline(
+          await readFile(join(project.path, relPath), "utf8"),
+        );
+        w.jobs = pipeline.jobs.map((j) => ({
+          id: j.id,
+          name: j.name,
+          needs: j.needs,
+          runners: [j.runsOn],
+          container: j.container,
+        }));
+        const stages = pipeline.stages.slice(0, 3).join(" → ");
+        w.name = `GitLab CI: ${stages}${pipeline.stages.length > 3 ? "…" : ""}`;
+      } catch (e) {
+        w.diagnostic = e instanceof Error ? e.message : String(e);
+      }
+      return w;
+    }),
+  );
+}
+
+export async function discover(project: Project): Promise<Workflow[]> {
+  const [githubWorkflows, gitlabWorkflows] = await Promise.all([
+    discoverGitHub(project),
+    discoverGitLab(project),
+  ]);
+  return [...githubWorkflows, ...gitlabWorkflows];
+}
+
 export async function safeWorkflowPath(project: Project, path: string) {
+  const gitlab = isGitLabWorkflow(path);
   const candidate = await realpath(resolve(project.path, path));
-  const base = await realpath(join(project.path, ".github/workflows"));
+  const base = await realpath(
+    gitlab ? project.path : join(project.path, ".github/workflows"),
+  );
   const rel = relative(base, candidate);
   if (
     !rel ||
     rel.startsWith("..") ||
     isAbsolute(rel) ||
-    !/\.ya?ml$/.test(candidate)
+    !/\.ya?ml$/i.test(candidate)
   )
     throw new AppError(
       "INVALID_WORKFLOW",
-      "Select a YAML file inside .github/workflows.",
+      gitlab
+        ? "Select a GitLab CI YAML file inside the project directory."
+        : "Select a YAML file inside .github/workflows.",
     );
   return candidate;
 }
@@ -198,23 +272,42 @@ export async function validateRun(project: Project, request: RunRequest) {
 }
 /** The image act uses for ubuntu-* runners. */
 export const RUNNER_IMAGE = "catthehacker/ubuntu:act-24.04";
+
+export function isGitLabWorkflow(workflowPath: string): boolean {
+  const norm = workflowPath.toLowerCase();
+  return (
+    norm === ".gitlab-ci.yml" ||
+    norm === ".gitlab-ci.yaml" ||
+    norm.includes(".gitlab/ci/")
+  );
+}
+
 export function commandArgs(
   project: Project,
   r: RunRequest,
   runId: string,
   snapshot?: ExecutionSnapshot,
 ) {
+  let targetWorkflow = resolve(project.path, r.workflowPath);
+  let event = r.event;
+  // GitLab pipelines run from their normalized GitHub-style form (see gitlab.ts).
+  if (isGitLabWorkflow(r.workflowPath)) {
+    targetWorkflow = materializeGitLabWorkflow(project.path, r.workflowPath);
+    event = actEventFor(r.event);
+  }
+  const targetJobId = r.jobId;
+
   const args = [
-    r.event,
+    event,
     "-W",
-    resolve(project.path, r.workflowPath),
+    targetWorkflow,
     "--json",
     "--rm",
     "--insecure-secrets=false",
     "--container-options",
     `--label act-dock.run=${runId}`,
   ];
-  if (r.jobId) args.push("-j", r.jobId);
+  if (targetJobId) args.push("-j", targetJobId);
   const mappings = snapshot?.options.runnerMappings || defaultMappings;
   for (const [label, reference] of Object.entries(mappings)) {
     const image =

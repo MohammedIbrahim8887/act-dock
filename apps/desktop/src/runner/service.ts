@@ -13,6 +13,7 @@ import {
   methods,
   runRequestSchema,
   type Method,
+  type Project,
   type Run,
 } from "../shared/contracts";
 import { dataDir, preparePaths, socketPath } from "./paths";
@@ -315,8 +316,35 @@ export async function serve() {
             path,
             name: basename(path),
             defaults: {},
+            category: p.category,
           })
         );
+      }
+      case "add_projects_batch": {
+        const input = methods[method].parse(raw);
+        const added: Project[] = [];
+        for (const item of input.projects) {
+          try {
+            const path = await canonicalProject(item.path);
+            let proj = store.projects().find((p) => p.path === path);
+            if (!proj) {
+              proj = store.putProject({
+                id: crypto.randomUUID(),
+                path,
+                name: item.name || basename(path),
+                defaults: {},
+                category: item.category || input.category,
+              });
+            } else if (item.category || input.category) {
+              proj = store.putProject({
+                ...proj,
+                category: item.category || input.category,
+              });
+            }
+            added.push(proj);
+          } catch {}
+        }
+        return added;
       }
       case "remove_project": {
         const p = methods[method].parse(raw);
