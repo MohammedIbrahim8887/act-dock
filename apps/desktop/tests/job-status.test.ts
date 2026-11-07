@@ -116,3 +116,18 @@ describe("paged log reading", () => {
     expect(entries.length).toBe(5001);
   });
 });
+
+describe("matrix records from act", () => {
+  // act reports every combination under the same job id; jobKey tells them apart.
+  test("a failing combination is not hidden by a passing one with the same job id", () => {
+    const row = (message: string, jobKey: string) =>
+      ({ ...entry(message, "test"), jobKey }) as LogEntry;
+    const status = parseJobStatusesFromLogs(jobs, [
+      row("⭐ Run Main run", "ok"),
+      row("🏁  Job succeeded", "ok"),
+      row("⭐ Run Main run", "bad"),
+      row("🏁  Job failed", "bad"),
+    ]);
+    expect(status.test).toBe("failure");
+  });
+});

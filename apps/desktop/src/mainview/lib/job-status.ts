@@ -82,7 +82,8 @@ export function parseJobStatusesFromLogs(
     const startMatch = text.match(/^⭐\s+Run\s+Main\s+([^\s[]+)/);
     const jobId = findJobId(label) || findJobId(startMatch?.[1]);
     if (!jobId) continue;
-    const execution = label || startMatch?.[1] || jobId;
+    // jobKey separates matrix combinations, which share one job id in act's output.
+    const execution = entry.jobKey || label || startMatch?.[1] || jobId;
 
     const terminal = text.match(/(?:🏁\s+)?Job (succeeded|failed)$/);
     if (terminal) {
