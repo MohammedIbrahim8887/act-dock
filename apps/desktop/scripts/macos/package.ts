@@ -88,13 +88,17 @@ export async function packageMacInstaller() {
     if (apps.length !== 1)
       throw new Error("Expected exactly one application in the update archive");
     await signAppBundle(join(staging, apps[0]));
-    const uv = Bun.which("uv") || "/opt/homebrew/bin/uv";
+    const uv = Bun.which("uv");
+    const pythonWithDmg = [
+      "/tmp/dmgbuild-env/bin/python",
+      Bun.which("python3"),
+      Bun.which("python"),
+    ].find((p) => p && Bun.file(p).size > 0);
+    const pythonRunner = uv
+      ? [uv, "run", "--with", "dmgbuild==1.6.7", "python"]
+      : [pythonWithDmg || "python3"];
     await run([
-      uv,
-      "run",
-      "--with",
-      "dmgbuild==1.6.7",
-      "python",
+      ...pythonRunner,
       "scripts/macos/build-dmg.py",
       "--app",
       join(staging, apps[0]),

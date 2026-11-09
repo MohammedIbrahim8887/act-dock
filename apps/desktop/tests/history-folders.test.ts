@@ -195,3 +195,9 @@ test("folder browsing shows directories, follows folder links, and detects workf
     browseFolders({ path: join(directory, "missing") }),
   ).rejects.toThrow();
 });
+
+test("folder browsing detects the .yaml GitLab filename without a .yml file", async () => {
+  await writeFile(join(directory, ".gitlab-ci.yaml"), "job:\n  script: echo hi\n");
+  const result = await browseFolders({ path: directory });
+  expect(result.hasWorkflows).toBe(true);
+});

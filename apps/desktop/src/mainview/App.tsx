@@ -1,8 +1,13 @@
 import { APP_VERSION } from "../shared/version";
 import brandMark from "../../assets/brand/pipeline-loop.png";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ThemeProvider, useTheme } from "next-themes";
 import { toast } from "sonner";
+import {
+  createLogReader,
+  parseJobStatusesFromLogs,
+  type JobStatus,
+} from "@/lib/job-status";
 import {
   Workflow as WorkflowIcon,
   Plus,
@@ -16,6 +21,7 @@ import {
   Play,
   GitBranch,
   ChevronRight,
+  ChevronDown,
   ArrowUpRight,
   CircleCheck,
   CircleX,
@@ -126,7 +132,10 @@ function Workspace() {
     [error, setError] = useState(""),
     [search, setSearch] = useState("");
   const [addOpen, setAddOpen] = useState(false),
-    [runWorkflow, setRunWorkflow] = useState<Workflow | null>(null),
+    [runWorkflow, setRunWorkflow] = useState<{
+      workflow: Workflow;
+      initialJobId?: string;
+    } | null>(null),
     [remove, setRemove] = useState<Project | null>(null),
     [runnerStopped, setRunnerStopped] = useState(false),
     [mobileRun, setMobileRun] = useState(false);
@@ -140,6 +149,118 @@ function Workspace() {
   const project = projects.find((p) => p.id === selected) || null;
   const workflow =
     workflows.find((w) => w.path === selectedWorkflow) || workflows[0] || null;
+
+  const [jobStatuses, setJobStatuses] = useState<Record<string, JobStatus>>({});
+
+  const activeWorkflowRun = useMemo(() => {
+    if (
+      selectedRun &&
+      selectedRun.request.projectId === project?.id &&
+      selectedRun.request.workflowPath === workflow?.path
+    ) {
+      return selectedRun;
+    }
+    return (
+      runs.find(
+        (r) =>
+          r.request.projectId === project?.id &&
+          r.request.workflowPath === workflow?.path,
+      ) || null
+    );
+  }, [selectedRun, runs, project?.id, workflow?.path]);
+
+  useEffect(() => {
+    if (!activeWorkflowRun || !workflow) {
+      setJobStatuses({});
+      return;
+    }
+    const runId = activeWorkflowRun.id;
+    const jobs = workflow.jobs;
+    let alive = true;
+    const readLogs = createLogReader((cursor) =>
+      api("get_run_logs", { runId, cursor, limit: 2000 }),
+    );
+    // Refreshes run one after another so an older response cannot overwrite newer state.
+    let queue: Promise<void> = Promise.resolve();
+    const refresh = () => {
+      queue = queue.then(async () => {
+        if (!alive) return;
+        try {
+          const entries = await readLogs();
+          if (alive) setJobStatuses(parseJobStatusesFromLogs(jobs, entries));
+        } catch {}
+      });
+    };
+    refresh();
+
+    const unsubscribe = subscribeEvents((events) => {
+      if (events.some((e) => e.runId === runId)) refresh();
+    });
+
+    return () => {
+      alive = false;
+      unsubscribe();
+    };
+  }, [activeWorkflowRun?.id, workflow]);
+
+  // Rerunning one job goes through the run dialog, which applies the workflow's
+  // required inputs and event rules instead of submitting defaults blindly.
+  const handleRunSpecificJob = (jobId: string) => {
+    if (!workflow) return;
+    setRunWorkflow({ workflow, initialJobId: jobId });
+  };
+
+  const [collapsedCategories, setCollapsedCategories] = useState<Record<string, boolean>>({});
+  const [projectFilter, setProjectFilter] = useState("");
+
+  const toggleCategory = useCallback((categoryName: string) => {
+    setCollapsedCategories((previous) => ({
+      ...previous,
+      [categoryName]: !previous[categoryName],
+    }));
+  }, []);
+
+  useEffect(() => {
+    if (selected && projects.length > 0) {
+      const activeProject = projects.find((p) => p.id === selected);
+      if (activeProject?.category) {
+        setCollapsedCategories((previous) => {
+          if (previous[activeProject.category!]) {
+            return { ...previous, [activeProject.category!]: false };
+          }
+          return previous;
+        });
+      }
+    }
+  }, [selected, projects]);
+
+  const filteredProjects = useMemo(() => {
+    if (!projectFilter.trim()) return projects;
+    const query = projectFilter.trim().toLowerCase();
+    return projects.filter(
+      (p) =>
+        p.name.toLowerCase().includes(query) ||
+        (p.category && p.category.toLowerCase().includes(query)),
+    );
+  }, [projects, projectFilter]);
+
+  const groupedProjects = useMemo(() => {
+    const map = new Map<string, Project[]>();
+    for (const p of filteredProjects) {
+      const cat = p.category?.trim() || "";
+      if (!map.has(cat)) map.set(cat, []);
+      map.get(cat)!.push(p);
+    }
+    const groups: { category: string; items: Project[] }[] = [];
+    for (const [category, items] of map.entries()) {
+      groups.push({ category, items });
+    }
+    return groups.sort((a, b) => {
+      if (!a.category) return 1;
+      if (!b.category) return -1;
+      return a.category.localeCompare(b.category);
+    });
+  }, [filteredProjects]);
   const refresh = useCallback(async () => {
     try {
       const [p, r] = await Promise.all([
@@ -351,6 +472,28 @@ function Workspace() {
                 <Plus className="size-4" />
               </IconButton>
             </div>
+            {projects.length >= 5 && (
+              <div className="px-2 pt-1 pb-1.5">
+                <div className="relative flex items-center">
+                  <Search className="absolute left-2 size-3 text-muted-foreground pointer-events-none" />
+                  <Input
+                    placeholder="Filter projects…"
+                    value={projectFilter}
+                    onChange={(e) => setProjectFilter(e.target.value)}
+                    className="h-7 text-xs pl-7 pr-6 bg-muted/30 border-border/60"
+                  />
+                  {projectFilter && (
+                    <button
+                      type="button"
+                      onClick={() => setProjectFilter("")}
+                      className="absolute right-2 text-muted-foreground hover:text-foreground cursor-pointer"
+                    >
+                      <CircleX className="size-3.5" />
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
             <SidebarGroupContent>
               <SidebarMenu>
                 {loading ? (
@@ -359,32 +502,103 @@ function Workspace() {
                     <Skeleton className="h-8 w-full" />
                   </div>
                 ) : (
-                  projects.map((p) => (
-                    <SidebarMenuItem key={p.id}>
-                      <SidebarMenuButton
-                        isActive={(view === "project" || view === "project-settings") && p.id === selected}
-                        onClick={() => selectProject(p)}
-                        tooltip={p.path}
-                      >
-                        <Folder className="size-4" />
-                        <span>{p.name}</span>
-                        {runs.some(
-                          (r) =>
-                            r.request.projectId === p.id &&
-                            r.state === "running",
-                        ) && (
-                          <LoaderCircle
-                            className="ml-auto size-3 animate-spin running-foreground"
-                            aria-label="Running pipeline"
-                          />
+                  groupedProjects.map((group) => {
+                    const isGroupCategory = Boolean(group.category);
+                    const isCollapsed =
+                      isGroupCategory &&
+                      !projectFilter.trim() &&
+                      Boolean(collapsedCategories[group.category]);
+
+                    return (
+                      <div key={group.category || "root"} className="space-y-0.5">
+                        {isGroupCategory && (
+                          <div
+                            role="button"
+                            tabIndex={0}
+                            onClick={() => toggleCategory(group.category)}
+                            onKeyDown={(event) => {
+                              if (event.key === "Enter" || event.key === " ") {
+                                event.preventDefault();
+                                toggleCategory(group.category);
+                              }
+                            }}
+                            className="sidebar-tree-node"
+                            title={`${isCollapsed ? "Expand" : "Collapse"} ${group.category}`}
+                          >
+                            <div className="flex items-center gap-1.5 min-w-0">
+                              {isCollapsed ? (
+                                <ChevronRight className="size-3.5 shrink-0 text-muted-foreground/70 transition-transform" />
+                              ) : (
+                                <ChevronDown className="size-3.5 shrink-0 text-muted-foreground/70 transition-transform" />
+                              )}
+                              {isCollapsed ? (
+                                <Folder className="size-3.5 shrink-0 text-muted-foreground/80" />
+                              ) : (
+                                <FolderOpen className="size-3.5 shrink-0 text-muted-foreground/80" />
+                              )}
+                              <span className="truncate">{group.category}</span>
+                            </div>
+                            <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-muted/60 text-muted-foreground shrink-0 ml-auto">
+                              {group.items.length}
+                            </span>
+                          </div>
                         )}
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  ))
+
+                        {!isCollapsed && (
+                          <div
+                            className={
+                              isGroupCategory
+                                ? "sidebar-tree-children"
+                                : "space-y-0.5"
+                            }
+                          >
+                            {group.items.map((p) => (
+                              <SidebarMenuItem key={p.id}>
+                                <SidebarMenuButton
+                                  size="sm"
+                                  isActive={
+                                    (view === "project" ||
+                                      view === "project-settings") &&
+                                    p.id === selected
+                                  }
+                                  onClick={() => selectProject(p)}
+                                  tooltip={p.path}
+                                >
+                                  <Folder
+                                    className={
+                                      isGroupCategory
+                                        ? "size-3.5 shrink-0 text-muted-foreground/70"
+                                        : "size-4"
+                                    }
+                                  />
+                                  <span className="truncate">{p.name}</span>
+                                  {runs.some(
+                                    (r) =>
+                                      r.request.projectId === p.id &&
+                                      r.state === "running",
+                                  ) && (
+                                    <LoaderCircle
+                                      className="ml-auto size-3 animate-spin running-foreground"
+                                      aria-label="Running pipeline"
+                                    />
+                                  )}
+                                </SidebarMenuButton>
+                              </SidebarMenuItem>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })
                 )}
                 {!loading && !projects.length && (
                   <p className="sidebar-empty">
                     Add a project to discover its workflows.
+                  </p>
+                )}
+                {!loading && projects.length > 0 && !filteredProjects.length && (
+                  <p className="sidebar-empty">
+                    No projects match "{projectFilter}".
                   </p>
                 )}
                 <SidebarMenuItem>
@@ -675,7 +889,7 @@ function Workspace() {
                 ) : !workflows.length ? (
                   <Empty
                     title="No workflows yet"
-                    description="Add a .yml or .yaml workflow to this project’s .github/workflows folder, then refresh."
+                    description="Add a workflow (.github/workflows/*.yml or .gitlab-ci.yml) to this project, then refresh."
                     icon={<WorkflowIcon />}
                     action={
                       <Button
@@ -717,6 +931,11 @@ function Workspace() {
                                   {w.path.split("/").pop()}
                                 </span>
                                 <span className="workflow-tags">
+                                  {w.path.includes(".gitlab") && (
+                                    <Badge variant="secondary" className="bg-orange-500/15 text-orange-400 border-orange-500/30 font-medium">
+                                      GitLab CI
+                                    </Badge>
+                                  )}
                                   {w.diagnostic ? (
                                     <Badge variant="outline">
                                       <CircleX className="size-3" />
@@ -773,21 +992,77 @@ function Workspace() {
                         ) : (
                           <>
                             <div className="jobs-list">
-                              {workflow.jobs.map((j) => (
-                                <div className="job-row" key={j.id}>
-                                  <span className="job-node" />
-                                  <div>
-                                    <h3>{j.name}</h3>
-                                    <p className="mono">
-                                      {j.runners.join(", ") ||
-                                        "Reusable workflow"}
-                                    </p>
-                                    {j.needs.length > 0 && (
-                                      <p>Needs: {j.needs.join(", ")}</p>
-                                    )}
+                              {workflow.jobs.map((j) => {
+                                const status = jobStatuses[j.id];
+                                return (
+                                  <div className="job-row" key={j.id}>
+                                    <div className="flex items-center justify-center size-5 shrink-0">
+                                      {status === "success" && (
+                                        <CircleCheck className="size-4 text-emerald-500 fill-emerald-500/10" />
+                                      )}
+                                      {status === "failure" && (
+                                        <CircleX className="size-4 text-rose-500 fill-rose-500/10" />
+                                      )}
+                                      {status === "running" && (
+                                        <LoaderCircle className="size-4 text-sky-400 animate-spin" />
+                                      )}
+                                      {(!status || status === "pending") && (
+                                        <span className="job-node" />
+                                      )}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <div className="flex items-center gap-2">
+                                        <h3 className="truncate">{j.name}</h3>
+                                        {status === "success" && (
+                                          <Badge
+                                            variant="outline"
+                                            className="text-[10px] px-1.5 py-0 border-emerald-500/30 text-emerald-500 font-normal"
+                                          >
+                                            Passed
+                                          </Badge>
+                                        )}
+                                        {status === "failure" && (
+                                          <Badge
+                                            variant="outline"
+                                            className="text-[10px] px-1.5 py-0 border-rose-500/30 text-rose-500 font-normal"
+                                          >
+                                            Failed
+                                          </Badge>
+                                        )}
+                                        {status === "running" && (
+                                          <Badge
+                                            variant="outline"
+                                            className="text-[10px] px-1.5 py-0 border-sky-400/30 text-sky-400 font-normal"
+                                          >
+                                            Running
+                                          </Badge>
+                                        )}
+                                      </div>
+                                      <p className="mono">
+                                        {j.runners.join(", ") ||
+                                          "Reusable workflow"}
+                                      </p>
+                                      {j.needs.length > 0 && (
+                                        <p>Needs: {j.needs.join(", ")}</p>
+                                      )}
+                                    </div>
+                                    <div className="job-actions">
+                                      <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
+                                        title={`Rerun only ${j.name}`}
+                                        disabled={runnerStopped}
+                                        onClick={() =>
+                                          handleRunSpecificJob(j.id)
+                                        }
+                                      >
+                                        <RefreshCw className="size-3.5" />
+                                      </Button>
+                                    </div>
                                   </div>
-                                </div>
-                              ))}
+                                );
+                              })}
                             </div>
                             {workflow.inputs.length > 0 && (
                               <p className="field-help">
@@ -835,7 +1110,7 @@ function Workspace() {
                       workflowLoading ||
                       !!workflowError
                     }
-                    onClick={() => setRunWorkflow(workflow)}
+                    onClick={() => setRunWorkflow({ workflow })}
                   >
                     <Play className="size-4" />
                     Run workflow
@@ -979,9 +1254,10 @@ function Workspace() {
       )}
       {project && runWorkflow && (
         <RunDialog
-          key={runWorkflow.path}
+          key={runWorkflow.workflow.path + (runWorkflow.initialJobId || "")}
           project={project}
-          workflow={runWorkflow}
+          workflow={runWorkflow.workflow}
+          initialJobId={runWorkflow.initialJobId}
           onClose={() => setRunWorkflow(null)}
           onRun={(r) => {
             showRun(r);

@@ -6,6 +6,7 @@ import {
   Folder,
   FolderOpen,
   Home,
+  Layers,
   LoaderCircle,
   RefreshCw,
 } from "lucide-react";
@@ -24,7 +25,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { api, chooseFolder, isDesktop } from "@/lib/api";
-import type { FolderListing, Project } from "../../shared/contracts";
+import type { DetectedProject, FolderListing, Project } from "../../shared/contracts";
 import { fail } from "./common";
 
 export function AddProjectDialog({
@@ -45,7 +46,9 @@ export function AddProjectDialog({
     [error, setError] = useState("");
   const [hidden, setHidden] = useState(false),
     [query, setQuery] = useState(""),
+    [category, setCategory] = useState(""),
     [retry, setRetry] = useState(0);
+
   useEffect(() => {
     if (!browsing) return;
     let alive = true;
@@ -54,7 +57,13 @@ export function AddProjectDialog({
     setQuery("");
     void api("browse_folders", { path: target, showHidden: hidden })
       .then((value) => {
-        if (alive) setListing(value);
+        if (alive) {
+          setListing(value);
+          const folderName = value.path.split("/").filter(Boolean).pop();
+          if (folderName && !category) {
+            setCategory(folderName);
+          }
+        }
       })
       .catch((e) => {
         if (alive) setError(fail(e));
@@ -66,6 +75,7 @@ export function AddProjectDialog({
       alive = false;
     };
   }, [browsing, target, hidden, retry]);
+
   async function pickNative() {
     setBusy(true);
     setError("");
@@ -78,12 +88,18 @@ export function AddProjectDialog({
       setBusy(false);
     }
   }
+
   async function add() {
     if (!selected) return;
     setBusy(true);
     setError("");
     try {
-      onAdded(await api("add_project", { path: selected }));
+      onAdded(
+        await api("add_project", {
+          path: selected,
+          category: category.trim() || undefined,
+        }),
+      );
       onClose();
     } catch (e) {
       setError(fail(e));
@@ -91,6 +107,32 @@ export function AddProjectDialog({
       setBusy(false);
     }
   }
+
+  async function addMicroservices(detected: DetectedProject[]) {
+    if (!detected || detected.length === 0) return;
+    setBusy(true);
+    setError("");
+    try {
+      const finalCategory = category.trim() || listing?.path.split("/").pop() || "Microservices";
+      const addedList = await api("add_projects_batch", {
+        projects: detected.map((p) => ({
+          path: p.path,
+          name: p.name,
+          category: finalCategory,
+        })),
+        category: finalCategory,
+      });
+      if (addedList.length > 0) {
+        onAdded(addedList[0]);
+        onClose();
+      }
+    } catch (e) {
+      setError(fail(e));
+    } finally {
+      setBusy(false);
+    }
+  }
+
   function navigate(path: string) {
     setLoading(true);
     setTarget(path);
@@ -164,6 +206,36 @@ export function AddProjectDialog({
               onChange={(e) => setQuery(e.target.value)}
               disabled={loading}
             />
+            {listing?.detectedProjects && listing.detectedProjects.length > 0 && (
+              <div className="border border-border/80 bg-secondary/30 rounded-lg p-3 space-y-2.5 text-xs">
+                <div className="flex items-center justify-between">
+                  <span className="font-medium text-foreground flex items-center gap-1.5">
+                    <Layers className="size-3.5 text-muted-foreground" />
+                    <span>{listing.detectedProjects.length} Microservices detected</span>
+                  </span>
+                  <Button
+                    size="sm"
+                    className="h-7 text-xs font-medium px-3"
+                    disabled={busy}
+                    onClick={() => void addMicroservices(listing.detectedProjects!)}
+                  >
+                    Add All Microservices ({listing.detectedProjects.length})
+                  </Button>
+                </div>
+                <div className="flex items-center gap-2 pt-0.5">
+                  <Label htmlFor="category-input" className="text-muted-foreground whitespace-nowrap text-xs">
+                    Category:
+                  </Label>
+                  <Input
+                    id="category-input"
+                    className="h-7 text-xs bg-background/50 border-border"
+                    placeholder="e.g. Backend"
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                  />
+                </div>
+              </div>
+            )}
             {error ? (
               <div className="form-error" role="alert">
                 <p>{error}</p>
@@ -231,10 +303,10 @@ export function AddProjectDialog({
                 {listing.hasWorkflows ? (
                   <>
                     <Check className="size-3.5" />
-                    GitHub Actions workflows found in this folder.
+                    CI/CD workflows (GitHub Actions or GitLab CI) found in this folder.
                   </>
                 ) : (
-                  "No .github/workflows folder here yet. You can add workflows later."
+                  "No workflows found directly in this folder. You can add workflows later."
                 )}
               </p>
             )}
@@ -278,6 +350,16 @@ export function AddProjectDialog({
               >
                 Browse folders
               </Button>
+            </div>
+            <div className="space-y-1.5 pt-2">
+              <Label htmlFor="single-category">Category (optional)</Label>
+              <Input
+                id="single-category"
+                placeholder="e.g. Backend, Frontend, Microservices"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                disabled={busy}
+              />
             </div>
             {error && (
               <p className="form-error" role="alert">

@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Act Dock — CI/CD Workflow Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090d16;
+      --surface: #111726;
+      --surface-hover: #182035;
+      --border: #222d47;
+      --border-focus: #3b82f6;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --github: #8b5cf6;
+      --gitlab: #f97316;
+      --success: #10b981;
+      --danger: #ef4444;
+      --code-bg: #0d121f;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      background: rgba(17, 23, 38, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-weight: 700;
+      font-size: 1.25rem;
+      letter-spacing: -0.02em;
+    }
+    .brand-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      font-size: 1rem;
+    }
+    .badge-sub {
+      font-size: 0.75rem;
+      background: var(--border);
+      color: var(--text-muted);
+      padding: 0.2rem 0.5rem;
+      border-radius: 999px;
+      font-weight: 500;
+    }
+    .main-layout {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      flex: 1;
+      overflow: hidden;
+    }
+    .sidebar {
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 65px);
+    }
+    .sidebar-header {
+      padding: 1.25rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .project-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .project-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.9rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    .project-card:hover {
+      background: var(--surface-hover);
+      border-color: #334155;
+    }
+    .project-card.active {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 1px var(--primary);
+    }
+    .project-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .project-title { font-weight: 600; font-size: 0.95rem; }
+    .project-path {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .content-pane {
+      padding: 2rem;
+      overflow-y: auto;
+      height: calc(100vh - 65px);
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .scanner-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .scanner-row {
+      display: flex;
+      gap: 0.75rem;
+    }
+    input[type="text"] {
+      flex: 1;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      padding: 0.65rem 1rem;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      outline: none;
+    }
+    input[type="text"]:focus {
+      border-color: var(--border-focus);
+    }
+    button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.65rem 1.2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.875rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: background 0.15s ease;
+    }
+    button:hover { background: var(--primary-hover); }
+    button.secondary {
+      background: var(--border);
+      color: var(--text);
+    }
+    button.secondary:hover { background: #334155; }
+    .tag {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .tag-github { background: rgba(139, 92, 246, 0.2); color: #c4b5fd; }
+    .tag-gitlab { background: rgba(249, 115, 22, 0.2); color: #fdba74; }
+    .tag-event {
+      background: var(--border);
+      color: #93c5fd;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+    }
+    .workflow-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1rem;
+    }
+    .workflow-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .workflow-title {
+      font-weight: 600;
+      font-size: 1.05rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .empty-state {
+      padding: 3rem;
+      text-align: center;
+      color: var(--text-muted);
+      border: 1px dashed var(--border);
+      border-radius: 12px;
+    }
+    .preset-pill {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      padding: 0.3rem 0.6rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .preset-pill:hover {
+      color: var(--text);
+      border-color: var(--primary);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="brand-icon">⚡</div>
+      <span>Act Dock</span>
+      <span class="badge-sub">Local CI/CD Hub</span>
+    </div>
+    <div style="font-size: 0.85rem; color: var(--text-muted);">
+      Runtime: <strong style="color: #60a5fa;">Bun</strong>
+    </div>
+  </header>
+
+  <div class="main-layout">
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <span style="font-weight: 600;">Projects</span>
+        <button id="addProjectBtn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">+ Add</button>
+      </div>
+      <div class="project-list" id="projectList">
+        <div style="padding: 1rem; color: var(--text-muted); font-size: 0.85rem;">
+          Loading projects...
+        </div>
+      </div>
+    </div>
+
+    <div class="content-pane">
+      <div class="scanner-box">
+        <span style="font-weight: 600; font-size: 0.95rem;">Quick Project Scanner</span>
+        <div class="scanner-row">
+          <input type="text" id="scanInput" placeholder="Enter path (e.g. /Users/oza/Developer/Personal P/Red Cross 2)" />
+          <button id="scanBtn">Scan Workflows</button>
+        </div>
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+          <span style="font-size: 0.75rem; color: var(--text-muted);">Presets:</span>
+          <span class="preset-pill" onclick="setScanPath('.')">Current Project</span>
+          <span class="preset-pill" onclick="setScanPath('/Users/oza/Developer/Personal P/Red Cross 2')">Red Cross 2</span>
+        </div>
+      </div>
+
+      <div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <h2 id="viewTitle" style="font-size: 1.25rem;">Discovered Workflows</h2>
+          <span id="platformBadge"></span>
+        </div>
+
+        <div id="workflowsContainer" class="workflow-grid">
+          <div class="empty-state" style="grid-column: 1 / -1;">
+            Select a project from the left or enter a path above to discover workflows.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let activeProjectId = null;
+
+    async function fetchProjects() {
+      try {
+        const res = await fetch('/api/projects');
+        const data = await res.json();
+        renderProjects(data.projects || []);
+      } catch (err) {
+        console.error('Failed to load projects', err);
+      }
+    }
+
+    function renderProjects(projects) {
+      const list = document.getElementById('projectList');
+      if (projects.length === 0) {
+        list.innerHTML = `
+          <div style="padding: 1rem; color: var(--text-muted); font-size: 0.85rem; text-align: center;">
+            No projects added yet.<br>Click <strong>+ Add</strong> or use Quick Scanner.
+          </div>`;
+        return;
+      }
+
+      list.innerHTML = projects.map(p => `
+        <div class="project-card ${p.id === activeProjectId ? 'active' : ''}" onclick="selectProject('${encodeURIComponent(p.id)}')">
+          <div class="project-card-header">
+            <span class="project-title">${escapeHtml(p.name)}</span>
+            <button onclick="removeProject(event, '${encodeURIComponent(p.id)}')" style="background: none; color: #ef4444; padding: 0; font-size: 0.8rem;">×</button>
+          </div>
+          <div class="project-path">${escapeHtml(p.path)}</div>
+        </div>
+      `).join('');
+    }
+
+    async function selectProject(encodedId) {
+      const id = decodeURIComponent(encodedId);
+      activeProjectId = id;
+      fetchProjects();
+
+      document.getElementById('viewTitle').textContent = 'Loading workflows...';
+      const container = document.getElementById('workflowsContainer');
+      container.innerHTML = '<div class="empty-state" style="grid-column: 1 / -1;">Scanning directory...</div>';
+
+      try {
+        const res = await fetch(`/api/workflows?projectId=${encodeURIComponent(id)}`);
+        const json = await res.json();
+        renderWorkflows(json.data?.workflows || [], json.data?.platform);
+      } catch (err) {
+        container.innerHTML = `<div class="empty-state" style="color: #ef4444;">Error: ${err.message}</div>`;
+      }
+    }
+
+    async function scanDirectPath(path) {
+      if (!path) return;
+      document.getElementById('viewTitle').textContent = `Scanning: ${path}`;
+      const container = document.getElementById('workflowsContainer');
+      container.innerHTML = '<div class="empty-state" style="grid-column: 1 / -1;">Scanning directory...</div>';
+
+      try {
+        const res = await fetch('/api/scan', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ path })
+        });
+        const json = await res.json();
+        renderWorkflows(json.workflows || [], json.platform);
+      } catch (err) {
+        container.innerHTML = `<div class="empty-state" style="color: #ef4444;">Error: ${err.message}</div>`;
+      }
+    }
+
+    function renderWorkflows(workflows, platform) {
+      const badge = document.getElementById('platformBadge');
+      if (platform && platform !== 'none') {
+        badge.innerHTML = `<span class="tag ${platform === 'github' ? 'tag-github' : 'tag-gitlab'}">${platform}</span>`;
+      } else {
+        badge.innerHTML = '';
+      }
+
+      document.getElementById('viewTitle').textContent = `Discovered Workflows (${workflows.length})`;
+      const container = document.getElementById('workflowsContainer');
+
+      if (!workflows || workflows.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state" style="grid-column: 1 / -1;">
+            No CI/CD workflows detected in this directory.<br>
+            Make sure it contains <code>.github/workflows/*.yml</code> or <code>.gitlab-ci.yml</code>.
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = workflows.map((w, i) => `
+        <div class="workflow-card">
+          <div class="workflow-title">
+            <span>${escapeHtml(w.name)}</span>
+            <span class="tag ${w.source === 'github' ? 'tag-github' : 'tag-gitlab'}">${w.source}</span>
+          </div>
+          <div style="font-size: 0.8rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace;">
+            ${escapeHtml(w.path)}
+          </div>
+          <div style="display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.5rem;">
+            ${(w.events || []).map(ev => `<span class="tag-event">${escapeHtml(ev)}</span>`).join('')}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function removeProject(event, encodedId) {
+      event.stopPropagation();
+      const id = decodeURIComponent(encodedId);
+      if (!confirm(`Remove project "${id}" from Act Dock?`)) return;
+      await fetch(`/api/projects?id=${encodeURIComponent(id)}`, { method: 'DELETE' });
+      if (activeProjectId === id) activeProjectId = null;
+      fetchProjects();
+    }
+
+    document.getElementById('addProjectBtn').addEventListener('click', async () => {
+      const path = prompt('Enter project path to register:', '/Users/oza/Developer/Personal P/Red Cross 2');
+      if (!path) return;
+      const res = await fetch('/api/projects', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path })
+      });
+      const data = await res.json();
+      if (data.success || data.data?.success) {
+        fetchProjects();
+        selectProject(path);
+      } else {
+        alert(data.error || data.data?.error || 'Failed to add project');
+      }
+    });
+
+    document.getElementById('scanBtn').addEventListener('click', () => {
+      scanDirectPath(document.getElementById('scanInput').value.trim());
+    });
+
+    function setScanPath(path) {
+      document.getElementById('scanInput').value = path;
+      scanDirectPath(path);
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // Initialize
+    fetchProjects();
+    // Default scan current project
+    scanDirectPath('.');
+  </script>
+</body>
+</html>
+
