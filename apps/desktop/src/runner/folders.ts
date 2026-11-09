@@ -59,11 +59,10 @@ export async function browseFolders({
       await stat(join(current, ".github/workflows"))
     ).isDirectory();
   } catch {}
-  if (!hasWorkflows) {
+  for (const name of [".gitlab-ci.yml", ".gitlab-ci.yaml"]) {
+    if (hasWorkflows) break;
     try {
-      hasWorkflows =
-        (await stat(join(current, ".gitlab-ci.yml"))).isFile() ||
-        (await stat(join(current, ".gitlab-ci.yaml"))).isFile();
+      hasWorkflows = (await stat(join(current, name))).isFile();
     } catch {}
   }
 

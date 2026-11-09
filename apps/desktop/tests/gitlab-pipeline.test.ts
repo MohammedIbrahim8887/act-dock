@@ -163,3 +163,40 @@ deploy:
     expect(analysis).toBeDefined();
   });
 });
+
+describe("GitLab execution settings", () => {
+  test.each([
+    "when: manual", "when: never", "when: on_failure",
+    "rules: [{when: never}]", "only: [main]", "except: [branches]",
+  ])("rejects unsupported job conditions: %s", (condition) => {
+    expect(() => parseGitLabPipeline(`job:\n  script: echo deploy\n  ${condition}\n`)).toThrow("not supported");
+  });
+
+  test("inherited and pipeline conditions are rejected during discovery", async () => {
+    await pipeline(".base:\n  when: manual\njob:\n  extends: .base\n  script: echo deploy\n");
+    expect((await discover(project))[0].diagnostic).toContain("when=manual");
+    expect(() => parseGitLabPipeline("workflow:\n  rules: [{when: never}]\njob:\n  script: echo deploy\n")).toThrow("workflow.rules");
+  });
+
+  test("preserves default and overridden images through materialization and analysis", async () => {
+    await pipeline("default:\n  image: node:20\nnode:\n  script: node --version\npython:\n  image: {name: 'python:3.12'}\n  script: python --version\n");
+    const data = parseDocument(await Bun.file(materializeGitLabWorkflow(dir, ".gitlab-ci.yml")).text()).toJS();
+    expect(data.jobs.node.container.image).toBe("node:20");
+    expect(data.jobs.python.container.image).toBe("python:3.12");
+    expect(data.jobs.node.steps[0].shell).toBe("sh");
+    const analysis = await analyzeWorkflow(project, request());
+    expect(JSON.stringify(analysis)).toContain("python:3.12");
+    expect(JSON.stringify(analysis)).toContain("node:20");
+  });
+
+  test.each(["{name: 'alpine:3', entrypoint: ['']}", "'$IMAGE'", "{}"])("rejects unsupported image configuration: %s", (image) => {
+    expect(() => parseGitLabPipeline(`job:\n  image: ${image}\n  script: echo hi\n`)).toThrow("image");
+  });
+
+  test("cleanup always runs without overriding the main script outcome", async () => {
+    await pipeline("job:\n  script: exit 0\n  after_script: exit 1\n");
+    const data = parseDocument(await Bun.file(materializeGitLabWorkflow(dir, ".gitlab-ci.yml")).text()).toJS();
+    expect(data.jobs.job.steps[0]["continue-on-error"]).toBeUndefined();
+    expect(data.jobs.job.steps[1]).toMatchObject({ if: "always()", "continue-on-error": true, run: "exit 1" });
+  });
+});

@@ -61,6 +61,7 @@ export type GitLabJob = {
   afterScript: string[];
   allowFailure: boolean;
   container: boolean;
+  image?: string;
 };
 
 export type GitLabPipeline = {
@@ -82,6 +83,17 @@ const lines = (v: unknown, key: string): string[] => {
     );
   return items.map(String);
 };
+
+/** Preserve image identity; unsupported Docker options must never be silently lost. */
+function imageName(value: unknown, jobName: string): string | undefined {
+  if (value === undefined) return undefined;
+  const name = isObj(value) ? value.name : value;
+  if (isObj(value) && Object.keys(value).some((key) => key !== "name"))
+    throw new Error(`${jobName}.image options are not supported yet. Use an image name only.`);
+  if (typeof name !== "string" || !name.trim() || /\$/.test(name))
+    throw new Error(`${jobName}.image must be a non-empty literal image name; variable expansion is not supported yet.`);
+  return name;
+}
 
 /** Child values replace parent values; plain mappings (such as variables) merge. */
 function mergeConfig(base: Obj, over: Obj): Obj {
@@ -138,6 +150,9 @@ export function parseGitLabPipeline(raw: string): GitLabPipeline {
       "include is not supported yet. Inline the included jobs into this file.",
     );
 
+  if (isObj(root.workflow) && root.workflow.rules !== undefined)
+    throw new Error("workflow.rules is not supported yet. Pipeline conditions cannot be ignored.");
+
   const stages =
     root.stages === undefined
       ? DEFAULT_STAGES
@@ -167,6 +182,11 @@ export function parseGitLabPipeline(raw: string): GitLabPipeline {
     const job = resolveJob(name, raw, templates, defaults);
     if (job.trigger !== undefined)
       throw new Error(`${name} is a trigger job, which is not supported yet.`);
+    for (const key of ["rules", "only", "except"])
+      if (job[key] !== undefined)
+        throw new Error(`${name}.${key} is not supported yet. Job conditions cannot be ignored.`);
+    if (job.when !== undefined && job.when !== "on_success")
+      throw new Error(`${name}.when=${String(job.when)} is not supported yet. Job conditions cannot be ignored.`);
     const id = name.replace(/[^a-zA-Z0-9_-]/g, "_");
     if (ids.has(id))
       throw new Error(
@@ -230,6 +250,7 @@ export function parseGitLabPipeline(raw: string): GitLabPipeline {
       afterScript: lines(job.after_script, `${name}.after_script`),
       allowFailure: job.allow_failure === true,
       container: job.image !== undefined,
+      image: imageName(job.image, name),
     });
   }
 
@@ -253,18 +274,20 @@ export function buildGitLabWorkflow(pipeline: GitLabPipeline, name: string) {
   const jobs: Obj = {};
   for (const job of pipeline.jobs) {
     const steps: Obj[] = [
-      { name: job.name, shell: "bash", run: job.script.join("\n") },
+      { name: job.name, shell: job.image ? "sh" : "bash", run: job.script.join("\n") },
     ];
     if (job.afterScript.length > 0)
       steps.push({
         name: `${job.name} (after_script)`,
         if: "always()",
-        shell: "bash",
+        "continue-on-error": true,
+        shell: job.image ? "sh" : "bash",
         run: job.afterScript.join("\n"),
       });
     jobs[job.id] = {
       name: job.name,
       "runs-on": job.runsOn,
+      ...(job.image ? { container: { image: job.image } } : {}),
       ...(job.needs.length > 0 ? { needs: job.needs } : {}),
       ...(job.allowFailure ? { "continue-on-error": true } : {}),
       ...(Object.keys(job.env).length > 0 ? { env: job.env } : {}),
