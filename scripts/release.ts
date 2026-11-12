@@ -61,13 +61,14 @@ export async function release(){
     const macArtifacts=join(stage,'apps/desktop/artifacts');
     for(const file of await readdir(macArtifacts))if(/^(?:stable-)?macos-arm64-/.test(file))await cp(join(macArtifacts,file),join(stage,'artifacts',file));
     await run(['bun','scripts/build-linux.ts'],stage);
+    await run(['bun','scripts/verify-appimage.ts'],stage);
     await run(['bun','scripts/build-windows.ts'],stage);
     const specs=[
       ['macos-arm64','macos-arm64-ActDock.dmg','macos','arm64','DMG'],
       ['windows-x64','windows-x64-ActDock-Setup.exe','windows','x64','EXE'],
       ['linux-x64-deb','linux-x64-ActDock.deb','linux','x64','DEB'],
       ['linux-x64-rpm','linux-x64-ActDock.rpm','linux','x64','RPM'],
-      ['linux-x64-appimage','linux-x64-ActDock.AppImage','linux','x64','AppImage'],
+      ['linux-x64-appimage','ActDock-x86_64.AppImage','linux','x64','AppImage'],
     ];
     const directory=join(stage,'artifacts');
     const assets=[];
