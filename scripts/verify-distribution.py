@@ -46,7 +46,7 @@ def verify_inside():
 
 if __name__ == "__main__":
     if "--extract-appimage" in sys.argv:
-        path=Path("/artifacts/linux-x64-ActDock.AppImage")
+        path=Path("/artifacts/ActDock-x86_64.AppImage")
         with path.open("rb") as image:
             header=image.read(64)
             assert header[:6] == b"\x7fELF\x02\x01", "Expected little-endian ELF64 AppImage"

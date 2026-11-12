@@ -3,6 +3,7 @@ import {join,resolve,dirname,relative} from 'node:path';
 import {tmpdir} from 'node:os';
 import {createHash} from 'node:crypto';
 import {run} from '../build-brand';
+import {bundleAppImageRuntime} from './appimage-runtime';
 async function findLauncher(dir:string):Promise<string|undefined>{
   for(const e of await readdir(dir,{withFileTypes:true})){const path=join(dir,e.name);if(e.isFile()&&e.name==='launcher')return path;if(e.isDirectory()){const found=await findLauncher(path);if(found)return found;}}
 }
@@ -34,7 +35,7 @@ export async function packageLinux(){
     await cp(join(rpmroot,`RPMS/x86_64/act-dock-${version}-1.x86_64.rpm`),join(artifacts,'linux-x64-ActDock.rpm'));
     const appdir=join(stage,'ActDock.AppDir');await mkdir(join(appdir,'usr/lib'),{recursive:true});await cp(app,join(appdir,'usr/lib/act-dock'),{recursive:true});
     await cp(icon,join(appdir,'act-dock.png'));await Bun.write(join(appdir,'act-dock.desktop'),desktop);
-    await Bun.write(join(appdir,'AppRun'),`#!/bin/sh\nAPPDIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"\nexec "$APPDIR/usr/lib/act-dock/${launcherRel}" "$@"\n`);await chmod(join(appdir,'AppRun'),0o755);
+    await bundleAppImageRuntime(appdir);
     const tool=process.env.ACT_DOCK_APPIMAGETOOL || resolve('.cache/appimagetool.AppImage');await mkdir(dirname(tool),{recursive:true});
     if(!(await Bun.file(tool).exists())){const r=await fetch('https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage');if(!r.ok)throw new Error('AppImage tooling download failed');await Bun.write(tool,r);await chmod(tool,0o755);}
     const toolBytes=Buffer.from(await Bun.file(tool).arrayBuffer());
@@ -47,7 +48,7 @@ export async function packageLinux(){
     const extracted=join(stage,'appimagetool');
     await run(['unsquashfs','-quiet','-no-progress','-d',extracted,'-o',String(offset),tool]);
     process.env.ARCH='x86_64';
-    await run([join(extracted,'AppRun'),appdir,join(artifacts,'linux-x64-ActDock.AppImage')]);
+    await run([join(extracted,'AppRun'),appdir,join(artifacts,'ActDock-x86_64.AppImage')]);
     await run(['dpkg-deb','--info',join(artifacts,'linux-x64-ActDock.deb')]);
     await run(['rpm','-qip',join(artifacts,'linux-x64-ActDock.rpm')]);
   }finally{await rm(stage,{recursive:true,force:true});}

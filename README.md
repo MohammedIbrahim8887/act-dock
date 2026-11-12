@@ -12,9 +12,9 @@ Run GitHub Actions locally from a desktop workspace, a CLI, or your AI agents. S
 | Windows x64 | [Installer](https://github.com/MohammedIbrahim8887/act-dock/releases/latest/download/windows-x64-ActDock-Setup.exe) | Windows 10+, Edge WebView2 |
 | Linux x64 | [DEB](https://github.com/MohammedIbrahim8887/act-dock/releases/latest/download/linux-x64-ActDock.deb) | Ubuntu 24.04+ or Debian 13+ |
 | Linux x64 | [RPM](https://github.com/MohammedIbrahim8887/act-dock/releases/latest/download/linux-x64-ActDock.rpm) | Fedora 40+ with WebKitGTK 4.1 |
-| Linux x64 | [AppImage](https://github.com/MohammedIbrahim8887/act-dock/releases/latest/download/linux-x64-ActDock.AppImage) | glibc 2.39+, GTK 3, WebKitGTK 4.1, Ayatana AppIndicator, librsvg |
+| Linux x64 | [AppImage](https://github.com/MohammedIbrahim8887/act-dock/releases/latest/download/ActDock-x86_64.AppImage) | Bundled desktop runtime; verified offline on Ubuntu 22.04 x64 |
 
-Installers are not notarized. The macOS app is ad-hoc signed during packaging so Gatekeeper offers **Open Anyway** (System Settings → Privacy & Security); builds up to v0.2.2 shipped an unsealed bundle that macOS reports as "damaged" — clear it with `xattr -dr com.apple.quarantine "/Applications/Act Dock.app"` or upgrade. Windows packages are assembled from the pinned native Electrobun 2.0.5 core; Windows GUI verification requires a Windows machine. The AppImage uses system GTK/WebKit libraries and is not a universal bundle for older distributions.
+Installers are not notarized. The macOS app is ad-hoc signed during packaging so Gatekeeper offers **Open Anyway** (System Settings → Privacy & Security); builds up to v0.2.2 shipped an unsealed bundle that macOS reports as "damaged" — clear it with `xattr -dr com.apple.quarantine "/Applications/Act Dock.app"` or upgrade. Windows packages are assembled from the pinned native Electrobun 2.0.5 core; Windows GUI verification requires a Windows machine. The AppImage bundles GTK, WebKitGTK, glibc, fonts, and Mesa so those desktop libraries do not need to be installed separately. Releases must pass `bun scripts/verify-appimage.ts`, which opens the packaged UI without network access on bare Ubuntu 22.04; its container test runs as an unprivileged user with an Xvfb display and no installed GTK/WebKitGTK runtime.
 
 ### Updates
 
